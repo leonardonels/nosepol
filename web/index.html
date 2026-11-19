@@ -1,178 +1,616 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NoSePol</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1f2a37">
+<meta name="theme-color" content="#0E0F10">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-  :root { --bg:#fff; --fg:#1f2a37; --muted:#6b7280; --panel:rgba(255,255,255,.94); --line:#e5e7eb; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#111827; --fg:#e5e7eb; --muted:#9ca3af; --panel:rgba(17,24,39,.94); --line:#374151; }
+  :root {
+    --ink:#0E0F10; --panel:#0E0F10; --raise:#1A1C1F; --line:#2A2C2E; --edge:#3A3C3E;
+    --fg:#ECEAE3; --muted:#9C9E98; --dim:#6E706B; --lime:#C6FF3D; --orange:#FF5A1F;
+    --cond:'Barlow Condensed', system-ui, sans-serif; --mono:'JetBrains Mono', ui-monospace, monospace;
+    --safe-b: env(safe-area-inset-bottom, 0px);
   }
-  html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
-    font:14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-  #map { position:absolute; inset:0; }
-  #panel { position:absolute; z-index:1000; top:10px; right:10px; width:min(340px, calc(100vw - 32px));
-    max-height:calc(100% - 20px); overflow:auto; background:var(--panel); border:1px solid var(--line);
-    border-radius:10px; padding:10px 12px; box-shadow:0 4px 18px rgba(0,0,0,.15); }
-  #panel h1 { font-size:15px; margin:0 0 6px; }
-  .chips { display:flex; gap:6px; margin-bottom:8px; }
-  .chip { border:2px solid var(--c); color:var(--fg); background:transparent; border-radius:999px;
-    padding:2px 10px; font-weight:600; cursor:pointer; }
-  .chip.on { background:var(--c); color:#fff; }
-  .meta { color:var(--muted); font-size:12px; margin-bottom:6px; }
-  table { width:100%; border-collapse:collapse; font-size:12px; font-variant-numeric:tabular-nums; }
-  th { text-align:left; color:var(--muted); font-weight:500; border-bottom:1px solid var(--line); }
-  td, th { padding:3px 4px; }
-  tr.veh { cursor:pointer; }
-  tr.veh:hover { background:rgba(127,127,127,.12); }
-  .badge { display:inline-block; min-width:26px; text-align:center; color:#fff; border-radius:4px;
-    font-weight:700; padding:0 3px; }
-  .stale { opacity:.5; }
-  .stopped .bus-icon { border-radius:4px; outline:2px dashed var(--fg); }
-  .stop-tag { color:var(--muted); font-style:italic; }
-  .bus-icon { display:flex; align-items:center; justify-content:center; width:26px; height:26px;
-    border-radius:50%; color:#fff; font:700 11px system-ui; border:2px solid #fff;
-    box-shadow:0 1px 4px rgba(0,0,0,.4); }
-  @media (max-width: 600px) {
-    #panel { top:auto; bottom:10px; right:16px; left:16px; width:auto; max-height:40%; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:var(--ink); color:var(--fg);
+    font:15px/1.35 Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; overscroll-behavior:none; }
+  button, input { font:inherit; color:inherit; }
+  button { cursor:pointer; }
+  #map { position:fixed; inset:0; background:#1B1E21; }
+  .leaflet-control-attribution { font-size:10px; background:rgba(236,234,227,.85) !important; }
+  .mono { font-family:var(--mono); font-size:11px; letter-spacing:.06em; }
+  .cond { font-family:var(--cond); font-weight:800; }
+  .hide { display:none !important; }
+
+  /* top bar */
+  #top { position:fixed; z-index:1000; top:0; left:0; right:0; padding:12px 12px 0;
+    padding-top:max(12px, env(safe-area-inset-top)); display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+  #top > * { pointer-events:auto; }
+  .bar { display:flex; gap:8px; }
+  .field { flex:1; min-width:0; height:48px; display:flex; align-items:center; gap:10px; padding:0 14px;
+    background:var(--panel); border:1px solid var(--edge); color:var(--muted); text-align:left; }
+  .sq { width:48px; height:48px; flex:none; display:flex; align-items:center; justify-content:center;
+    background:var(--panel); border:1px solid var(--edge); }
+  #live { width:auto; padding:0 10px; color:var(--lime); }
+  #live.bad { color:var(--orange); }
+  #chips { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+  #chips::-webkit-scrollbar { display:none; }
+  .chip { flex:none; height:44px; min-width:54px; padding:0 10px; border:2px solid var(--c); background:transparent;
+    color:var(--fg); font:800 19px var(--cond); }
+  .chip[aria-pressed=true] { background:var(--c); color:var(--k); }
+
+  /* map markers */
+  .bus { position:relative; width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+    font:800 18px/1 var(--cond); box-shadow:0 1px 4px rgba(0,0,0,.5); }
+  .bus .arrow { position:absolute; left:50%; top:50%; width:14px; height:11px; margin:-5px 0 0 -7px;
+    background:var(--c); clip-path:polygon(50% 0, 100% 100%, 50% 72%, 0 100%); filter:drop-shadow(0 0 1px #000); }
+  .bus.sel { outline:2px solid #fff; outline-offset:2px; }
+  .bus.stopped { outline:2px dashed var(--fg); outline-offset:1px; }
+  .bus.stopped .arrow { display:none; }
+  .bus.stale { opacity:.45; }
+  .selstop { width:22px; height:22px; background:var(--lime); border:4px solid var(--ink); box-shadow:0 0 0 3px var(--lime); }
+  .me { width:16px; height:16px; border-radius:50%; background:#3D9BFF; border:3px solid #fff; box-shadow:0 0 0 6px rgba(61,155,255,.25); }
+
+  /* sheet */
+  #sheet { position:fixed; z-index:1000; left:0; right:0; bottom:0; max-height:52vh; display:flex; flex-direction:column;
+    background:var(--panel); border-top:3px solid var(--accent, var(--edge)); transition:max-height .2s; }
+  #sheet.full { max-height:88vh; }
+  #grab { flex:none; height:28px; width:100%; border:0; background:none; display:flex; align-items:center; justify-content:center; }
+  #grab span { width:40px; height:4px; background:var(--edge); }
+  #sheetBody { overflow:auto; padding:0 16px calc(16px + var(--safe-b)); }
+  .kicker { color:var(--muted); display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  h2 { margin:4px 0 0; font:800 32px/.92 var(--cond); text-transform:uppercase; }
+  .sub { color:#B9BAB4; font-size:13px; margin-top:4px; }
+  .row { display:flex; align-items:center; gap:10px; min-height:52px; border-top:1px solid var(--line);
+    width:100%; background:none; border-left:0; border-right:0; border-bottom:0; padding:6px 0; text-align:left; }
+  .row:last-child { border-bottom:1px solid var(--line); }
+  .badge { flex:none; width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    background:var(--c); color:var(--k); font:800 21px var(--cond); }
+  .grow { flex:1; min-width:0; }
+  .grow b { display:block; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .note { font:500 11px var(--mono); color:var(--muted); }
+  .eta { font:800 26px var(--cond); min-width:48px; text-align:right; }
+  .op { font:500 11px var(--mono); color:var(--muted); min-width:58px; text-align:right; }
+  .faded { opacity:.5; }
+  .grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:1px; background:var(--line); margin-top:12px; }
+  .grid > div { background:var(--panel); padding:8px; min-width:0; }
+  .grid .v { font:800 21px var(--cond); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .actions { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin-top:14px; }
+  .btn { height:48px; border:1px solid var(--fg); background:transparent; font-weight:700; font-size:14px; }
+  .btn.on, .btn.primary { background:var(--fg); color:var(--ink); }
+  .empty { color:var(--muted); padding:14px 0; font-size:14px; }
+  .later { font-size:13px; color:#B9BAB4; padding:10px 0 2px; }
+
+  /* overlays */
+  .overlay { position:fixed; z-index:1100; inset:0; background:var(--ink); display:flex; flex-direction:column;
+    padding-top:env(safe-area-inset-top); }
+  .ohead { display:flex; gap:8px; padding:12px; align-items:center; border-bottom:1px solid var(--line); }
+  .ohead input { flex:1; min-width:0; height:48px; background:var(--raise); border:1px solid var(--edge); padding:0 14px; outline:none; }
+  .ohead input:focus { border-color:var(--lime); }
+  .obody { overflow:auto; padding:4px 16px calc(24px + var(--safe-b)); }
+  .obody h3 { font:800 26px var(--cond); text-transform:uppercase; margin:18px 0 6px; }
+  .obody p { color:#C9CAC4; font-size:14px; line-height:1.5; margin:6px 0; }
+  .seg { display:inline-flex; border:1px solid var(--edge); }
+  .seg button { height:40px; padding:0 16px; border:0; background:none; font-weight:700; }
+  .seg button[aria-pressed=true] { background:var(--fg); color:var(--ink); }
+  .stat { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:8px; }
+  .stat .v { font:800 22px var(--cond); }
+  a { color:var(--lime); }
+  :focus-visible { outline:2px solid var(--lime); outline-offset:2px; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  #toast { position:fixed; z-index:1200; left:50%; bottom:calc(56vh); transform:translateX(-50%); background:var(--fg); color:var(--ink);
+    padding:8px 14px; font-weight:600; font-size:13px; }
+  @media (min-width: 720px) {
+    #sheet { left:12px; right:auto; width:400px; bottom:12px; max-height:70vh; }
+    #sheet.full { max-height:calc(100vh - 140px); }
+    #top { right:auto; width:424px; }
+    #toast { bottom:24px; }
   }
 </style>
 </head>
 <body>
-<div id="map"></div>
-<div id="panel">
-  <h1>NoSePol</h1>
-  <div class="chips" id="chips"></div>
-  <div class="meta" id="meta">loading…</div>
-  <table>
-    <thead><tr><th>Line</th><th>To</th><th>v km/h</th><th>res m</th><th>next stop</th></tr></thead>
-    <tbody id="rows"></tbody>
-  </table>
+<div id="map" aria-label="Map"></div>
+
+<div id="top">
+  <div class="bar">
+    <button class="field" id="openSearch">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <span data-t="searchPh"></span>
+    </button>
+    <button class="sq mono" id="live" data-t-title="liveTitle">● —</button>
+    <button class="sq" id="openMenu" data-t-aria="menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <div id="chips" role="group" data-t-aria="lines"></div>
 </div>
+
+<button class="sq" id="locate" data-t-aria="locate" style="position:fixed; z-index:1000; right:12px;">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+</button>
+
+<section id="sheet" aria-live="polite">
+  <button id="grab" data-t-aria="expand"><span></span></button>
+  <div id="sheetBody"></div>
+</section>
+
+<div class="overlay hide" id="search" role="dialog" aria-modal="true" data-t-aria="search">
+  <div class="ohead">
+    <label for="q" class="sr" data-t="searchPh"></label>
+    <input id="q" type="search" autocomplete="off" enterkeyhint="search">
+    <button class="sq" id="closeSearch" data-t-aria="close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="obody" id="results"></div>
+</div>
+
+<div class="overlay hide" id="menu" role="dialog" aria-modal="true" data-t-aria="menu">
+  <div class="ohead">
+    <div style="flex:1; font:italic 800 30px var(--cond); text-transform:uppercase">NoSePol</div>
+    <button class="sq" id="closeMenu" data-t-aria="close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="obody" id="menuBody"></div>
+</div>
+<div id="toast" class="hide" role="status"></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const COLORS = { T06: "#d9480f", T08: "#1971c2", T09: "#2f9e44" };
-const base = l => l.replace(/\/$/, "");
-const color = l => COLORS[base(l)] || "#7048e8";
-const map = L.map("map", { zoomControl: false }).setView([45.65, 13.78], 13);
-L.control.zoom({ position: "bottomleft" }).addTo(map);
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19, attribution: "&copy; OpenStreetMap contributors · data TPL FVG",
-}).addTo(map);
-
-const enabled = new Set(Object.keys(COLORS));
-const shapeLayers = {};      // line -> layerGroup
-const markers = {};          // trip -> {bus, gps, link}
-let fitted = false;
-
-function chips(lines) {
-  const el = document.getElementById("chips");
-  el.innerHTML = "";
-  for (const { line } of lines) {
-    const b = document.createElement("button");
-    b.className = "chip" + (enabled.has(line) ? " on" : "");
-    b.style.setProperty("--c", color(line));
-    b.textContent = line.replace(/^T0?/, "");
-    b.onclick = () => { enabled.has(line) ? enabled.delete(line) : enabled.add(line); refreshVisibility(); chips(lines); tick(); };
-    el.appendChild(b);
-  }
+// ---------- i18n ----------
+const T = {
+  it: {
+    searchPh: "Fermata, via o linea", liveTitle: "Secondi dall'ultimo aggiornamento GPS", menu: "Menu", lines: "Linee",
+    locate: "Centra su di me", expand: "Espandi", close: "Chiudi", search: "Cerca",
+    nearest: "Fermata più vicina", walk: "a piedi", tapHint: "Tocca un autobus o una fermata sulla mappa.",
+    locHint: "Attiva la posizione per vedere la fermata più vicina.", locBtn: "Usa la mia posizione",
+    stop: "Fermata", bus: "Autobus", now: "ora", stopped: "fermo", gpsOld: "GPS di {s} s fa",
+    away: "a {d}", ours: "NoSePol", operator: "Operatore", noBuses: "Nessun autobus in arrivo adesso.",
+    later: "Poi, da orario", scheduled: "programmato", passed: "già passato",
+    to: "verso", reaches: "Alla prossima fermata {name} tra {eta}", atTerminus: "Al capolinea",
+    speed: "Velocità", next: "Prossima", confidence: "Qualità", gps: "Ultimo GPS",
+    high: "Alta", medium: "Media", low: "Stima", follow: "Segui", following: "Segui ●", share: "Condividi",
+    allDeps: "Tutti gli arrivi", stopsAhead: "Prossime fermate", copied: "Link copiato",
+    nearby: "Fermate vicine", noResults: "Nessuna fermata trovata.", typeHint: "Scrivi il nome di una fermata o di una via.",
+    linesTitle: "Linee", busesRunning: "{n} in servizio", showOnly: "Mostra solo questa",
+    language: "Lingua", feed: "Stato dei dati", lastBatch: "Ultimo GPS", every: "Ogni", staleN: "Vecchi",
+    resync: "Alcune fermate non hanno codice: i dati delle fermate andrebbero aggiornati.",
+    howTitle: "Come funziona",
+    how: "Ogni ~20 s gli autobus inviano la posizione GPS. NoSePol la proietta sul percorso, stima posizione e velocità e calcola quando l'autobus arriva alla fermata. Accanto trovi il tempo dichiarato dall'operatore.",
+    privacyTitle: "Privacy e dati",
+    privacy: "La tua posizione resta sul telefono: serve solo a trovare le fermate vicine e non viene inviata a nessuno se non come coordinate per cercarle. Nessun account, nessun tracciamento. Dati in tempo reale: TPL FVG. Mappa: © OpenStreetMap.",
+    installTitle: "Sulla schermata Home", install: "Dal menu del browser scegli «Aggiungi a schermata Home» per aprirla come un'app.",
+    offline: "Server non raggiungibile", unknownTrip: "Questo autobus non è più tracciato.", unknownStop: "Fermata sconosciuta.",
+    min: "min",
+  },
+  en: {
+    searchPh: "Stop, street or line", liveTitle: "Seconds since the last GPS update", menu: "Menu", lines: "Lines",
+    locate: "Centre on me", expand: "Expand", close: "Close", search: "Search",
+    nearest: "Nearest stop", walk: "walk", tapHint: "Tap a bus or a stop on the map.",
+    locHint: "Turn on location to see your nearest stop.", locBtn: "Use my location",
+    stop: "Stop", bus: "Bus", now: "now", stopped: "stopped", gpsOld: "GPS {s} s old",
+    away: "{d} away", ours: "NoSePol", operator: "Operator", noBuses: "No buses on the way right now.",
+    later: "Then, by timetable", scheduled: "scheduled", passed: "passed",
+    to: "to", reaches: "Next stop {name} in {eta}", atTerminus: "At the terminus",
+    speed: "Speed", next: "Next", confidence: "Confidence", gps: "Last GPS",
+    high: "High", medium: "Medium", low: "Estimate", follow: "Follow", following: "Following ●", share: "Share",
+    allDeps: "All arrivals", stopsAhead: "Next stops", copied: "Link copied",
+    nearby: "Nearby stops", noResults: "No stops found.", typeHint: "Type a stop or street name.",
+    linesTitle: "Lines", busesRunning: "{n} running", showOnly: "Show only this",
+    language: "Language", feed: "Data status", lastBatch: "Last GPS", every: "Every", staleN: "Stale",
+    resync: "Some stops have no code: the stop data should be refreshed.",
+    howTitle: "How it works",
+    how: "Buses report GPS about every 20 s. NoSePol fits each one onto its route, estimates position and speed, and works out when it reaches each stop. The operator's own time is shown beside ours.",
+    privacyTitle: "Privacy and data",
+    privacy: "Your location stays on your phone: it is only used to find nearby stops, sent as coordinates for that search and nothing else. No account, no tracking. Live data: TPL FVG. Map: © OpenStreetMap.",
+    installTitle: "On your home screen", install: "In the browser menu choose “Add to Home screen” to open it like an app.",
+    offline: "Server unreachable", unknownTrip: "This bus is no longer tracked.", unknownStop: "Unknown stop.",
+    min: "min",
+  },
+};
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("nsp." + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("nsp." + k, JSON.stringify(v)); } catch {} },
+};
+let lang = store.get("lang", "it");
+const t = (k, vars = {}) => (T[lang][k] ?? k).replace(/\{(\w+)\}/g, (_, n) => vars[n] ?? "");
+function applyLang() {
+  document.documentElement.lang = lang;
+  for (const el of document.querySelectorAll("[data-t]")) el.textContent = t(el.dataset.t);
+  for (const el of document.querySelectorAll("[data-t-aria]")) el.setAttribute("aria-label", t(el.dataset.tAria));
+  for (const el of document.querySelectorAll("[data-t-title]")) el.title = t(el.dataset.tTitle);
+  document.getElementById("q").placeholder = t("searchPh");
 }
 
-function refreshVisibility() {
-  for (const [line, g] of Object.entries(shapeLayers))
-    enabled.has(line) ? g.addTo(map) : g.remove();
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const api = p => fetch("api/" + p).then(r => r.ok ? r.json() : Promise.reject(r.status));
+const base = l => l.replace(/\/$/, "");
+let LINES = {};  // "T06" -> {name, color, ink, variants, vehicles}
+const style = l => LINES[base(l)] || { name: base(l).replace(/^T0*/, ""), color: "#8A8C86", ink: "#0E0F10" };
+const badge = l => { const s = style(l); return `<span class="badge" style="--c:${s.color};--k:${s.ink}">${esc(s.name)}</span>`; };
+function fmtEta(s) {
+  if (s == null) return "–";
+  if (s < 45) return t("now");
+  return Math.round(s / 60) + "′";
+}
+const fmtDist = m => m == null ? "" : m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1)} km`;
+const fmtMin = s => Math.max(1, Math.round(s / 60)) + "′";
+const walkMin = m => Math.max(1, Math.round(m * 1.3 / 75));  // 4.5 km/h, streets ~1.3x straight line
+function confidence(v) {
+  if (v.stale || v.residual == null || v.n_fixes < 3) return ["low", "#FF5A1F"];
+  if (v.residual <= 25 && v.age <= 45) return ["high", "#C6FF3D"];
+  return ["medium", "#ECEAE3"];
+}
+function toast(msg) { const el = $("toast"); el.textContent = msg; el.classList.remove("hide"); clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.add("hide"), 1800); }
+function haversine(a, b) {
+  const R = 6371000, r = Math.PI / 180, dLat = (b[0] - a[0]) * r, dLon = (b[1] - a[1]) * r;
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+// ---------- map ----------
+const map = L.map("map", { zoomControl: false, attributionControl: true }).setView([45.65, 13.775], 14);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19, attribution: "&copy; OpenStreetMap · TPL FVG",
+}).addTo(map);
+// Remember hidden lines, not shown ones, so a newly configured line shows up for everyone.
+const hidden = new Set(store.get("hiddenLines", []));
+const isOn = l => !hidden.has(base(l));
+const saveHidden = () => store.set("hiddenLines", [...hidden]);
+const shapeLayers = {};   // line -> layerGroup (routes)
+const stopLayer = L.layerGroup();
+const variantCoords = {}; // variant key -> [[lat, lon], ...]
+const busMarkers = {};    // trip -> marker
+let vehicles = [], me = null, meMarker = null, sel = null, follow = false, fitted = false;
+
+function renderChips() {
+  const el = $("chips");
+  el.innerHTML = Object.entries(LINES).map(([l, s]) =>
+    `<button class="chip" data-line="${l}" aria-pressed="${isOn(l)}" style="--c:${s.color};--k:${s.ink}">${esc(s.name)}</button>`).join("");
+  for (const b of el.querySelectorAll(".chip")) b.onclick = () => {
+    const l = b.dataset.line; hidden.has(l) ? hidden.delete(l) : hidden.add(l);
+    saveHidden(); applyFilter();
+  };
+}
+function applyFilter() {
+  for (const b of document.querySelectorAll(".chip")) b.setAttribute("aria-pressed", isOn(b.dataset.line));
+  for (const [l, g] of Object.entries(shapeLayers)) isOn(l) ? g.addTo(map) : g.remove();
+  drawBuses();
+}
+
+let chipsKey = "";
+async function loadLines() {
+  const lines = await api("lines");
+  LINES = Object.fromEntries(lines.map(l => [l.line, l]));
+  const key = lines.map(l => l.line).join();
+  if (key !== chipsKey) { chipsKey = key; renderChips(); }
+  return lines.reduce((a, l) => a + l.variants.length, 0);
 }
 
 async function loadShapes() {
-  const shapes = await fetch("api/shapes").then(r => r.json());
+  const shapes = await api("shapes");
   for (const g of Object.values(shapeLayers)) g.remove();
   for (const k in shapeLayers) delete shapeLayers[k];
-  const all = [];
+  stopLayer.clearLayers();
+  const seen = new Set(), all = [];
   for (const v of shapes) {
-    const g = shapeLayers[base(v.line)] ||= L.layerGroup();
-    const off = v.direction === "A" ? 1 : -1;
-    L.polyline(v.coords, { color: color(v.line), weight: 4, opacity: .55, dashArray: v.direction === "R" ? "6 6" : null })
-      .bindTooltip(`${v.line} → ${v.to} (${(v.length/1000).toFixed(1)} km, ${v.n_stops} stops)`).addTo(g);
-    for (const s of v.stops)
-      L.circleMarker([s.lat, s.lon], { radius: 3, color: color(v.line), weight: 1, fillColor: "#fff", fillOpacity: 1 })
-        .bindTooltip(`${s.name || "?"} <small>${s.code || ""}</small><br>s = ${Math.round(s.s)} m`).addTo(g);
+    variantCoords[v.key] = v.coords;
+    const s = style(v.line), g = shapeLayers[base(v.line)] ||= L.layerGroup();
+    L.polyline(v.coords, { color: "#0E0F10", weight: 8, opacity: .55, interactive: false }).addTo(g);
+    L.polyline(v.coords, { color: s.color, weight: 4, opacity: .95, interactive: false }).addTo(g);
+    for (const st of v.stops) {
+      if (!st.code || seen.has(st.code)) continue;
+      seen.add(st.code);
+      L.circleMarker([st.lat, st.lon], { radius: 5, color: "#0E0F10", weight: 2, fillColor: "#ECEAE3", fillOpacity: 1 })
+        .on("click", () => openStop(st.code)).addTo(stopLayer);
+    }
     all.push(...v.coords);
   }
-  refreshVisibility();
-  if (all.length && !fitted) { map.fitBounds(all, { padding: [20, 20] }); fitted = true; }
-  return shapes.length;
+  applyFilter();
+  if (all.length && !fitted && !location.hash) { map.fitBounds(all, { padding: [30, 30] }); fitted = true; }
 }
+function stopVisibility() { map.getZoom() >= 15 ? stopLayer.addTo(map) : stopLayer.remove(); }
+map.on("zoomend", stopVisibility);
 
-function busIcon(v) {
-  return L.divIcon({ className: "", iconSize: [26, 26], iconAnchor: [13, 13],
-    html: `<div class="bus-icon" style="background:${color(v.line)}">${v.line.replace(/^T0?/, "")}</div>` });
-}
-
-const isStale = v => v.age > 90 && !v.stopped_s;
-const stoppedText = v => `stopped ${Math.max(1, Math.round(v.stopped_s / 60))}′`;
-
-function popup(v) {
-  const ns = v.next_stop;
-  return `<b>${v.line}</b> → ${v.destination}${v.stopped_s ? ` · <b>${stoppedText(v)}</b>` : ""}<br>
-    trip ${v.trip} · bus ${v.vehicle}<br>
-    s = ${Math.round(v.s)} / ${v.length} m<br>
-    v = ${v.v == null ? "–" : (v.v * 3.6).toFixed(1) + " km/h"} · residual ${v.residual ?? "–"} m (${v.n_fixes} fixes)<br>
-    last GPS ${v.age}s ago, ${v.gps.offroute} m off route<br>
-    ${ns ? `next: ${ns.name} in ${ns.dist} m${ns.eta_s != null ? " ≈ " + Math.round(ns.eta_s / 60 * 10) / 10 + " min" : ""}` : "at terminus"}<br>
-    <small>API says: ${v.api_arrival}${v.note ? " · " + v.note : ""}</small>`;
-}
-
-let knownVariants = 0;
-async function tick() {
-  let data;
-  try { data = await fetch("api/vehicles").then(r => r.json()); }
-  catch { document.getElementById("meta").textContent = "server unreachable"; return; }
-  const vs = data.vehicles.filter(v => enabled.has(base(v.line)));
-  const live = new Set();
-  for (const v of vs) {
-    live.add(v.trip);
-    let m = markers[v.trip];
-    if (!m) {
-      m = markers[v.trip] = {
-        bus: L.marker([v.lat, v.lon], { icon: busIcon(v), zIndexOffset: 1000 }).addTo(map),
-        gps: L.circleMarker([v.gps.lat, v.gps.lon], { radius: 3, color: "#555", weight: 1, fillOpacity: .8 }).addTo(map),
-        link: L.polyline([], { color: "#555", weight: 1, dashArray: "2 3" }).addTo(map),
-      };
-      m.bus.bindPopup("");
-    }
-    m.bus.setLatLng([v.lat, v.lon]);
-    m.gps.setLatLng([v.gps.lat, v.gps.lon]);
-    m.link.setLatLngs([[v.gps.lat, v.gps.lon], [v.lat, v.lon]]);
-    m.bus.setPopupContent(popup(v));
-    m.bus.getElement()?.classList.toggle("stale", isStale(v));
-    m.bus.getElement()?.classList.toggle("stopped", !!v.stopped_s);
+// Heading: bearing of the route segment closest to the bus (on its own variant).
+function heading(v) {
+  const c = variantCoords[v.variant];
+  if (!c || c.length < 2) return null;
+  let best = 0, bd = Infinity;
+  for (let i = 0; i < c.length - 1; i++) {
+    const mx = (c[i][0] + c[i + 1][0]) / 2, my = (c[i][1] + c[i + 1][1]) / 2;
+    const d = (mx - v.lat) ** 2 + ((my - v.lon) * 0.7) ** 2;
+    if (d < bd) { bd = d; best = i; }
   }
-  for (const [trip, m] of Object.entries(markers))
-    if (!live.has(trip)) { m.bus.remove(); m.gps.remove(); m.link.remove(); delete markers[trip]; }
-
-  document.getElementById("rows").innerHTML = vs.map(v => `
-    <tr class="veh${isStale(v) ? " stale" : ""}" data-trip="${v.trip}">
-      <td><span class="badge" style="background:${color(v.line)}">${v.line.replace(/^T0?/, "")}</span></td>
-      <td>${v.destination}</td>
-      <td>${v.v == null ? "–" : (v.v * 3.6).toFixed(0)}</td>
-      <td>${v.residual ?? "–"}</td>
-      <td>${v.stopped_s ? `<span class="stop-tag">${stoppedText(v)}</span> · ` : ""}${v.next_stop ? `${v.next_stop.name}${v.next_stop.eta_s != null ? " · " + Math.max(0, Math.round(v.next_stop.eta_s / 60)) + "′" : ""}` : "–"}</td>
-    </tr>`).join("") || `<tr><td colspan="5" class="meta">no buses running</td></tr>`;
-  for (const tr of document.querySelectorAll("tr.veh"))
-    tr.onclick = () => { const m = markers[tr.dataset.trip]; if (m) { map.panTo(m.bus.getLatLng()); m.bus.openPopup(); } };
-
-  const lines = await fetch("api/lines").then(r => r.json());
-  const nv = lines.reduce((a, l) => a + l.variants.length, 0);
-  if (nv !== knownVariants) { knownVariants = nv; await loadShapes(); chips(lines); }
-  document.getElementById("meta").textContent =
-    `${vs.length} buses · ${nv} route variants · updated ${new Date(data.t * 1000).toLocaleTimeString()}`;
+  const [a, b] = [c[best], c[best + 1]];
+  const dy = b[0] - a[0], dx = (b[1] - a[1]) * Math.cos(a[0] * Math.PI / 180);
+  return (Math.atan2(dx, dy) * 180 / Math.PI + 360) % 360;
+}
+function busHtml(v) {
+  const s = style(v.line), h = heading(v);
+  const cls = ["bus", v.stopped_s ? "stopped" : "", isStale(v) ? "stale" : "", sel?.type === "bus" && sel.id === v.trip ? "sel" : ""].join(" ");
+  return `<div class="${cls}" style="--c:${s.color};background:${s.color};color:${s.ink}">${esc(s.name)}${h == null ? "" :
+    `<span class="arrow" style="transform:rotate(${h.toFixed(0)}deg) translateY(-25px)"></span>`}</div>`;
+}
+const isStale = v => v.age > 90 && !v.stopped_s;
+function drawBuses() {
+  const live = new Set();
+  for (const v of vehicles) {
+    if (!isOn(v.line)) continue;
+    live.add(v.trip);
+    const html = busHtml(v);
+    const icon = () => L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [15, 15], html });
+    let m = busMarkers[v.trip];
+    if (!m) {
+      m = busMarkers[v.trip] = L.marker([v.lat, v.lon], { icon: icon(), zIndexOffset: 1000, keyboard: true,
+        title: `${style(v.line).name} ${t("to")} ${v.destination}` }).on("click", () => openBus(v.trip)).addTo(map);
+    } else {
+      m.setLatLng([v.lat, v.lon]);
+      if (m.html !== html) m.setIcon(icon());  // rebuilding the icon every tick can swallow taps
+    }
+    m.html = html;
+  }
+  for (const [trip, m] of Object.entries(busMarkers)) if (!live.has(trip)) { m.remove(); delete busMarkers[trip]; }
 }
 
-tick();
+// ---------- sheet ----------
+const sheet = $("sheet"), body = $("sheetBody");
+$("grab").onclick = () => sheet.classList.toggle("full");
+function setSheet(html, accent) {
+  body.innerHTML = html;
+  sheet.style.setProperty("--accent", accent || "var(--edge)");
+  placeLocate();
+}
+function placeLocate() { $("locate").style.bottom = (sheet.offsetHeight + 12) + "px"; }
+// Centre a point in the part of the map the sheet doesn't cover.
+function focusOn(latlng, zoom) {
+  const z = Math.max(map.getZoom(), zoom);
+  const covered = innerWidth >= 720 ? 0 : sheet.offsetHeight;
+  const p = map.project(latlng, z).add([0, covered / 2]);
+  map.setView(map.unproject(p, z), z);
+}
+new ResizeObserver(placeLocate).observe(sheet);
+
+function peek() {
+  clearTimers();
+  sel = null; follow = false; sheet.classList.remove("full");
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+  drawBuses();
+  if (!me) {
+    setSheet(`<div class="kicker mono"><span>NOSEPOL · TRIESTE</span></div>
+      <p class="sub" style="margin:8px 0 12px">${esc(t("tapHint"))} ${esc(t("locHint"))}</p>
+      <button class="btn" id="useLoc" style="width:100%">${esc(t("locBtn"))}</button>`);
+    $("useLoc").onclick = locate;
+    return;
+  }
+  api(`stops?near=${me[0].toFixed(5)},${me[1].toFixed(5)}&limit=1`).then(async ([st]) => {
+    if (!st || sel) return;
+    const d = await api("stops/" + st.code);
+    if (sel) return;
+    const deps = d.departures.slice(0, 4);
+    setSheet(`<button class="row" id="peekStop" style="border-top:0; display:block">
+        <div class="kicker mono"><span>${esc(t("nearest")).toUpperCase()} · ${fmtDist(st.dist)} · ${walkMin(st.dist)}′ ${esc(t("walk"))}</span></div>
+        <h2>${esc(st.name)}</h2></button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px">${deps.map(x => {
+        const s = style(x.line), eta = x.eta_s ?? x.operator_eta_s;
+        return `<span style="background:${x.live ? s.color : "transparent"};color:${x.live ? s.ink : "var(--fg)"};border:2px solid ${s.color};padding:4px 9px;font:800 18px var(--cond)">${esc(s.name)} · ${x.stopped_s ? esc(t("stopped")) : fmtEta(eta)}</span>`;
+      }).join("") || `<span class="empty">${esc(t("noBuses"))}</span>`}</div>`);
+    $("peekStop").onclick = () => openStop(st.code);
+  }).catch(() => {});
+}
+
+let stopTimer = null, busTimer = null, selStop = null;
+function clearTimers() {
+  clearInterval(stopTimer); clearInterval(busTimer); stopTimer = busTimer = null;
+  if (selStop) { selStop.remove(); selStop = null; }
+}
+
+async function openStop(code, { pan = true } = {}) {
+  clearTimers(); follow = false;
+  sel = { type: "stop", id: code };
+  history.replaceState(null, "", "#/stop/" + encodeURIComponent(code));
+  drawBuses();
+  const render = async first => {
+    let d;
+    try { d = await api("stops/" + encodeURIComponent(code)); }
+    catch { if (first) setSheet(`<p class="empty">${esc(t("unknownStop"))}</p>`); return; }
+    if (sel?.type !== "stop" || sel.id !== code) return;
+    if (first) {
+      selStop = L.marker([d.lat, d.lon], { interactive: false, zIndexOffset: 500,
+        icon: L.divIcon({ className: "", html: '<div class="selstop"></div>', iconSize: [22, 22] }) }).addTo(map);
+      if (pan) requestAnimationFrame(() => focusOn([d.lat, d.lon], 16));
+    }
+    const walk = me ? haversine(me, [d.lat, d.lon]) : null;
+    const rows = d.departures.map(x => {
+      const eta = x.eta_s != null ? fmtEta(x.eta_s) : x.stopped_s ? t("stopped") : x.live ? "–"
+        : x.operator_eta_s != null ? fmtEta(x.operator_eta_s) : (x.scheduled || "–");
+      const note = x.live
+        ? [x.stopped_s ? `${t("stopped")} ${fmtMin(x.stopped_s)}` : null, x.stale ? t("gpsOld", { s: x.age }) : null, x.dist != null ? t("away", { d: fmtDist(x.dist) }) : null].filter(Boolean).join(" · ")
+        : `${t("scheduled")}${x.scheduled ? " " + x.scheduled : ""}`;
+      return `<button class="row ${x.stale || !x.live ? "faded" : ""}" ${x.live ? `data-trip="${esc(x.trip)}"` : "disabled"}>
+        ${badge(x.line)}<div class="grow"><b>${esc(x.destination)}</b><span class="note">${esc(note)}</span></div>
+        <span class="eta">${esc(eta)}</span><span class="op">${esc(x.operator ?? "")}</span></button>`;
+    }).join("");
+    const later = d.later.filter(x => x.times.length).map(x =>
+      `<div>${esc(style(x.line).name)} → ${esc(x.destination)}: ${x.times.slice(0, 4).map(esc).join(" · ")}</div>`).join("");
+    setSheet(`<div class="kicker mono"><span>${esc(t("stop")).toUpperCase()}${walk != null ? ` · ${fmtDist(walk)} · ${walkMin(walk)}′ ${esc(t("walk"))}` : ""}</span>
+        <button class="sq" id="closeSheet" aria-label="${esc(t("close"))}" style="width:44px;height:44px;border:0;background:none;margin-right:-10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <h2>${esc(d.name)}</h2>
+      <div style="display:flex;gap:6px;margin-top:8px">${d.lines.map(badge).join("")}</div>
+      <div class="kicker mono" style="margin-top:14px"><span></span><span style="display:flex;gap:10px"><span style="min-width:48px;text-align:right">${esc(t("ours")).toUpperCase()}</span><span style="min-width:58px;text-align:right">${esc(t("operator")).toUpperCase()}</span></span></div>
+      <div style="margin-top:4px">${rows || `<p class="empty">${esc(t("noBuses"))}</p>`}</div>
+      ${later ? `<div class="later"><div class="mono" style="color:var(--muted);margin-bottom:4px">${esc(t("later")).toUpperCase()}</div>${later}</div>` : ""}
+      <div class="actions"><button class="btn" id="shareBtn">${esc(t("share"))}</button><button class="btn primary" id="expandBtn">${esc(t("allDeps"))}</button></div>`, "#ECEAE3");
+    $("closeSheet").onclick = peek;
+    $("shareBtn").onclick = share;
+    $("expandBtn").onclick = () => sheet.classList.add("full");
+    for (const r of body.querySelectorAll("[data-trip]")) r.onclick = () => openBus(r.dataset.trip, { from: code });
+  };
+  await render(true);
+  stopTimer = setInterval(render, 10000);
+}
+
+async function openBus(trip, { pan = true, from = null } = {}) {
+  clearTimers();
+  if (!(sel?.type === "bus" && sel.id === trip)) follow = false;
+  sel = { type: "bus", id: trip, from: from ?? (sel?.type === "bus" && sel.id === trip ? sel.from : null) };
+  history.replaceState(null, "", "#/bus/" + encodeURIComponent(trip));
+  drawBuses();
+  const render = async first => {
+    let d;
+    try { d = await api("trips/" + encodeURIComponent(trip)); }
+    catch { if (first) setSheet(`<p class="empty">${esc(t("unknownTrip"))}</p><button class="btn" id="back" style="width:100%">${esc(t("close"))}</button>`); $("back") && ($("back").onclick = peek); return; }
+    if (sel?.type !== "bus" || sel.id !== trip) return;
+    if (first && pan) requestAnimationFrame(() => focusOn([d.lat, d.lon], 15));
+    const s = style(d.line), [conf, confColor] = confidence(d);
+    const ns = d.stops_ahead[0];
+    const head = d.stopped_s ? `<b style="color:var(--fg)">${esc(t("stopped"))} ${fmtMin(d.stopped_s)}</b>`
+      : ns ? esc(t("reaches", { name: ns.name, eta: fmtEta(ns.eta_s) })) : esc(t("atTerminus"));
+    const ahead = d.stops_ahead.slice(0, 12).map(x => {
+      const clock = x.eta_s != null ? new Date((d.t + x.eta_s) * 1000).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" }) : "";
+      const mine = sel.from === x.code;
+      return `<button class="row" data-stop="${esc(x.code ?? "")}" ${x.code ? "" : "disabled"} style="min-height:44px">
+        <span style="width:10px;height:10px;flex:none;border:2px solid ${mine ? "var(--lime)" : "var(--fg)"};background:${mine ? "var(--lime)" : "transparent"}"></span>
+        <span class="grow" style="font-weight:${mine ? 800 : 500}">${esc(x.name)}</span>
+        <span class="note">${esc(clock)}</span><span class="eta" style="font-size:20px">${esc(fmtEta(x.eta_s))}</span></button>`;
+    }).join("");
+    setSheet(`<div class="kicker mono"><span>${esc(t("bus")).toUpperCase()} · ${esc(d.trip)} · ${esc(t("gps")).toUpperCase()} ${d.age}s</span>
+        <button class="sq" id="closeSheet" aria-label="${esc(t("close"))}" style="width:44px;height:44px;border:0;background:none;margin-right:-10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <h2><span style="background:${s.color};color:${s.ink};padding:0 6px">${esc(s.name)}</span> → ${esc(d.destination)}</h2>
+      <div class="sub">${head}${d.api_arrival ? ` · ${esc(t("operator"))}: ${esc(d.api_arrival)}` : ""}</div>
+      <div class="grid">
+        <div><div class="mono" style="color:var(--muted)">${esc(t("speed")).toUpperCase()}</div><div class="v">${d.v == null ? "–" : Math.round(d.v * 3.6) + " km/h"}</div></div>
+        <div><div class="mono" style="color:var(--muted)">${esc(t("next")).toUpperCase()}</div><div class="v">${ns ? fmtDist(ns.dist) : "–"}</div></div>
+        <div><div class="mono" style="color:var(--muted)">${esc(t("confidence")).toUpperCase()}</div><div class="v" style="color:${confColor}">${esc(t(conf))}</div></div>
+        <div><div class="mono" style="color:var(--muted)">KM</div><div class="v">${(d.s / 1000).toFixed(1)}/${(d.length / 1000).toFixed(1)}</div></div>
+      </div>
+      <div class="actions"><button class="btn ${follow ? "on" : ""}" id="followBtn">${esc(t(follow ? "following" : "follow"))}</button><button class="btn" id="shareBtn">${esc(t("share"))}</button></div>
+      <div class="mono" style="color:var(--muted);margin-top:16px">${esc(t("stopsAhead")).toUpperCase()}</div>
+      <div style="margin-top:4px">${ahead}</div>`, s.color);
+    $("closeSheet").onclick = peek;
+    $("shareBtn").onclick = share;
+    $("followBtn").onclick = () => { follow = !follow; render(); if (follow) focusOn([d.lat, d.lon], 15); };
+    for (const r of body.querySelectorAll("[data-stop]")) if (r.dataset.stop) r.onclick = () => openStop(r.dataset.stop);
+  };
+  await render(true);
+  busTimer = setInterval(render, 10000);
+}
+
+async function share() {
+  const url = location.href;
+  try {
+    if (navigator.share) await navigator.share({ title: "NoSePol", url });
+    else { await navigator.clipboard.writeText(url); toast(t("copied")); }
+  } catch {}
+}
+
+// ---------- search ----------
+let searchSeq = 0;
+function openSearch() {
+  $("search").classList.remove("hide"); $("q").value = ""; $("q").focus(); runSearch();
+}
+function closeSearch() { $("search").classList.add("hide"); }
+async function runSearch() {
+  const q = $("q").value.trim(), seq = ++searchSeq;
+  let path, title = "";
+  if (q) path = `stops?q=${encodeURIComponent(q)}&limit=30` + (me ? `&near=${me[0].toFixed(5)},${me[1].toFixed(5)}` : "");
+  else if (me) { path = `stops?near=${me[0].toFixed(5)},${me[1].toFixed(5)}&limit=12`; title = t("nearby"); }
+  else { $("results").innerHTML = `<p class="empty">${esc(t("typeHint"))}</p>`; return; }
+  let res = [];
+  try { res = await api(path); } catch {}
+  if (seq !== searchSeq) return;
+  const lineHits = q ? Object.entries(LINES).filter(([l, s]) => s.name === q.replace(/^0+/, "") || l.toLowerCase() === q.toLowerCase()) : [];
+  $("results").innerHTML = (title ? `<h3>${esc(title)}</h3>` : "") +
+    lineHits.map(([l, s]) => `<button class="row" data-line="${l}">${badge(l)}<div class="grow"><b>${esc(t("lines"))} ${esc(s.name)}</b><span class="note">${esc([...new Set(s.variants.map(v => v.headsign))].join(" ⇄ "))}</span></div></button>`).join("") +
+    (res.map(r => `<button class="row" data-code="${esc(r.code)}"><div class="grow"><b>${esc(r.name)}</b>
+      <span class="note">${r.dist != null ? fmtDist(r.dist) + " · " : ""}${esc(r.code)}</span></div>
+      <span style="display:flex;gap:4px">${r.lines.map(l => { const s = style(l); return `<span style="background:${s.color};color:${s.ink};font:800 15px var(--cond);padding:2px 6px">${esc(s.name)}</span>`; }).join("")}</span></button>`).join("")
+      || (lineHits.length ? "" : `<p class="empty">${esc(t("noResults"))}</p>`));
+  for (const b of $("results").querySelectorAll("[data-code]")) b.onclick = () => { closeSearch(); openStop(b.dataset.code); };
+  for (const b of $("results").querySelectorAll("[data-line]")) b.onclick = () => { closeSearch(); showOnly(b.dataset.line); };
+}
+$("openSearch").onclick = openSearch;
+$("closeSearch").onclick = closeSearch;
+$("q").oninput = () => { clearTimeout(runSearch.h); runSearch.h = setTimeout(runSearch, 200); };
+
+// ---------- menu: lines, language, status, about ----------
+function showOnly(line) {
+  hidden.clear(); for (const l of Object.keys(LINES)) if (l !== line) hidden.add(l);
+  saveHidden(); applyFilter();
+  const g = shapeLayers[line]; if (g) { const b = L.featureGroup(g.getLayers()).getBounds(); if (b.isValid()) map.fitBounds(b, { padding: [30, 30] }); }
+}
+async function openMenu() {
+  $("menu").classList.remove("hide");
+  let st = null; try { st = await api("status"); } catch {}
+  const lines = Object.entries(LINES).map(([l, s]) => `<button class="row" data-line="${l}">${badge(l)}
+      <div class="grow"><b>${esc([...new Set(s.variants.map(v => v.headsign))].join(" ⇄ ") || l)}</b>
+      <span class="note">${esc(t("busesRunning", { n: s.vehicles }))} · ${esc(t("showOnly"))}</span></div></button>`).join("");
+  $("menuBody").innerHTML = `<h3>${esc(t("linesTitle"))}</h3>${lines}
+    <h3>${esc(t("language"))}</h3>
+    <div class="seg" role="group" aria-label="${esc(t("language"))}"><button data-lang="it" aria-pressed="${lang === "it"}">Italiano</button><button data-lang="en" aria-pressed="${lang === "en"}">English</button></div>
+    <h3>${esc(t("feed"))}</h3>
+    ${st ? `<div class="stat">
+      <div><div class="mono" style="color:var(--muted)">${esc(t("lastBatch")).toUpperCase()}</div><div class="v">${st.last_batch_age ?? "–"} s</div></div>
+      <div><div class="mono" style="color:var(--muted)">${esc(t("every")).toUpperCase()}</div><div class="v">~${st.batch_interval ?? "–"} s</div></div>
+      <div><div class="mono" style="color:var(--muted)">${esc(t("staleN")).toUpperCase()}</div><div class="v">${st.stale} / ${st.buses}</div></div></div>
+      ${st.resync_suggested ? `<p style="color:var(--orange)">${esc(t("resync"))}</p>` : ""}` : `<p>${esc(t("offline"))}</p>`}
+    <h3>${esc(t("howTitle"))}</h3><p>${esc(t("how"))}</p>
+    <h3>${esc(t("privacyTitle"))}</h3><p>${esc(t("privacy"))}</p>
+    <h3>${esc(t("installTitle"))}</h3><p>${esc(t("install"))}</p>`;
+  for (const b of $("menuBody").querySelectorAll("[data-line]")) b.onclick = () => { closeMenu(); showOnly(b.dataset.line); };
+  for (const b of $("menuBody").querySelectorAll("[data-lang]")) b.onclick = () => { lang = b.dataset.lang; store.set("lang", lang); applyLang(); openMenu(); rerender(); };
+}
+function closeMenu() { $("menu").classList.add("hide"); }
+$("openMenu").onclick = openMenu;
+$("closeMenu").onclick = closeMenu;
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeSearch(); closeMenu(); } });
+
+// ---------- location ----------
+function locate() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(p => {
+    me = [p.coords.latitude, p.coords.longitude];
+    if (!meMarker) meMarker = L.marker(me, { icon: L.divIcon({ className: "", html: '<div class="me"></div>', iconSize: [16, 16] }), interactive: false }).addTo(map);
+    else meMarker.setLatLng(me);
+    focusOn(me, 16);
+    if (!sel) peek();
+  }, () => toast(t("locHint")), { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
+}
+$("locate").onclick = locate;
+
+// ---------- routing & polling ----------
+function route() {
+  const m = location.hash.match(/^#\/(stop|bus)\/(.+)$/);
+  if (!m) return peek();
+  const id = decodeURIComponent(m[2]);
+  m[1] === "stop" ? openStop(id) : openBus(id);
+}
+function rerender() { if (sel?.type === "stop") openStop(sel.id, { pan: false }); else if (sel?.type === "bus") openBus(sel.id, { pan: false }); else peek(); drawBuses(); }
+window.addEventListener("hashchange", () => { if (!location.hash.startsWith(`#/${sel?.type}/`)) route(); });
+
+let knownVariants = -1;
+async function tick() {
+  try {
+    const data = await api("vehicles");
+    vehicles = data.vehicles;
+    drawBuses();
+    if (follow && sel?.type === "bus") { const v = vehicles.find(x => x.trip === sel.id); if (v) focusOn([v.lat, v.lon], 0); }
+    const freshest = Math.min(...vehicles.map(v => v.age).filter(a => a != null), 999);
+    $("live").textContent = vehicles.length ? `● ${freshest}s` : "● —";
+    $("live").classList.toggle("bad", freshest > 60);
+    const nv = await loadLines();
+    if (nv !== knownVariants) { knownVariants = nv; await loadShapes(); }
+  } catch {
+    $("live").textContent = "● ✕"; $("live").classList.add("bad");
+  }
+}
+
+applyLang();
+stopVisibility();
+tick().then(route);
 setInterval(tick, 3000);
 </script>
 </body>

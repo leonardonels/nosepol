@@ -3,7 +3,7 @@
   "short_name": "NoSePol",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#1f2a37",
-  "theme_color": "#1f2a37",
+  "background_color": "#0E0F10",
+  "theme_color": "#0E0F10",
   "icons": []
 }

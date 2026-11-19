@@ -48,11 +48,23 @@ Findings that shape the design:
 
 ## API
 
-- `GET /api/lines`: lines, route variants, vehicle counts
+- `GET /api/lines`: lines with display `name`, `color`, `ink` (text colour on it), route
+  variants and vehicle counts. Colours follow the order of `--lines`, so adding a line
+  needs no page change.
 - `GET /api/vehicles` or `/api/lines/T06/vehicles`: one entry per trip, with
-  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`
+  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
+- `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
+  words of the name or code (accents and case ignored) and/or sorted by distance
+- `GET /api/stops/{code}`: every tracked bus still heading to the stop, with our ETA
+  (`eta_s`), the operator's (`operator`, fetched live and cached 20 s) and later
+  timetable passes. Untracked runs the operator lists appear with `live: false`.
+- `GET /api/trips/{trip}`: one bus, the stops ahead with ETAs, and its recent fixes
+- `GET /api/status`: last GPS batch, batch interval, stale/stopped counts, stops with
+  no code (a hint that a resync is due)
 - `GET /api/debug`: poll set, batch intervals, raw fix history
+
+The page uses hash links that can be shared: `/#/stop/09001`, `/#/bus/T06:1086`.
 
 ## Keeping data fresh (resync)
 
