@@ -111,7 +111,12 @@
   .bus .arrow { position:absolute; left:50%; top:50%; width:20px; height:18px; margin:-9px 0 0 -10px; display:block; }
   .bus .arrow path { fill:var(--c); stroke:#1B1B1F; stroke-width:1.5; stroke-linejoin:round; }
   .bus.sel { box-shadow:0 0 0 2px var(--halo), 0 0 0 5px var(--md-primary), var(--md-elev-2); }
-  .bus .flag { position:absolute; right:-10px; top:-10px; min-width:16px; height:16px; padding:0 4px; border-radius:8px;
+  /* run number (the :xxx of the trip) top right; status (stopped time, next departure) top left */
+  .bus .run { position:absolute; left:calc(100% - 8px); top:-11px; height:15px; padding:0 4px; border-radius:8px; white-space:nowrap;
+    font:500 10px/15px Roboto, sans-serif; letter-spacing:0; background:var(--md-surface-container-highest); color:var(--md-on-surface);
+    box-shadow:0 0 0 1px var(--c), var(--md-elev-1); pointer-events:none; }
+  #map.far .bus .run { display:none; }
+  .bus .flag { position:absolute; right:calc(100% - 8px); top:-10px; min-width:16px; height:16px; padding:0 4px; border-radius:8px;
     font:500 11px/16px Roboto, sans-serif; text-align:center; }
   .bus.midroute { box-shadow:0 0 0 2px var(--halo), 0 0 0 5px #BA1A1A, var(--md-elev-2); }
   .bus.midroute .flag { background:#BA1A1A; color:#fff; }
@@ -551,7 +556,13 @@ async function loadShapes() {
 }
 function stopVisibility() { map.getZoom() >= 15 ? stopLayer.addTo(map) : stopLayer.remove(); }
 map.on("zoomend", stopVisibility);
+// run numbers only once zoomed in enough to tell buses apart
+const RUN_ZOOM = 14;
+const runVisibility = () => $("map").classList.toggle("far", map.getZoom() < RUN_ZOOM);
+map.on("zoomend", runVisibility);
 
+// "T06:279" -> the run number, shown beside the marker to tell buses of a line apart
+const runTag = trip => { const r = String(trip ?? "").split(":")[1]; return r ? `<span class="run">${esc(r)}</span>` : ""; };
 function busHtml(v) {
   // heading comes from the server: direction along the route around the bus's position
   const s = style(v.line), h = v.heading;
@@ -562,7 +573,7 @@ function busHtml(v) {
   // waiting at a terminus: show when it probably leaves; otherwise how long it has stood still
   const flag = (kind === "layover" || kind === "terminus") && v.next_run ? `<span class="flag">${esc(v.next_run.scheduled)}</span>`
     : kind ? `<span class="flag">${kind === "midroute" ? "!" : ""}${fmtMin(v.stopped_s)}</span>` : "";
-  return `<div class="${cls}" style="--c:${s.color};background:${s.color};color:${s.ink}">${esc(s.name)}${flag}${h == null || kind ? "" :
+  return `<div class="${cls}" style="--c:${s.color};background:${s.color};color:${s.ink}">${esc(s.name)}${flag}${runTag(v.trip)}${h == null || kind ? "" :
     `<svg class="arrow" viewBox="0 0 20 18" aria-hidden="true" style="transform:rotate(calc(${h.toFixed(0)}deg + var(--rot, 0deg))) translateY(-27px)"><path d="M10 1.5 L18.5 16.5 L10 12.5 L1.5 16.5 Z"/></svg>`}</div>`;
 }
 // Slide a marker to its new position over about one poll interval instead of jumping,
@@ -607,7 +618,7 @@ function drawBuses() {
     if (!isOn(d.line)) continue;
     const key = d.trip; want.add(key);
     const s = style(d.line);
-    const html = `<div class="bus pending" style="--c:${s.color}">${esc(s.name)}<span class="flag">${esc(d.scheduled)}</span></div>`;
+    const html = `<div class="bus pending" style="--c:${s.color}">${esc(s.name)}<span class="flag">${esc(d.scheduled)}</span>${runTag(d.trip)}</div>`;
     let m = pendingMarkers[key];
     if (!m) {
       m = pendingMarkers[key] = L.marker([d.lat, d.lon], { zIndexOffset: 900, keyboard: true,
@@ -944,6 +955,7 @@ async function tick() {
 
 applyLang();
 stopVisibility();
+runVisibility();
 addEventListener("load", () => map.invalidateSize());  // fonts/viewport can settle after init
 tick().then(route);
 setInterval(tick, 3000);
