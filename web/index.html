@@ -119,6 +119,10 @@
   .bus.terminus .flag, .bus.layover .flag { background:#44474E; color:#fff; }
   .bus.midroute .arrow, .bus.terminus .arrow, .bus.layover .arrow { display:none; }
   .bus.stale { opacity:.45; }
+  /* a scheduled departure no known bus will take: hollow, at the terminus */
+  .bus.pending { background:var(--md-surface-container-high) !important; color:var(--md-on-surface) !important;
+    box-shadow:inset 0 0 0 3px var(--c), 0 0 0 2px var(--halo), var(--md-elev-1); }
+  .bus.pending .flag { background:var(--md-surface-container-highest); color:var(--md-on-surface); }
   .selstop { width:22px; height:22px; border-radius:50%; background:var(--md-primary); border:4px solid var(--halo); box-shadow:var(--md-elev-2); }
   .me { width:18px; height:18px; border-radius:50%; background:#1A73E8; border:3px solid var(--halo); box-shadow:0 0 0 8px rgba(26,115,232,.2); }
 
@@ -249,7 +253,7 @@ const T = {
     nearest: "Fermata più vicina", walk: "a piedi", tapHint: "Tocca un autobus o una fermata sulla mappa.",
     locHint: "Attiva la posizione per vedere la fermata più vicina.", locBtn: "Usa la mia posizione",
     stop: "Fermata", bus: "Autobus", now: "ora", stopped: "fermo", gpsOld: "GPS di {s} s fa",
-    stoppedMid: "fermo da {m}, possibile problema", atTerminus2: "al capolinea da {m}", waiting: "in attesa",
+    stoppedMid: "fermo da {m}, possibile problema", stoppedFor: "fermo da {m}", atTerminus2: "al capolinea da {m}", waiting: "in attesa",
     layover: "al capolinea da {m}", leavesAt: "probabilmente riparte alle {time} → {dest}",
     busWaiting: "autobus già in attesa al capolinea",
     away: "a {d}", ours: "NoSePol", operator: "Operatore", noBuses: "Nessun autobus in arrivo adesso.",
@@ -259,7 +263,9 @@ const T = {
     high: "Alta", medium: "Media", low: "Stima", follow: "Segui", following: "Segui ●", share: "Condividi",
     allDeps: "Tutti gli arrivi", stopsAhead: "Prossime fermate", copied: "Link copiato",
     nearby: "Fermate vicine", noResults: "Nessuna fermata trovata.", typeHint: "Scrivi il nome di una fermata o di una via.",
-    linesTitle: "Linee", busesRunning: "{n} in servizio", showOnly: "Mostra solo questa",
+    linesTitle: "Linee", busesRunning: "{n} in servizio", pendingN: "{n} in partenza", showOnly: "Mostra solo questa",
+    pendingTitle: "Partenza programmata alle {time} → {dest}, autobus non ancora visibile",
+    thenLeaves: "poi riparte alle {time} → {dest}",
     language: "Lingua", theme: "Tema", themeSystem: "Sistema", themeLight: "Chiaro", themeDark: "Scuro", feed: "Stato dei dati", lastBatch: "Ultimo GPS", every: "Ogni", staleN: "Vecchi",
     resync: "Alcune fermate non hanno codice: i dati delle fermate andrebbero aggiornati.",
     howTitle: "Come funziona",
@@ -276,7 +282,7 @@ const T = {
     nearest: "Nearest stop", walk: "walk", tapHint: "Tap a bus or a stop on the map.",
     locHint: "Turn on location to see your nearest stop.", locBtn: "Use my location",
     stop: "Stop", bus: "Bus", now: "now", stopped: "stopped", gpsOld: "GPS {s} s old",
-    stoppedMid: "stopped {m}, may have a problem", atTerminus2: "at the terminus for {m}", waiting: "waiting",
+    stoppedMid: "stopped {m}, may have a problem", stoppedFor: "stopped for {m}", atTerminus2: "at the terminus for {m}", waiting: "waiting",
     layover: "at the terminus for {m}", leavesAt: "probably leaves at {time} → {dest}",
     busWaiting: "bus already waiting at the terminus",
     away: "{d} away", ours: "NoSePol", operator: "Operator", noBuses: "No buses on the way right now.",
@@ -286,7 +292,9 @@ const T = {
     high: "High", medium: "Medium", low: "Estimate", follow: "Follow", following: "Following ●", share: "Share",
     allDeps: "All arrivals", stopsAhead: "Next stops", copied: "Link copied",
     nearby: "Nearby stops", noResults: "No stops found.", typeHint: "Type a stop or street name.",
-    linesTitle: "Lines", busesRunning: "{n} running", showOnly: "Show only this",
+    linesTitle: "Lines", busesRunning: "{n} running", pendingN: "{n} about to start", showOnly: "Show only this",
+    pendingTitle: "Scheduled departure at {time} → {dest}, bus not visible yet",
+    thenLeaves: "then leaves again at {time} → {dest}",
     language: "Language", theme: "Theme", themeSystem: "System", themeLight: "Light", themeDark: "Dark", feed: "Data status", lastBatch: "Last GPS", every: "Every", staleN: "Stale",
     resync: "Some stops have no code: the stop data should be refreshed.",
     howTitle: "How it works",
@@ -339,10 +347,11 @@ const fmtDist = m => m == null ? "" : m < 1000 ? `${Math.round(m / 10) * 10} m` 
 const fmtMin = s => s >= 3600 ? Math.floor(s / 3600) + "h" + String(Math.round(s % 3600 / 60)).padStart(2, "0")
   : Math.max(1, Math.round(s / 60)) + "′";
 // "stopped 4′, may have a problem" / "at the terminus for 6′"
+const ALARM_S = 5 * 60;  // mid-route stop shown as a possible problem only after this
 const leaves = x => x.next_run ? t("leavesAt", { time: x.next_run.scheduled, dest: x.next_run.destination }) : "";
 const stopText = x => x.stop_kind === "layover" || x.stop_kind === "terminus"
   ? [t(x.stop_kind === "layover" ? "layover" : "atTerminus2", { m: fmtMin(x.stopped_s) }), leaves(x)].filter(Boolean).join(", ")
-  : t("stoppedMid", { m: fmtMin(x.stopped_s) });
+  : x.stopped_s < ALARM_S ? t("stoppedFor", { m: fmtMin(x.stopped_s) }) : t("stoppedMid", { m: fmtMin(x.stopped_s) });
 const stopShort = x => x.stop_kind === "layover" || x.stop_kind === "terminus" ? t("waiting") : t("stopped");
 const walkMin = m => Math.max(1, Math.round(m * 1.3 / 75));  // 4.5 km/h, streets ~1.3x straight line
 function confidence(v) {
@@ -376,6 +385,8 @@ for (const p of ["routeHalo", "routeShared"]) map.getPane(p).style.pointerEvents
 const sharedLayer = L.layerGroup().addTo(map);
 let SHAPES = [];
 const busMarkers = {};    // trip -> marker
+let pendingDeps = [];
+const pendingMarkers = {};  // departure trip -> marker
 let vehicles = [], me = null, meMarker = null, sel = null, follow = false, fitted = false;
 
 function renderChips() {
@@ -504,7 +515,9 @@ map.on("zoomend", stopVisibility);
 function busHtml(v) {
   // heading comes from the server: direction along the route around the bus's position
   const s = style(v.line), h = v.heading;
-  const kind = v.stop_kind || (v.stopped_s ? "midroute" : "");
+  // standing still mid-route is normal for a while (lights, loading): alarm only after ALARM_S
+  const kind0 = v.stop_kind || (v.stopped_s ? "midroute" : "");
+  const kind = kind0 === "midroute" && v.stopped_s < ALARM_S ? "" : kind0;
   const cls = ["bus", kind, isStale(v) ? "stale" : "", sel?.type === "bus" && sel.id === v.trip ? "sel" : ""].join(" ");
   // waiting at a terminus: show when it probably leaves; otherwise how long it has stood still
   const flag = (kind === "layover" || kind === "terminus") && v.next_run ? `<span class="flag">${esc(v.next_run.scheduled)}</span>`
@@ -531,6 +544,22 @@ function drawBuses() {
     m.html = html;
   }
   for (const [trip, m] of Object.entries(busMarkers)) if (!live.has(trip)) { m.remove(); delete busMarkers[trip]; }
+  // departures due soon that no known bus will take: a hollow marker at the terminus stop
+  const want = new Set();
+  for (const d of pendingDeps) {
+    if (!isOn(d.line)) continue;
+    const key = d.trip; want.add(key);
+    const s = style(d.line);
+    const html = `<div class="bus pending" style="--c:${s.color}">${esc(s.name)}<span class="flag">${esc(d.scheduled)}</span></div>`;
+    let m = pendingMarkers[key];
+    if (!m) {
+      m = pendingMarkers[key] = L.marker([d.lat, d.lon], { zIndexOffset: 900, keyboard: true,
+        title: t("pendingTitle", { time: d.scheduled, dest: d.destination }),
+        icon: L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [15, 15], html }) })
+        .on("click", () => openStop(d.stop)).addTo(map);
+    }
+  }
+  for (const [k, m] of Object.entries(pendingMarkers)) if (!want.has(k)) { m.remove(); delete pendingMarkers[k]; }
 }
 
 // ---------- sheet ----------
@@ -607,7 +636,7 @@ async function openStop(code, { pan = true } = {}) {
       const note = x.live
         ? [x.stopped_s ? stopText(x) : null, x.stale ? t("gpsOld", { s: x.age }) : null, x.dist != null ? t("away", { d: fmtDist(x.dist) }) : null].filter(Boolean).join(" · ")
         : `${t("scheduled")}${x.scheduled ? " " + x.scheduled : ""}${x.waiting_bus ? " · " + t("busWaiting") : ""}`;
-      const warn = x.stop_kind === "midroute" ? ' style="color:var(--orange)"' : "";
+      const warn = x.stop_kind === "midroute" && x.stopped_s >= ALARM_S ? ' style="color:var(--orange)"' : "";
       return `<button class="row ${x.stale || (!x.live && !x.waiting_bus) || x.stop_kind === "terminus" ? "faded" : ""}" ${x.live ? `data-trip="${esc(x.trip)}"` : "disabled"}>
         ${badge(x.line)}<div class="grow"><b>${esc(x.destination)}</b><span class="note"${warn}>${esc(note)}</span></div>
         <span class="eta"${warn}>${esc(eta)}</span><span class="op">${esc(x.operator ?? "")}</span></button>`;
@@ -645,8 +674,9 @@ async function openBus(trip, { pan = true, from = null } = {}) {
     if (first && pan) requestAnimationFrame(() => focusOn([d.lat, d.lon], 15));
     const s = style(d.line), [conf, confColor] = confidence(d);
     const ns = d.stops_ahead[0];
-    const head = d.stopped_s || d.stop_kind === "layover" ? `<b style="color:${d.stop_kind === "midroute" ? "var(--orange)" : "var(--fg)"}">${esc(stopText(d))}</b>`
-      : ns ? esc(t("reaches", { name: ns.name, eta: fmtEta(ns.eta_s) })) : esc(t("atTerminus"));
+    const head = d.stopped_s || d.stop_kind === "layover" ? `<b style="color:${d.stop_kind === "midroute" && d.stopped_s >= ALARM_S ? "var(--orange)" : "var(--fg)"}">${esc(stopText(d))}</b>`
+      : (ns ? esc(t("reaches", { name: ns.name, eta: fmtEta(ns.eta_s) })) : esc(t("atTerminus")))
+        + (d.next_run ? " · " + esc(t("thenLeaves", { time: d.next_run.scheduled, dest: d.next_run.destination })) : "");
     const ahead = d.stops_ahead.slice(0, 12).map(x => {
       const clock = x.eta_s != null ? new Date((d.t + x.eta_s) * 1000).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" }) : "";
       const mine = sel.from === x.code;
@@ -725,7 +755,7 @@ async function openMenu() {
   let st = null; try { st = await api("status"); } catch {}
   const lines = Object.entries(LINES).map(([l, s]) => `<button class="row" data-line="${l}">${badge(l)}
       <div class="grow"><b>${esc([...new Set(s.variants.map(v => v.headsign))].join(" ⇄ ") || l)}</b>
-      <span class="note">${esc(t("busesRunning", { n: s.vehicles }))} · ${esc(t("showOnly"))}</span></div></button>`).join("");
+      <span class="note">${esc(t("busesRunning", { n: s.vehicles }))}${s.pending ? " · " + esc(t("pendingN", { n: s.pending })) : ""} · ${esc(t("showOnly"))}</span></div></button>`).join("");
   $("menuBody").innerHTML = `<h3>${esc(t("linesTitle"))}</h3>${lines}
     <h3>${esc(t("language"))}</h3>
     <div class="seg" role="group" aria-label="${esc(t("language"))}"><button data-lang="it" aria-pressed="${lang === "it"}">Italiano</button><button data-lang="en" aria-pressed="${lang === "en"}">English</button></div>
@@ -781,6 +811,7 @@ async function tick() {
   try {
     const data = await api("vehicles");
     vehicles = data.vehicles;
+    pendingDeps = data.pending || [];
     drawBuses();
     if (follow && sel?.type === "bus") { const v = vehicles.find(x => x.trip === sel.id); if (v) focusOn([v.lat, v.lon], 0); }
     const freshest = Math.min(...vehicles.map(v => v.age).filter(a => a != null), 999);

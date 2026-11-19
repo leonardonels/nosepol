@@ -25,6 +25,8 @@ import unicodedata
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 from estimator import Track
@@ -48,6 +50,9 @@ OPERATOR_CACHE_S = 20   # s to reuse a stop's live operator answer
 AT_STOP_M = 20          # a bus this close past a stop still counts as arriving there
 STALE_S = 90            # GPS older than this (and not "stopped") is stale
 LAYOVER_TTL = 15 * 60  # s a bus waiting at the terminus after its trip stays, unless its next run starts
+LATE_OK = 5 * 60        # s an incoming bus may reach the terminus after a departure and still run it
+PENDING_AHEAD = 20 * 60  # s ahead to show a departure no known bus will take
+LOCAL_TZ = ZoneInfo("Europe/Rome")  # the operator's timetable times are local
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
            ("#D35DA2", "#FFFFFF"), ("#26A6B5", "#1B1B1F"), ("#F2B33D", "#1B1B1F"),
@@ -165,6 +170,7 @@ class Tracker:
         self.drops = collections.deque(maxlen=50)  # recent removals, with the reason
         self.drop_counts = {}   # reason -> removals since start
         self.started = time.time()
+        self.pending = []      # departures due soon that no known bus will take
         self.stats = {"sweeps": 0, "requests": 0, "last_sweep": None, "last_batch": None,
                       "batch_intervals": []}
         self.pool = ThreadPoolExecutor(4)
@@ -383,26 +389,70 @@ class Tracker:
         return bool(veh) and any(o is not tr and o.meta.get("vehicle") == veh and o.fixes[-1][0] > tr.fixes[-1][0]
                                  for o in self.tracks.values())
 
+    @staticmethod
+    def _sched_ts(text):
+        try:
+            return datetime.fromisoformat(text).replace(tzinfo=LOCAL_TZ).timestamp()
+        except (TypeError, ValueError):
+            return None
+
     def _assign_next_runs(self, t, fetched):
-        """Pair buses waiting at the end of their route with the line's next scheduled
-        departure listed at that terminus stop, first come first served (as observed).
-        The feed lists one next run per line and direction, so a second waiting bus
-        at the same terminus gets none."""
-        waiting = {}
+        """Pair each line's next unstarted departure listed at a terminus with the bus that
+        will probably run it: first buses already waiting there (in arrival order, as
+        observed), then buses still heading there that arrive in time (nearest first).
+        A departure no known bus can take is kept in self.pending: its bus is out of
+        sight (depot, a missed arrival, a server restart). The feed lists one next run
+        per line and direction at a stop, so there is at most one departure to pair."""
+        prev = {tr.trip: tr.next_run["trip"] for tr in self.tracks.values() if tr.next_run}
+        cands = {}
         for tr in self.tracks.values():
             tr.next_run = None
+            code = tr.variant.stops[-1]["code"]
+            if not code:
+                continue
+            key = (code, tr.variant.line.rstrip("/"))
             if self.at_end(tr) and (tr.layover or tr.stopped_for(t) is not None):
-                code = tr.variant.stops[-1]["code"]
-                if code:
-                    waiting.setdefault((code, tr.variant.line.rstrip("/")), []).append(tr)
-        for (code, line), trs in waiting.items():
+                cands.setdefault(key, []).append((0, tr.fixes[-1][0], tr, t))  # waiting: ready now
+            else:
+                s_, v, *_ = tr.predict(t)
+                left = tr.variant.shape.length - s_
+                eta = left / v if v and v > 0.5 else (0 if left < 500 else None)
+                if eta is not None:
+                    cands.setdefault(key, []).append((1, left, tr, t + eta))
+        termini = {}
+        for var in self.variants.values():
+            st = var.stops[-1]
+            if st["code"]:
+                termini.setdefault((st["code"], var.line.rstrip("/")), st)
+        pending = []
+        for (code, line), st in termini.items():
             deps = sorted((r for r in fetched.get(code) or [] if r["Line"].rstrip("/") == line
                            and not r.get("IsDestination") and not r.get("IsStarted") and r.get("Time")),
                           key=lambda r: r["Time"])
-            trs.sort(key=lambda tr: tr.fixes[-1][0])
-            for tr, r in zip(trs, deps):
-                tr.next_run = {"trip": f"{r['Line']}:{r['Race']}", "destination": pretty(r.get("Destination")),
-                               "scheduled": r["Time"][11:16], "stop": code}
+            cs = sorted(cands.get((code, line), []), key=lambda c: (c[0], c[1]))
+            for r in deps:
+                when = self._sched_ts(r["Time"])
+                run = {"trip": f"{r['Line']}:{r['Race']}", "destination": pretty(r.get("Destination")),
+                       "scheduled": r["Time"][11:16], "stop": code}
+                # a bus already paired with this run keeps it unless clearly behind (no flicker)
+                grace = lambda c: LATE_OK * (2 if prev.get(c[2].trip) == run["trip"] else 1)
+                pick = next((c for c in cs if c[0] == 0 or (when is not None and c[3] <= when + grace(c))), None)
+                if pick:
+                    cs.remove(pick)
+                    pick[2].next_run = run
+                elif when is not None and when - t <= PENDING_AHEAD:
+                    pending.append({**run, "line": line, "when": when, "stop_name": pretty(st["name"]),
+                                    "lat": st["lat"], "lon": st["lon"], "seen": t})
+        # Keep a pending departure that dropped out of the listing (it started, or one
+        # answer missed it) until its bus shows up with GPS, a known bus takes it, or
+        # 10 min after its time: no gap between "about to start" and the real bus.
+        now_ids = {d["trip"] for d in pending}
+        paired = {tr.next_run["trip"] for tr in self.tracks.values() if tr.next_run}
+        for d in self.pending:
+            if (d["trip"] not in now_ids and d["trip"] not in self.tracks and d["trip"] not in paired
+                    and t < d["when"] + 10 * 60):
+                pending.append(d)
+        self.pending = pending
 
     def _record_drop(self, trip, tr, reason, t):
         s = tr.fixes[-1][1]
@@ -449,9 +499,12 @@ class Tracker:
         with self.lock:
             out = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now), "stale": self.is_stale(tr, now)}
                    for tr in self.tracks.values() if line in (None, tr.variant.line.rstrip("/"))]
+            pending = [{**{k: v for k, v in d.items() if k not in ("when", "seen")}, "in_s": round(d["when"] - now)}
+                       for d in self.pending if line in (None, d["line"])]
         for v in out:
             v["destination"] = pretty(v.get("destination"))
-        return {"t": now, "vehicles": sorted(out, key=lambda v: (v["line"], v["variant"], v["s"]))}
+        return {"t": now, "vehicles": sorted(out, key=lambda v: (v["line"], v["variant"], v["s"])),
+                "pending": sorted(pending, key=lambda d: d["in_s"])}
 
     def line_style(self, line):
         base = line.rstrip("/")
@@ -463,7 +516,8 @@ class Tracker:
         with self.lock:
             return [{"line": l, **self.line_style(l),
                      "variants": [v.summary() for v in self.variants.values() if v.line.rstrip("/") == l],
-                     "vehicles": sum(tr.variant.line.rstrip("/") == l for tr in self.tracks.values())}
+                     "vehicles": sum(tr.variant.line.rstrip("/") == l for tr in self.tracks.values()),
+                     "pending": sum(d["line"] == l for d in self.pending)}
                     for l in self.lines]
 
     # ---- stops ---------------------------------------------------------
@@ -579,7 +633,8 @@ class Tracker:
         with self.lock:  # a departure from here that a bus waiting at this terminus will probably take
             for tr in self.tracks.values():
                 nr = tr.next_run
-                if nr and nr["stop"] == code and nr["trip"] in deps and not deps[nr["trip"]]["live"]:
+                waiting = tr.layover or tr.stopped_for(now) is not None
+                if waiting and nr and nr["stop"] == code and nr["trip"] in deps and not deps[nr["trip"]]["live"]:
                     deps[nr["trip"]]["waiting_bus"] = {"trip": tr.trip, "vehicle": tr.meta.get("vehicle"),
                                                        "waiting_s": round(now - tr.fixes[-1][0])}
 

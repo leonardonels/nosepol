@@ -64,6 +64,12 @@ Findings that shape the design:
   that terminus stop, paired first come first served. It goes as soon as its vehicle
   appears on a newer trip, or 15 min after its last listing. A terminus stop with no code
   in `data/stops.json` can't be read, so no `next_run` there until a resync.
+  Buses still heading to a terminus get `next_run` too when they'll arrive in time
+  (within 5 min of the departure; 10 min once paired, so it doesn't flicker).
+  `/api/vehicles` also returns `pending`: departures due in the next 20 min that no
+  known bus will take (its bus is out of sight: depot, a missed arrival, a restart),
+  with the terminus stop's position. One stays until its bus appears with GPS, a known
+  bus takes it, or 10 min after its time. `/api/lines` counts them per line.
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
 - `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
   words of the name or code (accents and case ignored) and/or sorted by distance
