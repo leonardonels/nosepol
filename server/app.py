@@ -47,7 +47,7 @@ STOP_MATCH_M = 40
 OPERATOR_CACHE_S = 20   # s to reuse a stop's live operator answer
 AT_STOP_M = 20          # a bus this close past a stop still counts as arriving there
 STALE_S = 90            # GPS older than this (and not "stopped") is stale
-ARRIVED_TTL = 60        # s a bus that reached the end of its route stays after the stops stop listing it
+LAYOVER_TTL = 15 * 60  # s a bus waiting at the terminus after its trip stays, unless its next run starts
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
            ("#D35DA2", "#FFFFFF"), ("#26A6B5", "#1B1B1F"), ("#F2B33D", "#1B1B1F"),
@@ -258,8 +258,9 @@ class Tracker:
 
     def sweep(self, t):
         codes = self.poll_set()
-        listed = {}
+        listed, fetched = {}, {}
         for code, rs in self.pool.map(self._fetch, codes):
+            fetched[code] = rs
             for r in rs:
                 if self.wants(r["Line"]):
                     listed.setdefault(f"{r['Line']}:{r['Race']}", []).append(r)
@@ -290,14 +291,24 @@ class Tracker:
                 self.seen[trip] = t
         with self.lock:
             # A bus at the end of its route that this sweep didn't list has finished its
-            # trip: the operator drops it right away (its next run shows up unstarted, no GPS).
+            # trip: the operator drops it at once. Buses then usually wait there and start
+            # the line's next run back (watched on lines 6, 8, 9), so keep it as "layover".
             for k, tr in self.tracks.items():
-                tr.arrived = self.at_end(tr) and self.seen.get(k, 0) < t
-            reasons = {k: "not_reported" for k, ts in self.seen.items() if t - ts > TRIP_TTL}
-            reasons |= {k: "arrived" for k, tr in self.tracks.items()
-                        if tr.arrived and t - self.seen.get(k, 0) > ARRIVED_TTL}
+                tr.layover = self.at_end(tr) and self.seen.get(k, 0) < t
+            self._assign_next_runs(t, fetched)
+            reasons = {}
+            for k, ts in self.seen.items():
+                tr = self.tracks.get(k)
+                if tr is not None and tr.layover:
+                    if t - ts > LAYOVER_TTL:
+                        reasons[k] = "layover_timeout"
+                elif t - ts > TRIP_TTL:
+                    reasons[k] = "not_reported"
             for k, tr in self.tracks.items():
-                if (why := self._drop_reason(tr, t)):
+                if tr.layover:
+                    if self._moved_on(tr):
+                        reasons[k] = "next_run"  # its vehicle started a newer trip
+                elif (why := self._drop_reason(tr, t)):
                     reasons[k] = why
             for trip, why in reasons.items():
                 self.seen.pop(trip, None)
@@ -332,20 +343,24 @@ class Tracker:
 
     @classmethod
     def at_terminus(cls, tr):
-        """At the end (see at_end) or within TERMINUS_M of the first stop."""
-        return cls.at_end(tr) or tr.fixes[-1][1] < tr.variant.stops[0]["s"] + TERMINUS_M
+        """At the end (see at_end), or at the start: within TERMINUS_M of the first stop or
+        not yet past the second one (buses wait at the stand before departing)."""
+        s, stops = tr.fixes[-1][1], tr.variant.stops
+        if cls.at_end(tr) or s < stops[0]["s"] + TERMINUS_M:
+            return True
+        return len(stops) >= 3 and s <= stops[1]["s"] + AT_STOP_M
 
     def stop_kind(self, tr, now):
-        """'arrived' (reached the end, no longer listed: its trip is over), 'terminus'
-        (waiting, normal), 'midroute' (may have a problem), or None if moving."""
-        if tr.arrived:
-            return "arrived"
+        """'layover' (trip over, waiting at the terminus for its next run), 'terminus'
+        (stopped there, still listed), 'midroute' (may have a problem), or None if moving."""
+        if tr.layover:
+            return "layover"
         if tr.stopped_for(now) is None:
             return None
         return "terminus" if self.at_terminus(tr) else "midroute"
 
     def is_stale(self, tr, now):
-        return now - tr.fixes[-1][0] > STALE_S and not tr.arrived and tr.stopped_for(now) is None
+        return now - tr.fixes[-1][0] > STALE_S and not tr.layover and tr.stopped_for(now) is None
 
     def _drop_reason(self, tr, t):
         """Why a bus that stopped moving should go now, or None to keep it. It stays
@@ -360,11 +375,34 @@ class Tracker:
             return "midroute_timeout"
         if still <= TRIP_TTL:
             return None
+        return "vehicle_reused" if self._moved_on(tr) else None
+
+    def _moved_on(self, tr):
+        """Its vehicle has a newer trip: this one is over."""
         veh = tr.meta.get("vehicle")
-        if veh and any(o is not tr and o.meta.get("vehicle") == veh and o.fixes[-1][0] > tr.fixes[-1][0]
-                       for o in self.tracks.values()):
-            return "vehicle_reused"
-        return None
+        return bool(veh) and any(o is not tr and o.meta.get("vehicle") == veh and o.fixes[-1][0] > tr.fixes[-1][0]
+                                 for o in self.tracks.values())
+
+    def _assign_next_runs(self, t, fetched):
+        """Pair buses waiting at the end of their route with the line's next scheduled
+        departure listed at that terminus stop, first come first served (as observed).
+        The feed lists one next run per line and direction, so a second waiting bus
+        at the same terminus gets none."""
+        waiting = {}
+        for tr in self.tracks.values():
+            tr.next_run = None
+            if self.at_end(tr) and (tr.layover or tr.stopped_for(t) is not None):
+                code = tr.variant.stops[-1]["code"]
+                if code:
+                    waiting.setdefault((code, tr.variant.line.rstrip("/")), []).append(tr)
+        for (code, line), trs in waiting.items():
+            deps = sorted((r for r in fetched.get(code) or [] if r["Line"].rstrip("/") == line
+                           and not r.get("IsDestination") and not r.get("IsStarted") and r.get("Time")),
+                          key=lambda r: r["Time"])
+            trs.sort(key=lambda tr: tr.fixes[-1][0])
+            for tr, r in zip(trs, deps):
+                tr.next_run = {"trip": f"{r['Line']}:{r['Race']}", "destination": pretty(r.get("Destination")),
+                               "scheduled": r["Time"][11:16], "stop": code}
 
     def _record_drop(self, trip, tr, reason, t):
         s = tr.fixes[-1][1]
@@ -538,6 +576,13 @@ class Tracker:
                 later.append({"line": r["Line"].rstrip("/"), "destination": pretty(r.get("Destination")),
                               "times": [x.strip() for x in r["NextPasses"].split("-") if x.strip()]})
 
+        with self.lock:  # a departure from here that a bus waiting at this terminus will probably take
+            for tr in self.tracks.values():
+                nr = tr.next_run
+                if nr and nr["stop"] == code and nr["trip"] in deps and not deps[nr["trip"]]["live"]:
+                    deps[nr["trip"]]["waiting_bus"] = {"trip": tr.trip, "vehicle": tr.meta.get("vehicle"),
+                                                       "waiting_s": round(now - tr.fixes[-1][0])}
+
         def order(d):
             eta = d["eta_s"] if d["eta_s"] is not None else d["operator_eta_s"]
             return (eta is None, eta or 0, d["dist"] or 0)
@@ -584,7 +629,7 @@ class Tracker:
                     "stopped": sum(1 for x in states if x["stopped_s"]),
                     "stopped_midroute": sum(1 for x in states if x["stop_kind"] == "midroute"),
                     "at_terminus": sum(1 for x in states if x["stop_kind"] == "terminus"),
-                    "arrived": sum(1 for x in states if x["stop_kind"] == "arrived"),
+                    "layover": sum(1 for x in states if x["stop_kind"] == "layover"),
                     "stale": sum(1 for x in states if x["stale"]),
                     "variants": len(self.variants), "stops_unknown_code": unknown,
                     "uptime_s": round(now - self.started),

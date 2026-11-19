@@ -15,7 +15,8 @@ class Track:
         self.variant = variant
         self.fixes = []        # (t, s, perp, lat, lon)
         self.last_report = None  # last time the API reported this trip, moved or not
-        self.arrived = False     # set by the tracker: reached the end and no longer listed
+        self.layover = False     # set by the tracker: trip over at the terminus, bus waiting there
+        self.next_run = None     # set by the tracker: the departure it probably takes next
         self.meta = {}
 
     def add_fix(self, t, lat, lon):
@@ -60,7 +61,7 @@ class Track:
 
     def predict(self, now):
         a, v, res, t_ref, n = self.fit()
-        if self.arrived or self.stopped_for(now) is not None:
+        if self.layover or self.stopped_for(now) is not None:
             return self.fixes[-1][1], 0.0, res, n  # hold it where it stands, no dead reckoning
         dt = min(max(0.0, now - t_ref), MAX_EXTRAP_S)
         s = a + (v or 0.0) * dt
@@ -87,7 +88,8 @@ class Track:
             "residual": None if res is None else round(res, 1),
             "n_fixes": n,
             "age": round(now - last[0]),
-            "stopped_s": None if stopped is None else round(stopped),
+            "stopped_s": round(now - last[0]) if self.layover else (None if stopped is None else round(stopped)),
+            "next_run": self.next_run,
             "gps": {"lat": last[3], "lon": last[4], "offroute": round(last[2], 1)},
             "next_stop": nxt and {"code": nxt["code"], "name": nxt["name"],
                                   "dist": round(nxt["s"] - s), "eta_s": eta},

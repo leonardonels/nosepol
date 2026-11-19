@@ -57,8 +57,13 @@ Findings that shape the design:
   `terminus` (waiting, kept up to 15 min) or `midroute` (may have a problem, kept up to 1 h).
   "Terminus" means within 150 m of the first stop, or at/past the second-to-last stop
   (buses often wait at the stop before the end). A bus in that last stretch that the
-  stops stop listing has finished its trip (the operator drops it at once): `stop_kind`
-  `arrived`, held at its last position, removed 60 s after its last listing.
+  stops stop listing has finished its trip (the operator drops it at once) and usually
+  waits there, then starts the line's next run back (watched on lines 6, 8, 9: waits of
+  2-10 min). It stays as `stop_kind` `layover`, held at its last position, with
+  `next_run` {trip, destination, scheduled}: the line's next unstarted departure listed at
+  that terminus stop, paired first come first served. It goes as soon as its vehicle
+  appears on a newer trip, or 15 min after its last listing. A terminus stop with no code
+  in `data/stops.json` can't be read, so no `next_run` there until a resync.
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
 - `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
   words of the name or code (accents and case ignored) and/or sorted by distance
@@ -69,7 +74,7 @@ Findings that shape the design:
 - `GET /api/status`: last GPS batch, batch interval, stale/stopped counts, stops with
   no code (a hint that a resync is due), and removed buses: `drops_by_reason` since
   start and `drops_recent` (trip, reason, how long it stood still, where). Reasons:
-  `arrived`, `terminus_timeout`, `midroute_timeout`, `not_reported` (no stop lists it for 3 min),
+  `next_run` (its vehicle started a newer trip), `layover_timeout`, `terminus_timeout`, `midroute_timeout`, `not_reported` (no stop lists it for 3 min),
   `vehicle_reused` (its vehicle runs a newer trip). Each removal is also logged.
 - `GET /api/debug`: poll set, batch intervals, raw fix history
 
