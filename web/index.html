@@ -423,9 +423,12 @@ const saveHidden = () => store.set("hiddenLines", [...hidden]);
 const shapeLayers = {};   // line -> layerGroup (routes)
 const stopLayer = L.layerGroup();
 // Drawing order: all route halos, then route colours, then shared stretches (dashed), then stops.
-map.createPane("routeHalo").style.zIndex = 380;
-map.createPane("routeShared").style.zIndex = 410;
-map.createPane("stops").style.zIndex = 420;
+// These panes must sit in leaflet-rotate's rotating pane (with the tiles and the default
+// overlay pane), or they stay north-up while the map turns and drift off the routes.
+const rotating = map.getPane("rotatePane") || map._rotatePane || map.getPane("mapPane");
+map.createPane("routeHalo", rotating).style.zIndex = 380;
+map.createPane("routeShared", rotating).style.zIndex = 410;
+map.createPane("stops", rotating).style.zIndex = 420;
 for (const p of ["routeHalo", "routeShared"]) map.getPane(p).style.pointerEvents = "none";
 const sharedLayer = L.layerGroup().addTo(map);
 let SHAPES = [];
