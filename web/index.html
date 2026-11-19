@@ -32,6 +32,8 @@
   .badge { display:inline-block; min-width:26px; text-align:center; color:#fff; border-radius:4px;
     font-weight:700; padding:0 3px; }
   .stale { opacity:.5; }
+  .stopped .bus-icon { border-radius:4px; outline:2px dashed var(--fg); }
+  .stop-tag { color:var(--muted); font-style:italic; }
   .bus-icon { display:flex; align-items:center; justify-content:center; width:26px; height:26px;
     border-radius:50%; color:#fff; font:700 11px system-ui; border:2px solid #fff;
     box-shadow:0 1px 4px rgba(0,0,0,.4); }
@@ -110,9 +112,12 @@ function busIcon(v) {
     html: `<div class="bus-icon" style="background:${color(v.line)}">${v.line.replace(/^T0?/, "")}</div>` });
 }
 
+const isStale = v => v.age > 90 && !v.stopped_s;
+const stoppedText = v => `stopped ${Math.max(1, Math.round(v.stopped_s / 60))}′`;
+
 function popup(v) {
   const ns = v.next_stop;
-  return `<b>${v.line}</b> → ${v.destination}<br>
+  return `<b>${v.line}</b> → ${v.destination}${v.stopped_s ? ` · <b>${stoppedText(v)}</b>` : ""}<br>
     trip ${v.trip} · bus ${v.vehicle}<br>
     s = ${Math.round(v.s)} / ${v.length} m<br>
     v = ${v.v == null ? "–" : (v.v * 3.6).toFixed(1) + " km/h"} · residual ${v.residual ?? "–"} m (${v.n_fixes} fixes)<br>
@@ -143,18 +148,19 @@ async function tick() {
     m.gps.setLatLng([v.gps.lat, v.gps.lon]);
     m.link.setLatLngs([[v.gps.lat, v.gps.lon], [v.lat, v.lon]]);
     m.bus.setPopupContent(popup(v));
-    m.bus.getElement()?.classList.toggle("stale", v.age > 90);
+    m.bus.getElement()?.classList.toggle("stale", isStale(v));
+    m.bus.getElement()?.classList.toggle("stopped", !!v.stopped_s);
   }
   for (const [trip, m] of Object.entries(markers))
     if (!live.has(trip)) { m.bus.remove(); m.gps.remove(); m.link.remove(); delete markers[trip]; }
 
   document.getElementById("rows").innerHTML = vs.map(v => `
-    <tr class="veh${v.age > 90 ? " stale" : ""}" data-trip="${v.trip}">
+    <tr class="veh${isStale(v) ? " stale" : ""}" data-trip="${v.trip}">
       <td><span class="badge" style="background:${color(v.line)}">${v.line.replace(/^T0?/, "")}</span></td>
       <td>${v.destination}</td>
       <td>${v.v == null ? "–" : (v.v * 3.6).toFixed(0)}</td>
       <td>${v.residual ?? "–"}</td>
-      <td>${v.next_stop ? `${v.next_stop.name}${v.next_stop.eta_s != null ? " · " + Math.max(0, Math.round(v.next_stop.eta_s / 60)) + "′" : ""}` : "–"}</td>
+      <td>${v.stopped_s ? `<span class="stop-tag">${stoppedText(v)}</span> · ` : ""}${v.next_stop ? `${v.next_stop.name}${v.next_stop.eta_s != null ? " · " + Math.max(0, Math.round(v.next_stop.eta_s / 60)) + "′" : ""}` : "–"}</td>
     </tr>`).join("") || `<tr><td colspan="5" class="meta">no buses running</td></tr>`;
   for (const tr of document.querySelectorAll("tr.veh"))
     tr.onclick = () => { const m = markers[tr.dataset.trip]; if (m) { map.panTo(m.bus.getLatLng()); m.bus.openPopup(); } };

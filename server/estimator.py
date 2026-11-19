@@ -6,6 +6,7 @@ WINDOW_S = 150      # fit window
 MAX_FIXES = 8
 MAX_EXTRAP_S = 60   # don't dead-reckon further than this past the last fix
 OFFROUTE_M = 80     # fixes further than this from the shape are not used in the fit
+STOP_AFTER_S = 60   # still listed, same position this long (~3 GPS batches) -> stopped
 
 
 class Track:
@@ -13,16 +14,30 @@ class Track:
         self.trip = trip
         self.variant = variant
         self.fixes = []        # (t, s, perp, lat, lon)
+        self.last_report = None  # last time the API reported this trip, moved or not
         self.meta = {}
 
     def add_fix(self, t, lat, lon):
         if self.fixes and (lat, lon) == self.fixes[-1][3:5]:
-            return False  # same GPS batch seen via another stop, or bus not refreshed
+            self.last_report = t
+            return False  # same GPS batch seen via another stop, or bus not moving
+        if self.stopped_for(t) is not None:
+            # It sat still until the last report: keep that as a fix, so the fit
+            # sees "stood at s until then" instead of a slow crawl.
+            self.fixes.append((self.last_report, *self.fixes[-1][1:]))
         hint = self.predict(t)[0] if self.fixes else None
         perp, s = self.variant.shape.project(lat, lon, hint)
         self.fixes.append((t, s, perp, lat, lon))
         self.fixes = [f for f in self.fixes if t - f[0] <= WINDOW_S][-MAX_FIXES:]
+        self.last_report = t
         return True
+
+    def stopped_for(self, now):
+        """Seconds the bus has stood still, or None if it is moving (or we can't tell yet)."""
+        if not self.fixes or self.last_report is None:
+            return None
+        since = self.fixes[-1][0]
+        return now - since if self.last_report - since >= STOP_AFTER_S else None
 
     def fit(self):
         """Returns (s_at_last_fix_time_ref, v, residual_rms, t_ref, n)."""
@@ -44,6 +59,8 @@ class Track:
 
     def predict(self, now):
         a, v, res, t_ref, n = self.fit()
+        if self.stopped_for(now) is not None:
+            return self.fixes[-1][1], 0.0, res, n  # hold it where it stands
         dt = min(max(0.0, now - t_ref), MAX_EXTRAP_S)
         s = a + (v or 0.0) * dt
         return min(max(s, 0.0), self.variant.shape.length), v, res, n
@@ -56,6 +73,7 @@ class Track:
         if nxt and v and v > 0.5:
             eta = round((nxt["s"] - s) / v)
         last = self.fixes[-1]
+        stopped = self.stopped_for(now)
         return {
             "trip": self.trip,
             "variant": self.variant.key,
@@ -67,6 +85,7 @@ class Track:
             "residual": None if res is None else round(res, 1),
             "n_fixes": n,
             "age": round(now - last[0]),
+            "stopped_s": None if stopped is None else round(stopped),
             "gps": {"lat": last[3], "lon": last[4], "offroute": round(last[2], 1)},
             "next_stop": nxt and {"code": nxt["code"], "name": nxt["name"],
                                   "dist": round(nxt["s"] - s), "eta_s": eta},

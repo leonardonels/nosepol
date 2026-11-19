@@ -35,7 +35,9 @@ FRAME = Frame(45.65, 13.78)  # Trieste
 HEARTBEAT_EVERY = 5     # s
 FORCE_SWEEP_EVERY = 60  # s, sweep even if heartbeat sees no change
 STOP_STRIDE = 4         # poll every Nth stop of each variant (+ terminus)
-TRIP_TTL = 180          # s without sighting -> drop trip
+TRIP_TTL = 180          # s not listed, or standing still at a terminus -> drop trip
+STOPPED_TTL = 600       # s standing still mid-route -> drop trip
+TERMINUS_M = 150        # within this of either end of the route counts as "at the terminus"
 STOP_MATCH_M = 40
 
 log = logging.getLogger("nosepol")
@@ -207,11 +209,12 @@ class Tracker:
 
     def sweep(self, t):
         codes = self.poll_set()
-        runs = {}
+        listed = {}
         for code, rs in self.pool.map(self._fetch, codes):
             for r in rs:
                 if self.wants(r["Line"]):
-                    runs.setdefault(f"{r['Line']}:{r['Race']}", r)
+                    listed.setdefault(f"{r['Line']}:{r['Race']}", []).append(r)
+        runs = {trip: self._freshest(trip, rs) for trip, rs in listed.items()}
         updated = 0
         for trip, r in runs.items():
             if not r.get("IsStarted") or not r.get("Latitude"):
@@ -237,10 +240,9 @@ class Tracker:
                 updated += tr.add_fix(t, r["Latitude"], r["Longitude"])
                 self.seen[trip] = t
         with self.lock:
-            # Drop on "no new GPS fix", not "not listed": a stop the bus already
-            # passed can keep listing it as "In transito" with a frozen position.
-            stale = {k for k, tr in self.tracks.items() if t - tr.fixes[-1][0] > TRIP_TTL}
-            for trip in stale | {k for k, ts in self.seen.items() if t - ts > TRIP_TTL}:
+            stale = {k for k, ts in self.seen.items() if t - ts > TRIP_TTL}
+            stale |= {k for k, tr in self.tracks.items() if self._drop_still(tr, t)}
+            for trip in stale:
                 self.seen.pop(trip, None)
                 tr = self.tracks.pop(trip, None)
                 if tr:
@@ -249,6 +251,34 @@ class Tracker:
             self.stats["last_sweep"] = {"t": t, "stops": len(codes), "trips": len(runs),
                                         "new_fixes": updated}
         log.info("sweep: %d stops, %d trips, %d new fixes", len(codes), len(runs), updated)
+
+    def _freshest(self, trip, rs):
+        """A stop the bus already passed can keep listing it with a frozen position,
+        so when stops disagree, take a position that differs from the last fix."""
+        tr = self.tracks.get(trip)
+        if tr and len(rs) > 1:
+            last = tr.fixes[-1][3:5]
+            moved = [r for r in rs if (r.get("Latitude"), r.get("Longitude")) != last]
+            if moved:
+                return moved[0]
+        return rs[0]
+
+    def _drop_still(self, tr, t):
+        """A bus that stopped moving: drop it at a terminus (layover, or a finished trip
+        still listed) or when its vehicle runs a newer trip; mid-route, keep it as
+        "stopped" for up to STOPPED_TTL."""
+        still = t - tr.fixes[-1][0]
+        if still > STOPPED_TTL:
+            return True
+        if still <= TRIP_TTL:
+            return False
+        s = tr.fixes[-1][1]
+        if s < TERMINUS_M or s > tr.variant.shape.length - TERMINUS_M:
+            return True
+        veh = tr.meta.get("vehicle")
+        return bool(veh) and any(o is not tr and o.meta.get("vehicle") == veh
+                                 and o.fixes[-1][0] > tr.fixes[-1][0]
+                                 for o in self.tracks.values())
 
     def run(self):
         self.discover()
