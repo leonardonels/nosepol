@@ -58,6 +58,9 @@ BLIND_MAX_S = 45 * 60   # s, longest a bus is kept on such a stretch without a r
 FILL_NEAR_M = 2000      # look for missing stop codes in districts with a stop this close
 FILL_GAP = 60           # codes probed past a district's last known code
 FILL_EVERY = 24 * 3600  # s between searches while some route stops still have no code
+STREAM_EVERY = 3        # s between updates on /api/stream (the page glides markers over this)
+STREAM_MAX_S = 10 * 60  # s before a stream closes; the browser reconnects on its own
+MAX_STREAMS = 200       # open streams at once; more get 503 and the page polls instead
 LOCAL_TZ = ZoneInfo("Europe/Rome")  # the operator's timetable times are local
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
@@ -226,6 +229,7 @@ class Tracker:
         self.pool = ThreadPoolExecutor(4)
         self._stop_index = (None, {})  # (variant keys it was built from, code -> entry)
         self._operator = {}            # stop code -> (time fetched, runs)
+        self._live, self._live_lock = None, threading.Lock()  # (built at, body) for live()
         self._load_cache()
 
     def wants(self, line):
@@ -643,6 +647,24 @@ class Tracker:
         return {"t": now, "vehicles": sorted(out, key=lambda v: (v["line"], v["variant"], v["s"])),
                 "pending": sorted(pending, key=lambda d: d["in_s"])}
 
+    def live(self):
+        """What /api/stream sends each STREAM_EVERY: the vehicles, the feed's last GPS
+        batch, and a count of route variants (the page reloads routes when it changes).
+        Built at most once a second, however many streams are open."""
+        now = time.time()
+        with self._live_lock:
+            if self._live and now - self._live[0] < 1:
+                return self._live[1]
+            out = self.vehicles()
+            with self.lock:
+                ints = self.stats["batch_intervals"]
+                out |= {"last_batch": self.stats["last_batch"],
+                        "batch_interval": round(statistics.median(ints)) if ints else None,
+                        "variants": len(self.variants)}
+            body = json.dumps(out, ensure_ascii=False, separators=(",", ":"))
+            self._live = (now, body)
+            return body
+
     def line_style(self, line):
         base = line.rstrip("/")
         i = self.lines.index(base) if base in self.lines else len(self.lines)
@@ -895,6 +917,9 @@ class Tracker:
 
 
 def make_handler(tracker):
+    streams = {"open": 0}
+    streams_lock = threading.Lock()
+
     class H(SimpleHTTPRequestHandler):
         def __init__(self, *a, **kw):
             super().__init__(*a, directory=str(WEB), **kw)
@@ -919,6 +944,34 @@ def make_handler(tracker):
             self.end_headers()
             self.wfile.write(body)
 
+        def _stream(self):
+            """Server-sent events: tracker.live() every STREAM_EVERY s, so the page needn't
+            poll. Closes after STREAM_MAX_S; EventSource reconnects by itself."""
+            with streams_lock:
+                if streams["open"] >= MAX_STREAMS:
+                    return self._json({"error": "too many streams, poll /api/vehicles"}, 503)
+                streams["open"] += 1
+            try:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("X-Accel-Buffering", "no")  # proxies: don't hold events back
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(f"retry: {STREAM_EVERY * 1000}\n\n".encode())
+                end = time.time() + STREAM_MAX_S
+                while time.time() < end:
+                    t = time.time()
+                    self.wfile.write(b"data: " + tracker.live().encode() + b"\n\n")
+                    self.wfile.flush()
+                    time.sleep(max(0.0, STREAM_EVERY - (time.time() - t)))
+            except OSError:  # the page went away
+                pass
+            finally:
+                with streams_lock:
+                    streams["open"] -= 1
+                self.close_connection = True
+
         def do_GET(self):
             url = urllib.parse.urlparse(self.path)
             parts = [urllib.parse.unquote(p) for p in url.path.split("/") if p]
@@ -926,6 +979,16 @@ def make_handler(tracker):
                 return super().do_GET()
             qs = {k: v[-1] for k, v in urllib.parse.parse_qs(url.query).items()}
             match parts[1:]:
+                case ["stream"]:
+                    return self._stream()
+                case ["live"]:  # one /api/stream update, for pages that can't stream
+                    body = tracker.live().encode()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.end_headers()
+                    return self.wfile.write(body)
                 case ["stops"]:
                     try:
                         near = tuple(float(x) for x in qs["near"].split(",")) if "near" in qs else None

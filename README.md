@@ -91,6 +91,12 @@ Findings that shape the design:
   known bus will take (its bus is out of sight: depot, a missed arrival, a restart),
   with the terminus stop's position. One stays until its bus appears with GPS, a known
   bus takes it, or 10 min after its time. `/api/lines` counts them per line.
+- `GET /api/stream`: server-sent events, one every 3 s: the `/api/vehicles` payload
+  plus `last_batch` (time of the last GPS batch), `batch_interval` and `variants` (a
+  route count; the page reloads routes when it changes). The page uses this instead of
+  polling and closes it while hidden. A stream closes after 10 min (the browser
+  reconnects); past 200 open streams the server answers 503 and the page polls
+  `GET /api/live`, the same payload once.
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
 - `GET /api/lines/T06/track`: the line page's data. Per direction, the full route's
   stops and every bus on it placed by `s` along that route (short-turn trips mapped

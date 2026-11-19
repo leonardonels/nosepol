@@ -309,7 +309,7 @@
 // ---------- i18n ----------
 const T = {
   it: {
-    searchPh: "Fermata, via o linea", liveTitle: "Secondi dall'ultimo aggiornamento GPS", menu: "Menu", lines: "Linee",
+    searchPh: "Fermata, via o linea", liveTitle: "Secondi dall'ultimo GPS ricevuto", menu: "Menu", lines: "Linee",
     locate: "Centra su di me", north: "Ruota la mappa verso nord", expand: "Espandi", close: "Chiudi", search: "Cerca",
     nearest: "Fermata più vicina", walk: "a piedi", tapHint: "Tocca un autobus o una fermata sulla mappa.",
     locHint: "Attiva la posizione per vedere la fermata più vicina.", locBtn: "Usa la mia posizione",
@@ -337,6 +337,11 @@ const T = {
     offline: "Server non raggiungibile", unknownTrip: "Questo autobus non è più tracciato.", unknownStop: "Fermata sconosciuta.",
     min: "min",
     blind: "posizione stimata: nessuna fermata di questo tratto segnala gli autobus",
+    lastBatchAt: "Ultimo GPS ricevuto alle {time}, circa ogni {s} s", lastBatchAt0: "Ultimo GPS ricevuto alle {time}", noBatch: "Nessun GPS ricevuto finora",
+    onIt: "Sono su questo autobus", notOnIt: "Non sono a bordo", onBoard: "A bordo", whereOff: "Dove scendi?",
+    getOffAt: "Scendi a", stopsLeft: "Fermate", arrive: "Arrivo", yourStop: "La tua fermata", nowAt: "In viaggio a {v} km/h",
+    buzz: "Vibra una fermata prima", buzzNote: "Lo schermo resta acceso finché non vibra.", buzzNo: "Questo telefono o browser non può vibrare: guarda il conto delle fermate.",
+    nextIsYours: "La prossima fermata è la tua", arrivedAt: "Sei arrivato a {name}", gotOff: "Sono sceso", changeStop: "Cambia fermata",
     lineN: "Linea {n}", running: "In servizio", avgGap: "Intervallo", lineStatus: "Stato", showOnMap: "Mostra sulla mappa",
     bunched: "Accoppiati", hole: "Buco", regular: "Regolare", atTermN: "{n} al capolinea", startsN: "{n} in partenza",
     shortTrip: "corsa limitata: termina a {dest}", shortLegend: "Tratteggiati: corse limitate ({ends})",
@@ -344,7 +349,7 @@ const T = {
     lineHint: "Distanze in minuti tra autobus consecutivi. Sotto i 2′ sono accoppiati.",
   },
   en: {
-    searchPh: "Stop, street or line", liveTitle: "Seconds since the last GPS update", menu: "Menu", lines: "Lines",
+    searchPh: "Stop, street or line", liveTitle: "Seconds since the last GPS batch", menu: "Menu", lines: "Lines",
     locate: "Centre on me", north: "Turn the map to north", expand: "Expand", close: "Close", search: "Search",
     nearest: "Nearest stop", walk: "walk", tapHint: "Tap a bus or a stop on the map.",
     locHint: "Turn on location to see your nearest stop.", locBtn: "Use my location",
@@ -372,6 +377,11 @@ const T = {
     installTitle: "On your home screen", install: "In the browser menu choose “Add to Home screen” to open it like an app.",
     offline: "Server unreachable", unknownTrip: "This bus is no longer tracked.", unknownStop: "Unknown stop.",
     min: "min",
+    lastBatchAt: "Last GPS batch at {time}, about every {s} s", lastBatchAt0: "Last GPS batch at {time}", noBatch: "No GPS received yet",
+    onIt: "I'm on this bus", notOnIt: "I'm not on it", onBoard: "On board", whereOff: "Where do you get off?",
+    getOffAt: "Get off at", stopsLeft: "Stops", arrive: "Arrive", yourStop: "Your stop", nowAt: "Moving at {v} km/h",
+    buzz: "Vibrate one stop before", buzzNote: "The screen stays on until it buzzes.", buzzNo: "This phone or browser can't vibrate: watch the stop count.",
+    nextIsYours: "Next stop is yours", arrivedAt: "You've reached {name}", gotOff: "I got off", changeStop: "Change stop",
     lineN: "Line {n}", running: "Running", avgGap: "Avg gap", lineStatus: "Status", showOnMap: "Show on map",
     bunched: "Bunched", hole: "Gap", regular: "Regular", atTermN: "{n} at the terminus", startsN: "{n} about to start",
     shortTrip: "short trip: ends at {dest}", shortLegend: "Dashed: short trips ({ends})",
@@ -778,6 +788,7 @@ function focusOn(latlng, zoom) {
 new ResizeObserver(placeLocate).observe(sheet);
 
 function peek() {
+  if (onboard) return openBus(onboard.trip, { pan: false });  // on a bus: its sheet is home
   clearTimers();
   sel = null; follow = false; setHeight("normal");
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
@@ -869,9 +880,15 @@ async function openBus(trip, { pan = true, from = null } = {}) {
   const render = async first => {
     let d;
     try { d = await api("trips/" + encodeURIComponent(trip)); }
-    catch { if (first) setSheet(`<p class="empty">${esc(t("unknownTrip"))}</p><button class="btn" id="back" style="width:100%">${esc(t("close"))}</button>`); $("back") && ($("back").onclick = peek); return; }
+    catch {
+      if (!first && onboard?.trip !== trip) return;
+      setSheet(`<p class="empty">${esc(t("unknownTrip"))}</p><button class="btn" id="back" style="width:100%">${esc(t(onboard?.trip === trip ? "gotOff" : "close"))}</button>`);
+      $("back").onclick = () => { if (onboard?.trip === trip) leaveBus(); peek(); };
+      return;
+    }
     if (sel?.type !== "bus" || sel.id !== trip) return;
     if (first && pan) requestAnimationFrame(() => focusOn([d.lat, d.lon], 15));
+    if (onboard?.trip === trip) return renderOnboard(d, render);
     const s = style(d.line), [conf, confColor] = confidence(d);
     const ns = d.stops_ahead[0];
     const head = d.stopped_s || d.stop_kind === "layover" ? `<b style="color:${d.stop_kind === "midroute" && d.stopped_s >= ALARM_S ? "var(--orange)" : "var(--fg)"}">${esc(stopText(d))}</b>`
@@ -896,17 +913,108 @@ async function openBus(trip, { pan = true, from = null } = {}) {
         <div><div class="mono" style="color:var(--muted)">${esc(t("confidence"))}</div><div class="v" style="color:${confColor}">${esc(t(conf))}</div></div>
         <div><div class="mono" style="color:var(--muted)">KM</div><div class="v">${(d.s / 1000).toFixed(1)}/${(d.length / 1000).toFixed(1)}</div></div>
       </div>
+      <button class="btn primary" id="onItBtn" style="width:100%;margin-top:16px">${esc(t("onIt"))}</button>
       <div class="actions"><button class="btn ${follow ? "on" : ""}" id="followBtn">${esc(t(follow ? "following" : "follow"))}</button><button class="btn" id="shareBtn">${esc(t("share"))}</button><button class="btn" id="lineBtn">${esc(t("lineN", { n: s.name }))}</button></div>
       <div class="mono" style="color:var(--muted);margin-top:16px">${esc(t("stopsAhead"))}</div>
       <div style="margin-top:4px">${ahead}</div>`, s.color);
     $("closeSheet").onclick = peek;
     $("shareBtn").onclick = share;
     $("lineBtn").onclick = () => openLine(d.line);
+    $("onItBtn").onclick = () => { boardBus(d); follow = true; setHeight("full"); openBus(trip, { pan: false }); };
     $("followBtn").onclick = () => { follow = !follow; render(); if (follow) focusOn([d.lat, d.lon], 15); };
     for (const r of body.querySelectorAll("[data-stop]")) if (r.dataset.stop) r.onclick = () => openStop(r.dataset.stop);
   };
   await render(true);
-  busTimer = setInterval(render, 10000);
+  busTimer = setInterval(render, onboard?.trip === trip ? 5000 : 10000);
+}
+
+// ---------- on board: "I'm on this bus" ----------
+// Kept in this browser only: the trip, the stop to get off at, and whether to buzz one
+// stop before. The buzz uses the Vibration API, so the page must stay open (the screen is
+// kept on while it waits).
+const ONBOARD_MAX_MS = 3 * 3600 * 1000;
+let onboard = store.get("onboard", null);
+if (onboard && !(Date.now() - onboard.at < ONBOARD_MAX_MS)) { onboard = null; store.set("onboard", null); }
+const saveOnboard = () => store.set("onboard", onboard);
+function boardBus(d) {
+  onboard = { trip: d.trip, line: d.line, dest: null, buzz: true, buzzed: false, at: Date.now() };
+  saveOnboard(); keepAwake();
+}
+function leaveBus() { onboard = null; saveOnboard(); keepAwake(); follow = false; }
+const sameStop = (a, b) => a && b && (a.code ? a.code === b.code : a.name === b.name);
+let wakeLock = null;
+async function keepAwake() {
+  const want = !!(onboard?.dest && onboard.buzz && !onboard.buzzed && !onboard.arrived) && !document.hidden;
+  try {
+    if (want && !wakeLock && navigator.wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.onrelease = () => { wakeLock = null; }; }
+    else if (!want && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch { wakeLock = null; }
+}
+document.addEventListener("visibilitychange", keepAwake);
+function renderOnboard(d, render) {
+  const s = style(d.line), ahead = d.stops_ahead;
+  const clock = sec => sec == null ? "" : new Date((d.t + sec) * 1000).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const close = `<button class="sq" id="closeSheet" aria-label="${esc(t("close"))}" style="width:44px;height:44px;border:0;background:none;margin-right:-10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+  const kicker = `<div class="kicker mono"><span>${esc(t("onBoard"))} · ${esc(s.name)} → ${esc(d.destination)} · ${esc(String(d.trip).split(":")[1] ?? "")}</span>${close}</div>`;
+  const wire = () => {
+    $("closeSheet").onclick = () => setHeight("min");  // stays on board; the handle brings it back
+    $("gotOffBtn").onclick = () => { leaveBus(); peek(); };
+  };
+  const dot = (c, fill) => `<span style="width:12px;height:12px;flex:none;border-radius:50%;border:2px solid ${c};background:${fill ? c : "transparent"}"></span>`;
+  // 1. pick the stop to get off at
+  if (!onboard.dest) {
+    setSheet(`${kicker}<h2>${esc(t("whereOff"))}</h2>
+      <div style="margin-top:8px">${ahead.map((x, i) => `<button class="row" data-i="${i}" style="min-height:48px">${dot("var(--md-outline)")}
+        <span class="grow">${esc(x.name)}</span><span class="note">${esc(clock(x.eta_s))}</span><span class="eta" style="font-size:16px">${esc(fmtEta(x.eta_s))}</span></button>`).join("")
+        || `<p class="empty">${esc(t("atTerminus"))}</p>`}</div>
+      <div class="actions"><button class="btn" id="gotOffBtn">${esc(t("notOnIt"))}</button></div>`, s.color);
+    wire();
+    for (const r of body.querySelectorAll("[data-i]")) r.onclick = () => {
+      const x = ahead[+r.dataset.i];
+      onboard.dest = { code: x.code, name: x.name }; onboard.buzzed = onboard.arrived = false; saveOnboard(); keepAwake(); render();
+    };
+    return;
+  }
+  const k = ahead.findIndex(x => sameStop(x, onboard.dest));
+  // 2. past it, or the trip ended: say so
+  if (k < 0) {
+    if (onboard.buzz && !onboard.arrived) { navigator.vibrate?.([200, 100, 200, 100, 200]); onboard.arrived = true; saveOnboard(); keepAwake(); }
+    setSheet(`${kicker}<h2>${esc(t("arrivedAt", { name: onboard.dest.name }))}</h2>
+      <div class="actions"><button class="btn primary" id="gotOffBtn">${esc(t("gotOff"))}</button></div>`, s.color);
+    wire();
+    return;
+  }
+  // 3. on the way: buzz once when the next stop is ours
+  const dest = ahead[k], left = k + 1;
+  if (left <= 1 && onboard.buzz && !onboard.buzzed) {
+    navigator.vibrate?.([300, 150, 300]);
+    toast(t("nextIsYours"));
+    onboard.buzzed = true; saveOnboard(); keepAwake();
+  }
+  const now = d.stopped_s ? esc(stopText(d)) : esc(t("nowAt", { v: d.v == null ? "–" : Math.round(d.v * 3.6) }));
+  const rows = ahead.slice(0, k + 1).map((x, i) => {
+    const mine = i === k;
+    return `<div class="row" style="min-height:${mine ? 56 : 44}px;${mine ? "background:var(--md-secondary-container);color:var(--md-on-secondary-container)" : ""}">
+      ${dot(mine ? "var(--md-primary)" : "var(--md-outline)", mine)}
+      <span class="grow">${mine ? `<span class="mono" style="display:block;color:inherit">${esc(t("yourStop"))}</span>` : ""}<span style="font-weight:${mine ? 500 : 400}">${esc(x.name)}</span></span>
+      <span class="note" style="color:inherit">${esc(clock(x.eta_s))}</span><span class="eta" style="font-size:${mine ? 22 : 16}px">${esc(fmtEta(x.eta_s))}</span></div>`;
+  }).join("");
+  setSheet(`${kicker}
+    <div class="mono" style="margin-top:4px">${esc(t("getOffAt"))}</div>
+    <h2>${esc(dest.name)}</h2>
+    <div class="stat">
+      <div><div class="mono" style="color:var(--muted)">${esc(t("stopsLeft"))}</div><div class="v">${left}</div></div>
+      <div><div class="mono" style="color:var(--muted)">${esc(t("min"))}</div><div class="v">${dest.eta_s == null ? "–" : fmtEta(dest.eta_s)}</div></div>
+      <div><div class="mono" style="color:var(--muted)">${esc(t("arrive"))}</div><div class="v">${esc(clock(dest.eta_s) || "–")}</div></div>
+    </div>
+    <div class="sub" style="margin-top:12px">${now}${d.blind ? " · " + esc(t("blind")) : ""}${d.age > 90 ? " · " + esc(t("gpsOld", { s: d.age })) : ""}</div>
+    <div style="margin-top:8px">${rows}</div>
+    <label class="row" style="min-height:56px;cursor:pointer"><span class="grow">${esc(t("buzz"))}<span class="note" style="display:block">${esc(t(navigator.vibrate ? "buzzNote" : "buzzNo"))}</span></span>
+      <input type="checkbox" id="buzzBox" ${onboard.buzz ? "checked" : ""} style="width:22px;height:22px;accent-color:var(--md-primary)"></label>
+    <div class="actions"><button class="btn" id="changeBtn">${esc(t("changeStop"))}</button><button class="btn primary" id="gotOffBtn">${esc(t("gotOff"))}</button></div>`, s.color);
+  wire();
+  $("buzzBox").onchange = e => { onboard.buzz = e.target.checked; saveOnboard(); keepAwake(); };
+  $("changeBtn").onclick = () => { onboard.dest = null; saveOnboard(); keepAwake(); render(); };
 }
 
 async function share() {
@@ -954,7 +1062,7 @@ function showOnly(line) {
 }
 async function openMenu() {
   $("menu").classList.remove("hide");
-  let st = null; try { st = await api("status"); } catch {}
+  let st = null; try { [st] = await Promise.all([api("status"), loadLines()]); } catch {}
   const lines = Object.entries(LINES).map(([l, s]) => `<button class="row" data-line="${l}">${badge(l)}
       <div class="grow"><b>${esc([...new Set(s.variants.map(v => v.headsign))].join(" ⇄ ") || l)}</b>
       <span class="note">${esc(t("busesRunning", { n: s.vehicles }))}${s.pending ? " · " + esc(t("pendingN", { n: s.pending })) : ""}</span></div></button>`).join("");
@@ -1144,7 +1252,7 @@ $("locate").onclick = locate;
 // ---------- routing & polling ----------
 function route() {
   const m = location.hash.match(/^#\/(stop|bus|line)\/(.+)$/);
-  if (!m) { closeLine(); return peek(); }
+  if (!m) { closeLine(); return onboard ? openBus(onboard.trip) : peek(); }
   const id = decodeURIComponent(m[2]);
   if (m[1] === "line") return openLine(id);
   closeLine();
@@ -1153,30 +1261,72 @@ function route() {
 function rerender() { if (lineOpen) openLine(lineOpen); if (sel?.type === "stop") openStop(sel.id, { pan: false }); else if (sel?.type === "bus") openBus(sel.id, { pan: false }); else peek(); drawBuses(); }
 window.addEventListener("hashchange", () => { if (!location.hash.startsWith(lineOpen ? "#/line/" : `#/${sel?.type}/`)) route(); });
 
-let knownVariants = -1;
-async function tick() {
-  try {
-    const data = await api("vehicles");
-    vehicles = data.vehicles;
-    pendingDeps = data.pending || [];
-    drawBuses();
-    if (follow && sel?.type === "bus") { const v = vehicles.find(x => x.trip === sel.id); if (v) focusOn([v.lat, v.lon], 0); }
-    const freshest = Math.min(...vehicles.map(v => v.age).filter(a => a != null), 999);
-    $("live").textContent = vehicles.length ? `● ${freshest}s` : "● —";
-    $("live").classList.toggle("bad", freshest > 60);
+// Live updates: one server-sent event every ~3 s (vehicles, last GPS batch, route count).
+// If the stream can't open or goes quiet, poll the same data instead. Nothing runs while
+// the page is hidden, to keep traffic down.
+let knownVariants = -1, streamVariants = -1, linesAt = 0;
+let lastBatch = null, batchEvery = null, online = false;
+async function apply(data, receivedAt) {
+  vehicles = data.vehicles;
+  pendingDeps = data.pending || [];
+  drawBuses();
+  if (follow && sel?.type === "bus") { const v = vehicles.find(x => x.trip === sel.id); if (v) focusOn([v.lat, v.lon], 0); }
+  // the batch time in this phone's clock, so a skewed clock doesn't matter
+  // (until the server has seen a batch change since it started, use the freshest bus's GPS age)
+  const freshest = Math.min(...data.vehicles.map(v => v.age).filter(a => a != null));
+  lastBatch = data.last_batch != null ? receivedAt - (data.t - data.last_batch) : isFinite(freshest) ? receivedAt - freshest : null;
+  batchEvery = data.batch_interval ?? batchEvery;
+  online = true; paintLive();
+  if (data.variants !== streamVariants || Date.now() - linesAt > 60000) {
+    streamVariants = data.variants; linesAt = Date.now();
     const nv = await loadLines();
     if (nv !== knownVariants) { knownVariants = nv; await loadShapes(); }
-  } catch {
-    $("live").textContent = "● ✕"; $("live").classList.add("bad");
   }
 }
+// "● 12 s": seconds since the last GPS batch, counting up between updates
+function paintLive() {
+  const el = $("live");
+  if (!online) { el.textContent = "● ✕"; el.classList.add("bad"); el.title = t("offline"); return; }
+  if (lastBatch == null) { el.textContent = "● —"; el.classList.remove("bad"); el.title = liveText(); return; }
+  const age = Math.max(0, Math.round(Date.now() / 1000 - lastBatch));
+  el.textContent = `● ${age} s`;
+  el.classList.toggle("bad", age > Math.max(60, 3 * (batchEvery || 20)));
+  el.title = liveText();
+}
+const liveText = () => !online ? t("offline") : lastBatch == null ? t("noBatch")
+  : t(batchEvery ? "lastBatchAt" : "lastBatchAt0", { s: batchEvery,
+      time: new Date(lastBatch * 1000).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }) });
+$("live").onclick = () => toast(liveText());
+setInterval(paintLive, 1000);
+
+let stream = null, lastMsg = 0, pollTimer = null;
+async function poll() {
+  try { await apply(await api("live"), Date.now() / 1000); }
+  catch { online = false; paintLive(); }
+}
+function startPolling() { if (!pollTimer) { poll(); pollTimer = setInterval(poll, 3000); } }
+function stopPolling() { clearInterval(pollTimer); pollTimer = null; }
+function connect() {
+  if (stream || document.hidden) return;
+  if (!window.EventSource) return startPolling();
+  stream = new EventSource("api/stream");
+  stream.onmessage = e => { lastMsg = Date.now(); stopPolling(); apply(JSON.parse(e.data), Date.now() / 1000); };
+  stream.onerror = () => {
+    startPolling();  // EventSource retries by itself; poll meanwhile
+    if (stream.readyState === EventSource.CLOSED) { stream = null; setTimeout(connect, 60000); }  // refused (e.g. busy)
+  };
+}
+function disconnect() { stream?.close(); stream = null; stopPolling(); }
+// a stream that's open but silent (a proxy holding it back): poll until it speaks again
+setInterval(() => { if (stream && !document.hidden && Date.now() - lastMsg > 8000) startPolling(); }, 3000);
+document.addEventListener("visibilitychange", () => document.hidden ? disconnect() : connect());
 
 applyLang();
 stopVisibility();
 runVisibility();
 addEventListener("load", () => map.invalidateSize());  // fonts/viewport can settle after init
-tick().then(route);
-setInterval(tick, 3000);
+poll().then(route);
+connect();
 </script>
 </body>
 </html>
