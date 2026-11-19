@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NoSePol</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1f2a37">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root { --bg:#fff; --fg:#1f2a37; --muted:#6b7280; --panel:rgba(255,255,255,.94); --line:#e5e7eb; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#111827; --fg:#e5e7eb; --muted:#9ca3af; --panel:rgba(17,24,39,.94); --line:#374151; }
+  }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+    font:14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  #map { position:absolute; inset:0; }
+  #panel { position:absolute; z-index:1000; top:10px; right:10px; width:min(340px, calc(100vw - 32px));
+    max-height:calc(100% - 20px); overflow:auto; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; box-shadow:0 4px 18px rgba(0,0,0,.15); }
+  #panel h1 { font-size:15px; margin:0 0 6px; }
+  .chips { display:flex; gap:6px; margin-bottom:8px; }
+  .chip { border:2px solid var(--c); color:var(--fg); background:transparent; border-radius:999px;
+    padding:2px 10px; font-weight:600; cursor:pointer; }
+  .chip.on { background:var(--c); color:#fff; }
+  .meta { color:var(--muted); font-size:12px; margin-bottom:6px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; font-variant-numeric:tabular-nums; }
+  th { text-align:left; color:var(--muted); font-weight:500; border-bottom:1px solid var(--line); }
+  td, th { padding:3px 4px; }
+  tr.veh { cursor:pointer; }
+  tr.veh:hover { background:rgba(127,127,127,.12); }
+  .badge { display:inline-block; min-width:26px; text-align:center; color:#fff; border-radius:4px;
+    font-weight:700; padding:0 3px; }
+  .stale { opacity:.5; }
+  .bus-icon { display:flex; align-items:center; justify-content:center; width:26px; height:26px;
+    border-radius:50%; color:#fff; font:700 11px system-ui; border:2px solid #fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.4); }
+  @media (max-width: 600px) {
+    #panel { top:auto; bottom:10px; right:16px; left:16px; width:auto; max-height:40%; }
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+  <h1>NoSePol</h1>
+  <div class="chips" id="chips"></div>
+  <div class="meta" id="meta">loading…</div>
+  <table>
+    <thead><tr><th>Line</th><th>To</th><th>v km/h</th><th>res m</th><th>next stop</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const COLORS = { T06: "#d9480f", T08: "#1971c2", T09: "#2f9e44" };
+const base = l => l.replace(/\/$/, "");
+const color = l => COLORS[base(l)] || "#7048e8";
+const map = L.map("map", { zoomControl: false }).setView([45.65, 13.78], 13);
+L.control.zoom({ position: "bottomleft" }).addTo(map);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19, attribution: "&copy; OpenStreetMap contributors · data TPL FVG",
+}).addTo(map);
+
+const enabled = new Set(Object.keys(COLORS));
+const shapeLayers = {};      // line -> layerGroup
+const markers = {};          // trip -> {bus, gps, link}
+let fitted = false;
+
+function chips(lines) {
+  const el = document.getElementById("chips");
+  el.innerHTML = "";
+  for (const { line } of lines) {
+    const b = document.createElement("button");
+    b.className = "chip" + (enabled.has(line) ? " on" : "");
+    b.style.setProperty("--c", color(line));
+    b.textContent = line.replace(/^T0?/, "");
+    b.onclick = () => { enabled.has(line) ? enabled.delete(line) : enabled.add(line); refreshVisibility(); chips(lines); tick(); };
+    el.appendChild(b);
+  }
+}
+
+function refreshVisibility() {
+  for (const [line, g] of Object.entries(shapeLayers))
+    enabled.has(line) ? g.addTo(map) : g.remove();
+}
+
+async function loadShapes() {
+  const shapes = await fetch("api/shapes").then(r => r.json());
+  for (const g of Object.values(shapeLayers)) g.remove();
+  for (const k in shapeLayers) delete shapeLayers[k];
+  const all = [];
+  for (const v of shapes) {
+    const g = shapeLayers[base(v.line)] ||= L.layerGroup();
+    const off = v.direction === "A" ? 1 : -1;
+    L.polyline(v.coords, { color: color(v.line), weight: 4, opacity: .55, dashArray: v.direction === "R" ? "6 6" : null })
+      .bindTooltip(`${v.line} → ${v.to} (${(v.length/1000).toFixed(1)} km, ${v.n_stops} stops)`).addTo(g);
+    for (const s of v.stops)
+      L.circleMarker([s.lat, s.lon], { radius: 3, color: color(v.line), weight: 1, fillColor: "#fff", fillOpacity: 1 })
+        .bindTooltip(`${s.name || "?"} <small>${s.code || ""}</small><br>s = ${Math.round(s.s)} m`).addTo(g);
+    all.push(...v.coords);
+  }
+  refreshVisibility();
+  if (all.length && !fitted) { map.fitBounds(all, { padding: [20, 20] }); fitted = true; }
+  return shapes.length;
+}
+
+function busIcon(v) {
+  return L.divIcon({ className: "", iconSize: [26, 26], iconAnchor: [13, 13],
+    html: `<div class="bus-icon" style="background:${color(v.line)}">${v.line.replace(/^T0?/, "")}</div>` });
+}
+
+function popup(v) {
+  const ns = v.next_stop;
+  return `<b>${v.line}</b> → ${v.destination}<br>
+    trip ${v.trip} · bus ${v.vehicle}<br>
+    s = ${Math.round(v.s)} / ${v.length} m<br>
+    v = ${v.v == null ? "–" : (v.v * 3.6).toFixed(1) + " km/h"} · residual ${v.residual ?? "–"} m (${v.n_fixes} fixes)<br>
+    last GPS ${v.age}s ago, ${v.gps.offroute} m off route<br>
+    ${ns ? `next: ${ns.name} in ${ns.dist} m${ns.eta_s != null ? " ≈ " + Math.round(ns.eta_s / 60 * 10) / 10 + " min" : ""}` : "at terminus"}<br>
+    <small>API says: ${v.api_arrival}${v.note ? " · " + v.note : ""}</small>`;
+}
+
+let knownVariants = 0;
+async function tick() {
+  let data;
+  try { data = await fetch("api/vehicles").then(r => r.json()); }
+  catch { document.getElementById("meta").textContent = "server unreachable"; return; }
+  const vs = data.vehicles.filter(v => enabled.has(base(v.line)));
+  const live = new Set();
+  for (const v of vs) {
+    live.add(v.trip);
+    let m = markers[v.trip];
+    if (!m) {
+      m = markers[v.trip] = {
+        bus: L.marker([v.lat, v.lon], { icon: busIcon(v), zIndexOffset: 1000 }).addTo(map),
+        gps: L.circleMarker([v.gps.lat, v.gps.lon], { radius: 3, color: "#555", weight: 1, fillOpacity: .8 }).addTo(map),
+        link: L.polyline([], { color: "#555", weight: 1, dashArray: "2 3" }).addTo(map),
+      };
+      m.bus.bindPopup("");
+    }
+    m.bus.setLatLng([v.lat, v.lon]);
+    m.gps.setLatLng([v.gps.lat, v.gps.lon]);
+    m.link.setLatLngs([[v.gps.lat, v.gps.lon], [v.lat, v.lon]]);
+    m.bus.setPopupContent(popup(v));
+    m.bus.getElement()?.classList.toggle("stale", v.age > 90);
+  }
+  for (const [trip, m] of Object.entries(markers))
+    if (!live.has(trip)) { m.bus.remove(); m.gps.remove(); m.link.remove(); delete markers[trip]; }
+
+  document.getElementById("rows").innerHTML = vs.map(v => `
+    <tr class="veh${v.age > 90 ? " stale" : ""}" data-trip="${v.trip}">
+      <td><span class="badge" style="background:${color(v.line)}">${v.line.replace(/^T0?/, "")}</span></td>
+      <td>${v.destination}</td>
+      <td>${v.v == null ? "–" : (v.v * 3.6).toFixed(0)}</td>
+      <td>${v.residual ?? "–"}</td>
+      <td>${v.next_stop ? `${v.next_stop.name}${v.next_stop.eta_s != null ? " · " + Math.max(0, Math.round(v.next_stop.eta_s / 60)) + "′" : ""}` : "–"}</td>
+    </tr>`).join("") || `<tr><td colspan="5" class="meta">no buses running</td></tr>`;
+  for (const tr of document.querySelectorAll("tr.veh"))
+    tr.onclick = () => { const m = markers[tr.dataset.trip]; if (m) { map.panTo(m.bus.getLatLng()); m.bus.openPopup(); } };
+
+  const lines = await fetch("api/lines").then(r => r.json());
+  const nv = lines.reduce((a, l) => a + l.variants.length, 0);
+  if (nv !== knownVariants) { knownVariants = nv; await loadShapes(); chips(lines); }
+  document.getElementById("meta").textContent =
+    `${vs.length} buses · ${nv} route variants · updated ${new Date(data.t * 1000).toLocaleTimeString()}`;
+}
+
+tick();
+setInterval(tick, 3000);
+</script>
+</body>
+</html>

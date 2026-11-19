@@ -1,0 +1,9 @@
+{
+  "name": "NoSePol",
+  "short_name": "NoSePol",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1f2a37",
+  "theme_color": "#1f2a37",
+  "icons": []
+}

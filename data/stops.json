@@ -1,0 +1,7646 @@
+{
+"10001": {
+"code": "10001",
+"name": "PIAZZA OBERDAN",
+"lat": 45.65420511,
+"lon": 13.77590557,
+"urban": true
+},
+"10003": {
+"code": "10003",
+"name": "via del Coroneo 27 (tribunale)",
+"lat": 45.65507908,
+"lon": 13.78088911,
+"urban": true
+},
+"10004": {
+"code": "10004",
+"name": "VIA FABIO SEVERO 4 (TRIBUNALE)",
+"lat": 45.65576982,
+"lon": 13.77922534,
+"urban": true
+},
+"10005": {
+"code": "10005",
+"name": "VIA CARDUCCI (REGIONE)",
+"lat": 45.65359744,
+"lon": 13.77624555,
+"urban": true
+},
+"10007": {
+"code": "10007",
+"name": "via Fabio Severo 30 (angolo via Catullo)",
+"lat": 45.65670312,
+"lon": 13.7823369,
+"urban": true
+},
+"10008": {
+"code": "10008",
+"name": "VIA DEL CORONEO (REGIONE)",
+"lat": 45.65312356,
+"lon": 13.77712302,
+"urban": true
+},
+"10009": {
+"code": "10009",
+"name": "TRIESTE piazza Guglielmo Oberdan 7 (angolo via XXIV Maggio)",
+"lat": 45.65461161,
+"lon": 13.77596135,
+"urban": true
+},
+"10010": {
+"code": "10010",
+"name": "PIAZZA OBERDAN",
+"lat": 45.65418841,
+"lon": 13.77653832,
+"urban": true
+},
+"10011": {
+"code": "10011",
+"name": "PIAZZA OBERDAN",
+"lat": 45.65396145,
+"lon": 13.77635715,
+"urban": true
+},
+"20001": {
+"code": "20001",
+"name": "via Fabio Severo 53 (campus dell'ex ospedale militare)",
+"lat": 45.65639576,
+"lon": 13.78517054,
+"urban": true
+},
+"20002": {
+"code": "20002",
+"name": "via Fabio Severo 107 (angolo via Sottoripa)",
+"lat": 45.65865463,
+"lon": 13.78980036,
+"urban": true
+},
+"20003": {
+"code": "20003",
+"name": "via Fabio Severo 40 (campus dell'ex ospedale militare)",
+"lat": 45.65649441,
+"lon": 13.78555989,
+"urban": true
+},
+"20004": {
+"code": "20004",
+"name": "via del Coroneo 41 (angolo via Severo)",
+"lat": 45.65610294,
+"lon": 13.78260661,
+"urban": true
+},
+"20005": {
+"code": "20005",
+"name": "via Fabio Severo 88/a (angolo via Vero)",
+"lat": 45.65697781,
+"lon": 13.78827698,
+"urban": true
+},
+"30001": {
+"code": "30001",
+"name": "via Zorutti 38",
+"lat": 45.63373673,
+"lon": 13.78398274,
+"urban": true
+},
+"30002": {
+"code": "30002",
+"name": "via Orlandini 38 (angolo via San Giovanni Bosco)",
+"lat": 45.63738193,
+"lon": 13.78143071,
+"urban": true
+},
+"30003": {
+"code": "30003",
+"name": "via Orlandini 22 (angolo via Carlo Ucekar)",
+"lat": 45.63840298,
+"lon": 13.78179992,
+"urban": true
+},
+"30004": {
+"code": "30004",
+"name": "via Orlandini 9 (angolo via Ponziana)",
+"lat": 45.64009042,
+"lon": 13.78135595,
+"urban": true
+},
+"30005": {
+"code": "30005",
+"name": "via dell'Istria 43 (largo del Pestalozzi, scuola)",
+"lat": 45.63912465,
+"lon": 13.78406186,
+"urban": true
+},
+"30006": {
+"code": "30006",
+"name": "via dell'Istria 57 (angolo via Marenzi)",
+"lat": 45.6372018,
+"lon": 13.78522295,
+"urban": true
+},
+"30007": {
+"code": "30007",
+"name": "via dell'Istria 67 (ospedale Burlo, parcheggio Maddalena)",
+"lat": 45.63496568,
+"lon": 13.78655111,
+"urban": true
+},
+"30008": {
+"code": "30008",
+"name": "VIA VISINADA (PALAZZETTO)",
+"lat": 45.63270715,
+"lon": 13.78407878,
+"urban": true
+},
+"40001": {
+"code": "40001",
+"name": "via Baiamonti 47 (angolo via Svevo)",
+"lat": 45.62857957,
+"lon": 13.78359715,
+"urban": true
+},
+"40002": {
+"code": "40002",
+"name": "via dei Soncini 179 (angolo via di Servola)",
+"lat": 45.62529099,
+"lon": 13.78371639,
+"urban": true
+},
+"40003": {
+"code": "40003",
+"name": "via di Servola (chiesa)",
+"lat": 45.62566076,
+"lon": 13.78209523,
+"urban": true
+},
+"40004": {
+"code": "40004",
+"name": "via di Servola 2 (angolo via della Calcara)",
+"lat": 45.62773013,
+"lon": 13.78370533,
+"urban": true
+},
+"40005": {
+"code": "40005",
+"name": "via Valmaura 43",
+"lat": 45.6214564,
+"lon": 13.78751005,
+"urban": true
+},
+"40006": {
+"code": "40006",
+"name": "via Valmaura 69",
+"lat": 45.6207141,
+"lon": 13.78626578,
+"urban": true
+},
+"40007": {
+"code": "40007",
+"name": "via di Servola 125 (cimitero)",
+"lat": 45.62401009,
+"lon": 13.78557208,
+"urban": true
+},
+"40009": {
+"code": "40009",
+"name": "via Giorgio Pitacco 4",
+"lat": 45.62456323,
+"lon": 13.77962073,
+"urban": true
+},
+"40010": {
+"code": "40010",
+"name": "via Giorgio Pitacco 12",
+"lat": 45.62387208,
+"lon": 13.78106604,
+"urban": true
+},
+"40011": {
+"code": "40011",
+"name": "via Giorgio Pitacco 41",
+"lat": 45.62345243,
+"lon": 13.78180632,
+"urban": true
+},
+"40012": {
+"code": "40012",
+"name": "via dei Giardini 59 (museo del presepio)",
+"lat": 45.62281379,
+"lon": 13.78353586,
+"urban": true
+},
+"40013": {
+"code": "40013",
+"name": "via di Servola 22",
+"lat": 45.62683175,
+"lon": 13.78259905,
+"urban": true
+},
+"50001": {
+"code": "50001",
+"name": "viale Miramare 36 (parcheggio Bovedo)",
+"lat": 45.67851031,
+"lon": 13.75459811,
+"urban": true
+},
+"50002": {
+"code": "50002",
+"name": "viale Miramare 113 (istituto Rittmeyer)",
+"lat": 45.68083413,
+"lon": 13.7535765,
+"urban": true
+},
+"50003": {
+"code": "50003",
+"name": "BARCOLA",
+"lat": 45.6819751,
+"lon": 13.75166085,
+"urban": true
+},
+"50004": {
+"code": "50004",
+"name": "viale Miramare 52 (istituto Rittmeyer)",
+"lat": 45.68009229,
+"lon": 13.75398517,
+"urban": true
+},
+"50005": {
+"code": "50005",
+"name": "viale Miramare 36 (circolo sportivo Saturnia, Bovedo)",
+"lat": 45.67863413,
+"lon": 13.75439634,
+"urban": true
+},
+"50007": {
+"code": "50007",
+"name": "viale Miramare 211 (piazzale Biagio Marin, fontana)",
+"lat": 45.68538712,
+"lon": 13.74884318,
+"urban": true
+},
+"50008": {
+"code": "50008",
+"name": "viale Miramare 271/1",
+"lat": 45.68770912,
+"lon": 13.74553944,
+"urban": true
+},
+"50009": {
+"code": "50009",
+"name": "viale Miramare (ex dazio)",
+"lat": 45.68954769,
+"lon": 13.74289122,
+"urban": true
+},
+"50010": {
+"code": "50010",
+"name": "viale Miramare (ex dazio)",
+"lat": 45.68992668,
+"lon": 13.74216031,
+"urban": true
+},
+"50011": {
+"code": "50011",
+"name": "viale Miramare 271 (Barcola)",
+"lat": 45.6874052,
+"lon": 13.74573245,
+"urban": true
+},
+"50012": {
+"code": "50012",
+"name": "viale Miramare 201 (fontana)",
+"lat": 45.68487423,
+"lon": 13.74926877,
+"urban": true
+},
+"50013": {
+"code": "50013",
+"name": "TRIESTE viale Miramare 64 (chiosco in pietra, Barcola)",
+"lat": 45.68189487,
+"lon": 13.75231099,
+"urban": true
+},
+"50014": {
+"code": "50014",
+"name": "TRIESTE viale Miramare 127 (gelateria Pipolo, Barcola)",
+"lat": 45.68250396,
+"lon": 13.75195935,
+"urban": true
+},
+"50015": {
+"code": "50015",
+"name": "viale Miramare (parcheggio Bovedo)",
+"lat": 45.67589015,
+"lon": 13.75511268,
+"urban": true
+},
+"50016": {
+"code": "50016",
+"name": "viale Miramare (parcheggio Bovedo)",
+"lat": 45.67599249,
+"lon": 13.75507885,
+"urban": true
+},
+"11001": {
+"code": "11001",
+"name": "via Udine 7 (sede Inps)",
+"lat": 45.65672719,
+"lon": 13.77448751,
+"urban": true
+},
+"11002": {
+"code": "11002",
+"name": "campo del Belvedere 3",
+"lat": 45.6593318,
+"lon": 13.77312141,
+"urban": true
+},
+"11003": {
+"code": "11003",
+"name": "via Udine 63 (angolo via Tor San Piero)",
+"lat": 45.6618637,
+"lon": 13.77169258,
+"urban": true
+},
+"11004": {
+"code": "11004",
+"name": "via Udine 44/a (angolo via Tor San Piero)",
+"lat": 45.66128999,
+"lon": 13.77191051,
+"urban": true
+},
+"11005": {
+"code": "11005",
+"name": "campo del Belvedere 6",
+"lat": 45.65929237,
+"lon": 13.77292228,
+"urban": true
+},
+"11006": {
+"code": "11006",
+"name": "via Udine 6 (Inps)",
+"lat": 45.65652101,
+"lon": 13.77456581,
+"urban": true
+},
+"11007": {
+"code": "11007",
+"name": "viale Miramare 5 (piazza Libertà, stazione ferroviaria)",
+"lat": 45.65775596,
+"lon": 13.77263919,
+"urban": true
+},
+"11008": {
+"code": "11008",
+"name": "viale Miramare 19 (angolo via Ariosto)",
+"lat": 45.6602303,
+"lon": 13.77129829,
+"urban": true
+},
+"11009": {
+"code": "11009",
+"name": "via Ghega 6 (conservatorio Tartini)",
+"lat": 45.65576509,
+"lon": 13.7737416,
+"urban": true
+},
+"11010": {
+"code": "11010",
+"name": "via Commerciale 26 (trenovia)",
+"lat": 45.65767945,
+"lon": 13.77641454,
+"urban": true
+},
+"11011": {
+"code": "11011",
+"name": "via de Rittmeyer (angolo via Udine)",
+"lat": 45.65637034,
+"lon": 13.77520445,
+"urban": true
+},
+"12001": {
+"code": "12001",
+"name": "viale Miramare 77 (salita Madonna di Gretta, cavalcavia)",
+"lat": 45.66668835,
+"lon": 13.76253367,
+"urban": true
+},
+"12002": {
+"code": "12002",
+"name": "TRIESTE viale Miramare 12 (largo Roiano)",
+"lat": 45.66368657,
+"lon": 13.7687608,
+"urban": true
+},
+"12003": {
+"code": "12003",
+"name": "viale Miramare 19 (via Ariosto)",
+"lat": 45.66094413,
+"lon": 13.77071787,
+"urban": true
+},
+"12004": {
+"code": "12004",
+"name": "viale Miramare 5 (stazione ferroviaria)",
+"lat": 45.65809408,
+"lon": 13.77227561,
+"urban": true
+},
+"12005": {
+"code": "12005",
+"name": "viale Miramare 67 (polizia locale)",
+"lat": 45.66546934,
+"lon": 13.76466867,
+"urban": true
+},
+"13001": {
+"code": "13001",
+"name": "riva del Mandracchio (palacongressi)",
+"lat": 45.64920826,
+"lon": 13.76458628,
+"urban": true
+},
+"13002": {
+"code": "13002",
+"name": "riva Sauro 1 (Salone degli Incanti)",
+"lat": 45.64730482,
+"lon": 13.76211602,
+"urban": true
+},
+"13003": {
+"code": "13003",
+"name": "riva Grumula (stazione Rogers)",
+"lat": 45.64553642,
+"lon": 13.7592387,
+"urban": true
+},
+"13004": {
+"code": "13004",
+"name": "riva Grumula 12/a",
+"lat": 45.64558904,
+"lon": 13.75951185,
+"urban": true
+},
+"13005": {
+"code": "13005",
+"name": "riva Sauro 24 (acquario, museo Revoltella)",
+"lat": 45.64727975,
+"lon": 13.7622632,
+"urban": true
+},
+"13006": {
+"code": "13006",
+"name": "riva del Mandracchio 4 (hotel Excelsior)",
+"lat": 45.64927913,
+"lon": 13.76531304,
+"urban": true
+},
+"13008": {
+"code": "13008",
+"name": "VIA DI CAMPO MARZIO",
+"lat": 45.64511515,
+"lon": 13.75761538,
+"urban": true
+},
+"13011": {
+"code": "13011",
+"name": "via di Cavana (angolo via Venezian)",
+"lat": 45.64771276,
+"lon": 13.76612708,
+"urban": true
+},
+"13012": {
+"code": "13012",
+"name": "via della Rotonda (Arco di Riccardo)",
+"lat": 45.64707201,
+"lon": 13.76847359,
+"urban": true
+},
+"13013": {
+"code": "13013",
+"name": "via Venezian 8",
+"lat": 45.64807921,
+"lon": 13.76588804,
+"urban": true
+},
+"13014": {
+"code": "13014",
+"name": "via San Giorgio (biblioteca)",
+"lat": 45.64718123,
+"lon": 13.76400202,
+"urban": true
+},
+"13015": {
+"code": "13015",
+"name": "largo Papa Giovanni XXIII (civico museo Sartorio)",
+"lat": 45.64569833,
+"lon": 13.76296309,
+"urban": true
+},
+"13016": {
+"code": "13016",
+"name": "via Santi Martiri 8",
+"lat": 45.64644913,
+"lon": 13.76497098,
+"urban": true
+},
+"13017": {
+"code": "13017",
+"name": "via Diaz 1/d",
+"lat": 45.6493023,
+"lon": 13.76662478,
+"urban": true
+},
+"14001": {
+"code": "14001",
+"name": "via Tiepolo (largo Canal)",
+"lat": 45.64508467,
+"lon": 13.77282895,
+"urban": true
+},
+"14002": {
+"code": "14002",
+"name": "via Segantini 4 (angolo via dei Navali)",
+"lat": 45.64404763,
+"lon": 13.77264949,
+"urban": true
+},
+"14003": {
+"code": "14003",
+"name": "via Besenghi 37 (seminario vescovile)",
+"lat": 45.64251905,
+"lon": 13.77070351,
+"urban": true
+},
+"14004": {
+"code": "14004",
+"name": "via Segantini 3 (angolo via dei Navali)",
+"lat": 45.64409275,
+"lon": 13.77307839,
+"urban": true
+},
+"14005": {
+"code": "14005",
+"name": "via Tiepolo (largo Canal)",
+"lat": 45.64519791,
+"lon": 13.77289706,
+"urban": true
+},
+"14006": {
+"code": "14006",
+"name": "via San Michele 15 (parco giochi)",
+"lat": 45.64627127,
+"lon": 13.7697584,
+"urban": true
+},
+"14007": {
+"code": "14007",
+"name": "via San Michele 35 (angolo via Testi)",
+"lat": 45.64548532,
+"lon": 13.77116477,
+"urban": true
+},
+"14008": {
+"code": "14008",
+"name": "SAN GIUSTO",
+"lat": 45.6467763,
+"lon": 13.77235889,
+"urban": true
+},
+"14009": {
+"code": "14009",
+"name": "VIA SAN GIUSTO 18",
+"lat": 45.64591656,
+"lon": 13.77318294,
+"urban": true
+},
+"14010": {
+"code": "14010",
+"name": "via San Michele 28 (angolo via Testi)",
+"lat": 45.64552678,
+"lon": 13.77125369,
+"urban": true
+},
+"14011": {
+"code": "14011",
+"name": "via Bazzoni 4",
+"lat": 45.64450296,
+"lon": 13.77083,
+"urban": true
+},
+"15001": {
+"code": "15001",
+"name": "via San Giacomo in Monte 2 (angolo via del Bosco)",
+"lat": 45.64485509,
+"lon": 13.77575983,
+"urban": true
+},
+"15002": {
+"code": "15002",
+"name": "via San Giacomo in Monte 9",
+"lat": 45.64404285,
+"lon": 13.77850123,
+"urban": true
+},
+"15003": {
+"code": "15003",
+"name": "campo San Giacomo 3",
+"lat": 45.64299275,
+"lon": 13.77962442,
+"urban": true
+},
+"15004": {
+"code": "15004",
+"name": "campo San Giacomo 1/b",
+"lat": 45.64276319,
+"lon": 13.78004324,
+"urban": true
+},
+"16001": {
+"code": "16001",
+"name": "via Ponziana 5 (angolo via Orlandini)",
+"lat": 45.64141131,
+"lon": 13.78114445,
+"urban": true
+},
+"16002": {
+"code": "16002",
+"name": "via Ponziana 2 (angolo via Orlandini)",
+"lat": 45.64111588,
+"lon": 13.78129522,
+"urban": true
+},
+"16003": {
+"code": "16003",
+"name": "via dell'Istria 15 (angolo via Rivalto)",
+"lat": 45.64133991,
+"lon": 13.78162399,
+"urban": true
+},
+"16004": {
+"code": "16004",
+"name": "via dell'Istria 56 (angolo via della Bastia)",
+"lat": 45.63993672,
+"lon": 13.78340271,
+"urban": true
+},
+"16005": {
+"code": "16005",
+"name": "via dell'Istria 24/c (angolo via di Rivalto)",
+"lat": 45.64125338,
+"lon": 13.78194987,
+"urban": true
+},
+"16006": {
+"code": "16006",
+"name": "via del Molino a Vento 70 (largo del Pestalozzi)",
+"lat": 45.6406952,
+"lon": 13.78447378,
+"urban": true
+},
+"16007": {
+"code": "16007",
+"name": "via del Molino a Vento 51 (angolo via dei Montecchi)",
+"lat": 45.64273515,
+"lon": 13.78289902,
+"urban": true
+},
+"16008": {
+"code": "16008",
+"name": "via del Molino a Vento 72 (angolo via della Bastia)",
+"lat": 45.64034312,
+"lon": 13.78437554,
+"urban": true
+},
+"16009": {
+"code": "16009",
+"name": "VIA DELLA BASTIA 1",
+"lat": 45.64057649,
+"lon": 13.7841782,
+"urban": true
+},
+"17001": {
+"code": "17001",
+"name": "via dei Conti (angolo via Pio Riego Gambini)",
+"lat": 45.64567572,
+"lon": 13.78602431,
+"urban": true
+},
+"17002": {
+"code": "17002",
+"name": "via d'Azeglio (angolo via Foscolo)",
+"lat": 45.64751331,
+"lon": 13.78277307,
+"urban": true
+},
+"17003": {
+"code": "17003",
+"name": "via Pascoli 31/a (istituto Itis)",
+"lat": 45.64717535,
+"lon": 13.78484655,
+"urban": true
+},
+"17004": {
+"code": "17004",
+"name": "via dei Conti (angolo via Pio Riego Gambini)",
+"lat": 45.6453327,
+"lon": 13.78593227,
+"urban": true
+},
+"17005": {
+"code": "17005",
+"name": "viale Gabriele d'Annunzio 14 (largo Sonnino)",
+"lat": 45.64451671,
+"lon": 13.78241771,
+"urban": true
+},
+"17006": {
+"code": "17006",
+"name": "piazza Garibaldi 3",
+"lat": 45.6460253,
+"lon": 13.78039591,
+"urban": true
+},
+"17007": {
+"code": "17007",
+"name": "viale Gabriele d'Annunzio 12 (largo Sonnino)",
+"lat": 45.6448146,
+"lon": 13.78165413,
+"urban": true
+},
+"17008": {
+"code": "17008",
+"name": "via del Molino a Vento 22 (angolo via dei Montecchi)",
+"lat": 45.64297506,
+"lon": 13.78302857,
+"urban": true
+},
+"17009": {
+"code": "17009",
+"name": "piazza Garibaldi 12",
+"lat": 45.64627777,
+"lon": 13.78085884,
+"urban": true
+},
+"18001": {
+"code": "18001",
+"name": "via Pascoli 28 (istituto Itis)",
+"lat": 45.64720422,
+"lon": 13.78459888,
+"urban": true
+},
+"18002": {
+"code": "18002",
+"name": "via Foscolo (angolo via Giuseppe Lorenzo Gatteri)",
+"lat": 45.6486206,
+"lon": 13.78532543,
+"urban": true
+},
+"18003": {
+"code": "18003",
+"name": "via Rossetti 53 (chiesa)",
+"lat": 45.64829981,
+"lon": 13.78690126,
+"urban": true
+},
+"18004": {
+"code": "18004",
+"name": "via Rossetti 67 (ospedale Sanatorio Triestino)",
+"lat": 45.64680929,
+"lon": 13.78809163,
+"urban": true
+},
+"18005": {
+"code": "18005",
+"name": "via dei Piccardi 20 (angolo via dei Porta)",
+"lat": 45.64623153,
+"lon": 13.78750735,
+"urban": true
+},
+"18006": {
+"code": "18006",
+"name": "via Canova (angolo via Pascoli)",
+"lat": 45.64793699,
+"lon": 13.78621608,
+"urban": true
+},
+"18007": {
+"code": "18007",
+"name": "via Canova (angolo via Buonarroti)",
+"lat": 45.65003273,
+"lon": 13.78438369,
+"urban": true
+},
+"18008": {
+"code": "18008",
+"name": "via della Ginnastica 40 (angolo via Gatteri)",
+"lat": 45.65105303,
+"lon": 13.78257125,
+"urban": true
+},
+"18009": {
+"code": "18009",
+"name": "via Gatteri (angolo via della Ginnastica)",
+"lat": 45.65118677,
+"lon": 13.78287317,
+"urban": true
+},
+"18010": {
+"code": "18010",
+"name": "via della Ginnastica 47 (angolo via Rossetti)",
+"lat": 45.65139092,
+"lon": 13.78471687,
+"urban": true
+},
+"18011": {
+"code": "18011",
+"name": "via Brunner (ospedale Maggiore)",
+"lat": 45.65067647,
+"lon": 13.78228744,
+"urban": true
+},
+"18012": {
+"code": "18012",
+"name": "via Rossetti 25 (angolo via Stuparich)",
+"lat": 45.65063811,
+"lon": 13.78460161,
+"urban": true
+},
+"18013": {
+"code": "18013",
+"name": "via Pascoli 42 (angolo via Dei Piccardi)",
+"lat": 45.6477098,
+"lon": 13.78601245,
+"urban": true
+},
+"19002": {
+"code": "19002",
+"name": "LARGO TOMIZZA",
+"lat": 45.65387184,
+"lon": 13.78482685,
+"urban": true
+},
+"19003": {
+"code": "19003",
+"name": "via Giulia 3/c (giardino pubblico, teatro Rossetti)",
+"lat": 45.65344919,
+"lon": 13.78267806,
+"urban": true
+},
+"19004": {
+"code": "19004",
+"name": "via Giulia 21 (largo Tomizza)",
+"lat": 45.65387724,
+"lon": 13.7861808,
+"urban": true
+},
+"19005": {
+"code": "19005",
+"name": "via del Farneto 40 (campo San Luigi)",
+"lat": 45.65275176,
+"lon": 13.78911534,
+"urban": true
+},
+"19006": {
+"code": "19006",
+"name": "via del Farneto 6 (azienda sanitaria)",
+"lat": 45.65265557,
+"lon": 13.78725962,
+"urban": true
+},
+"19007": {
+"code": "19007",
+"name": "via Gatteri (istituto scolastico Foscolo)",
+"lat": 45.65248384,
+"lon": 13.78211671,
+"urban": true
+},
+"19008": {
+"code": "19008",
+"name": "via Battisti 22 (angolo via Giuseppe Lorenzo Gatteri)",
+"lat": 45.65324575,
+"lon": 13.7813975,
+"urban": true
+},
+"19010": {
+"code": "19010",
+"name": "largo Tomizza (giardino pubblico de Tommasini)",
+"lat": 45.65430322,
+"lon": 13.78603362,
+"urban": true
+},
+"19011": {
+"code": "19011",
+"name": "via Polonio (angolo via Battisti)",
+"lat": 45.65248841,
+"lon": 13.78127917,
+"urban": true
+},
+"21001": {
+"code": "21001",
+"name": "via Cantù 34 (angolo via Guicciardini)",
+"lat": 45.66103128,
+"lon": 13.78179379,
+"urban": true
+},
+"21002": {
+"code": "21002",
+"name": "via Cantù 10 (scuola)",
+"lat": 45.66050364,
+"lon": 13.78634286,
+"urban": true
+},
+"21003": {
+"code": "21003",
+"name": "VIA COMMERCIALE 21",
+"lat": 45.65797476,
+"lon": 13.77625408,
+"urban": true
+},
+"21004": {
+"code": "21004",
+"name": "piazza Casali",
+"lat": 45.65764949,
+"lon": 13.77655959,
+"urban": true
+},
+"21005": {
+"code": "21005",
+"name": "via Cantù 12 (angolo via del Montello)",
+"lat": 45.66095558,
+"lon": 13.78440443,
+"urban": true
+},
+"22001": {
+"code": "22001",
+"name": "via della Bellavista 2 (casa cantoniera)",
+"lat": 45.66760972,
+"lon": 13.79099749,
+"urban": true
+},
+"22002": {
+"code": "22002",
+"name": "strada nuova per Opicina (casa cantoniera)",
+"lat": 45.66827486,
+"lon": 13.79090935,
+"urban": true
+},
+"22003": {
+"code": "22003",
+"name": "strada nuova per Opicina 2 (casa cantoniera)",
+"lat": 45.66907634,
+"lon": 13.79094665,
+"urban": true
+},
+"22004": {
+"code": "22004",
+"name": "via Commerciale 155",
+"lat": 45.66457998,
+"lon": 13.78497105,
+"urban": true
+},
+"22005": {
+"code": "22005",
+"name": "via Commerciale 160 (scala dell'Erica)",
+"lat": 45.66437554,
+"lon": 13.78098953,
+"urban": true
+},
+"22006": {
+"code": "22006",
+"name": "via Commerciale 126 (angolo via Ovidio)",
+"lat": 45.66403887,
+"lon": 13.77770091,
+"urban": true
+},
+"22007": {
+"code": "22007",
+"name": "via Commerciale 92 (angolo via Davis)",
+"lat": 45.66327017,
+"lon": 13.77484217,
+"urban": true
+},
+"22008": {
+"code": "22008",
+"name": "via Commerciale 47",
+"lat": 45.66101985,
+"lon": 13.77357553,
+"urban": true
+},
+"22009": {
+"code": "22009",
+"name": "via Commerciale 67 (angolo via Davis)",
+"lat": 45.66328604,
+"lon": 13.77506326,
+"urban": true
+},
+"22010": {
+"code": "22010",
+"name": "via Commerciale 95 (angolo via Ovidio)",
+"lat": 45.66405134,
+"lon": 13.77802478,
+"urban": true
+},
+"22011": {
+"code": "22011",
+"name": "via Commerciale 158 (scala dell'Erica)",
+"lat": 45.66414238,
+"lon": 13.7807227,
+"urban": true
+},
+"22012": {
+"code": "22012",
+"name": "Cologna (trenovia, campo sportivo)",
+"lat": 45.66521767,
+"lon": 13.78696028,
+"urban": true
+},
+"22013": {
+"code": "22013",
+"name": "vetta Scorcola",
+"lat": 45.66288408,
+"lon": 13.78124293,
+"urban": true
+},
+"22014": {
+"code": "22014",
+"name": "località Romagna",
+"lat": 45.66127045,
+"lon": 13.77806281,
+"urban": true
+},
+"22015": {
+"code": "22015",
+"name": "via Commerciale (via Sant'Anastasio)",
+"lat": 45.65953179,
+"lon": 13.77666299,
+"urban": true
+},
+"23001": {
+"code": "23001",
+"name": "strada nuova per Opicina 26 (angolo via Commerciale)",
+"lat": 45.67526767,
+"lon": 13.7891253,
+"urban": true
+},
+"23002": {
+"code": "23002",
+"name": "via Barbariga 5",
+"lat": 45.66383135,
+"lon": 13.77094351,
+"urban": true
+},
+"23003": {
+"code": "23003",
+"name": "piazza Tra i Rivi 3 (Roiano)",
+"lat": 45.66542208,
+"lon": 13.77239183,
+"urban": true
+},
+"23004": {
+"code": "23004",
+"name": "ROIANO",
+"lat": 45.6669937,
+"lon": 13.7720622,
+"urban": true
+},
+"23005": {
+"code": "23005",
+"name": "via Stock (largo dei Petazzi, agenzia delle entrate)",
+"lat": 45.66525392,
+"lon": 13.77098298,
+"urban": true
+},
+"23006": {
+"code": "23006",
+"name": "via Tor San Piero 20",
+"lat": 45.66375706,
+"lon": 13.77031291,
+"urban": true
+},
+"23007": {
+"code": "23007",
+"name": "TRIESTE viale Miramare (fronte civico 14, largo Roiano)",
+"lat": 45.6640608,
+"lon": 13.76844644,
+"urban": true
+},
+"23008": {
+"code": "23008",
+"name": "via Santa Teresa 4 (largo Roiano)",
+"lat": 45.66387052,
+"lon": 13.76998308,
+"urban": true
+},
+"23009": {
+"code": "23009",
+"name": "via Santa Teresa 1 (largo Roiano, agenzia delle entrate)",
+"lat": 45.66366202,
+"lon": 13.76984644,
+"urban": true
+},
+"23010": {
+"code": "23010",
+"name": "via Udine 87 (angolo via dei Barbariga)",
+"lat": 45.66389892,
+"lon": 13.77053124,
+"urban": true
+},
+"23011": {
+"code": "23011",
+"name": "salita di Gretta 1/1 (angolo via dei Giacinti)",
+"lat": 45.66466162,
+"lon": 13.76947473,
+"urban": true
+},
+"23012": {
+"code": "23012",
+"name": "via Udine 83 (angolo via dei Barbariga)",
+"lat": 45.6632131,
+"lon": 13.77078695,
+"urban": true
+},
+"23013": {
+"code": "23013",
+"name": "COLOGNA",
+"lat": 45.6666651,
+"lon": 13.7855265,
+"urban": true
+},
+"23014": {
+"code": "23014",
+"name": "via Commerciale 68",
+"lat": 45.66077709,
+"lon": 13.77360008,
+"urban": true
+},
+"23015": {
+"code": "23015",
+"name": "via di Verniellis (scuola dell'infanzia)",
+"lat": 45.66504064,
+"lon": 13.78554559,
+"urban": true
+},
+"23016": {
+"code": "23016",
+"name": "via dei Giaggioli (scala dei Giaggioli)",
+"lat": 45.66606702,
+"lon": 13.78388018,
+"urban": true
+},
+"23017": {
+"code": "23017",
+"name": "via dei Giaggioli 20",
+"lat": 45.66687931,
+"lon": 13.78408725,
+"urban": true
+},
+"23019": {
+"code": "23019",
+"name": "Cologna (trenovia, chiesetta)",
+"lat": 45.66717912,
+"lon": 13.78604173,
+"urban": true
+},
+"23020": {
+"code": "23020",
+"name": "località Banne",
+"lat": 45.67525052,
+"lon": 13.78870894,
+"urban": true
+},
+"24001": {
+"code": "24001",
+"name": "viale Miramare 77 (cavalcavia)",
+"lat": 45.66686487,
+"lon": 13.76262607,
+"urban": true
+},
+"24002": {
+"code": "24002",
+"name": "viale Miramare 30 (ferroviario e CRAL)",
+"lat": 45.67293593,
+"lon": 13.75764549,
+"urban": true
+},
+"24003": {
+"code": "24003",
+"name": "viale Miramare 30 (bagni ferroviario e CRAL)",
+"lat": 45.67309376,
+"lon": 13.75726003,
+"urban": true
+},
+"24004": {
+"code": "24004",
+"name": "salita di Gretta 1/1 (angolo via dei Giacinti)",
+"lat": 45.66502712,
+"lon": 13.76914579,
+"urban": true
+},
+"24005": {
+"code": "24005",
+"name": "salita di Gretta 27 (angolo via del Cisternone)",
+"lat": 45.66672405,
+"lon": 13.7662494,
+"urban": true
+},
+"24006": {
+"code": "24006",
+"name": "strada del Friuli 10 (angolo via Aquileia)",
+"lat": 45.66918278,
+"lon": 13.76430494,
+"urban": true
+},
+"24007": {
+"code": "24007",
+"name": "via Aquileia 2 (scalette, chiesa)",
+"lat": 45.66934929,
+"lon": 13.76430449,
+"urban": true
+},
+"24008": {
+"code": "24008",
+"name": "LARGO OSOPPO",
+"lat": 45.66963433,
+"lon": 13.76652567,
+"urban": true
+},
+"24009": {
+"code": "24009",
+"name": "via Aquileia 2 (chiesa)",
+"lat": 45.66954975,
+"lon": 13.76411392,
+"urban": true
+},
+"24010": {
+"code": "24010",
+"name": "strada del Friuli 6 (angolo via Aquileia)",
+"lat": 45.66874269,
+"lon": 13.7648089,
+"urban": true
+},
+"24011": {
+"code": "24011",
+"name": "salita di Gretta 34 (angolo via del Cisternone)",
+"lat": 45.66654293,
+"lon": 13.76614747,
+"urban": true
+},
+"24012": {
+"code": "24012",
+"name": "via al Cisternone 9",
+"lat": 45.66646904,
+"lon": 13.76680703,
+"urban": true
+},
+"24013": {
+"code": "24013",
+"name": "via Venzone 3 (angolo via al Cisternone)",
+"lat": 45.66715742,
+"lon": 13.76762316,
+"urban": true
+},
+"24014": {
+"code": "24014",
+"name": "via Venzone 7 (largo Osoppo)",
+"lat": 45.66936831,
+"lon": 13.76689741,
+"urban": true
+},
+"24015": {
+"code": "24015",
+"name": "via Bonomea 123 (ufficio postale)",
+"lat": 45.6706714,
+"lon": 13.76629105,
+"urban": true
+},
+"24016": {
+"code": "24016",
+"name": "via Bonomea 177 (angolo via Cividale)",
+"lat": 45.67154326,
+"lon": 13.76409572,
+"urban": true
+},
+"24017": {
+"code": "24017",
+"name": "via Bonomea 189 (angolo via Luzzatto)",
+"lat": 45.6720346,
+"lon": 13.76322518,
+"urban": true
+},
+"24018": {
+"code": "24018",
+"name": "via Bonomea 213 (erta dei Pruni)",
+"lat": 45.67264792,
+"lon": 13.76220652,
+"urban": true
+},
+"24019": {
+"code": "24019",
+"name": "via Bonomea 108 (angolo via Piani)",
+"lat": 45.67419223,
+"lon": 13.76268284,
+"urban": true
+},
+"24020": {
+"code": "24020",
+"name": "via Bonomea 108/21",
+"lat": 45.67455594,
+"lon": 13.76510149,
+"urban": true
+},
+"24021": {
+"code": "24021",
+"name": "via Bonomea 221 (angolo via Piani)",
+"lat": 45.67431641,
+"lon": 13.76334454,
+"urban": true
+},
+"24022": {
+"code": "24022",
+"name": "via Bonomea 223/1 (angolo via Toscanini)",
+"lat": 45.67646316,
+"lon": 13.76834696,
+"urban": true
+},
+"24023": {
+"code": "24023",
+"name": "via Bonomea 249",
+"lat": 45.6773414,
+"lon": 13.76965985,
+"urban": true
+},
+"24024": {
+"code": "24024",
+"name": "via Bonomea 184 (semaforo, ponte ferroviario)",
+"lat": 45.67884123,
+"lon": 13.77102338,
+"urban": true
+},
+"24025": {
+"code": "24025",
+"name": "VIA BONOMEA (SISSA)",
+"lat": 45.68053215,
+"lon": 13.7734197,
+"urban": true
+},
+"24026": {
+"code": "24026",
+"name": "via Bonomea 184 (ponte ferroviario)",
+"lat": 45.67884012,
+"lon": 13.77092068,
+"urban": true
+},
+"24027": {
+"code": "24027",
+"name": "via Bonomea 249",
+"lat": 45.67743135,
+"lon": 13.76965467,
+"urban": true
+},
+"24028": {
+"code": "24028",
+"name": "via Bonomea 174/3 (angolo via Stradivari)",
+"lat": 45.67663106,
+"lon": 13.76847488,
+"urban": true
+},
+"24029": {
+"code": "24029",
+"name": "via Bonomea 120 (angolo via Terstenico)",
+"lat": 45.67556418,
+"lon": 13.76678057,
+"urban": true
+},
+"24030": {
+"code": "24030",
+"name": "via Bonomea 108/21",
+"lat": 45.67462713,
+"lon": 13.7650261,
+"urban": true
+},
+"24031": {
+"code": "24031",
+"name": "via Bonomea 120 (angolo via Terstenico)",
+"lat": 45.67553362,
+"lon": 13.76686791,
+"urban": true
+},
+"24032": {
+"code": "24032",
+"name": "via Bonomea 213 (erta dei Pruni)",
+"lat": 45.67261074,
+"lon": 13.76209821,
+"urban": true
+},
+"24033": {
+"code": "24033",
+"name": "via Bonomea 185 (angolo via Luzzatto)",
+"lat": 45.67184291,
+"lon": 13.76338889,
+"urban": true
+},
+"24034": {
+"code": "24034",
+"name": "via Bonomea 42 (angolo via Cividale)",
+"lat": 45.67124517,
+"lon": 13.76441362,
+"urban": true
+},
+"24035": {
+"code": "24035",
+"name": "via Gemona 13",
+"lat": 45.67048708,
+"lon": 13.76630955,
+"urban": true
+},
+"24036": {
+"code": "24036",
+"name": "via Venzone 7 (largo Osoppo)",
+"lat": 45.66921024,
+"lon": 13.76684632,
+"urban": true
+},
+"24037": {
+"code": "24037",
+"name": "via Venzone 1 (angolo via al Cisternone)",
+"lat": 45.66698167,
+"lon": 13.76760134,
+"urban": true
+},
+"24038": {
+"code": "24038",
+"name": "via al Cisternone 2",
+"lat": 45.66647202,
+"lon": 13.76666575,
+"urban": true
+},
+"24039": {
+"code": "24039",
+"name": "strada del Friuli 51",
+"lat": 45.67027462,
+"lon": 13.76206306,
+"urban": true
+},
+"24040": {
+"code": "24040",
+"name": "strada del Friuli 101",
+"lat": 45.67129592,
+"lon": 13.76037471,
+"urban": true
+},
+"24041": {
+"code": "24041",
+"name": "strada del Friuli 107/b",
+"lat": 45.67326676,
+"lon": 13.75951269,
+"urban": true
+},
+"24042": {
+"code": "24042",
+"name": "strada del Friuli 115/117 (faro della Vittoria)",
+"lat": 45.67435906,
+"lon": 13.75856412,
+"urban": true
+},
+"24043": {
+"code": "24043",
+"name": "strada del Friuli 106",
+"lat": 45.67682375,
+"lon": 13.75800604,
+"urban": true
+},
+"24044": {
+"code": "24044",
+"name": "strada del Friuli 169",
+"lat": 45.67699484,
+"lon": 13.76126743,
+"urban": true
+},
+"24045": {
+"code": "24045",
+"name": "strada del Friuli 177",
+"lat": 45.67873694,
+"lon": 13.76178373,
+"urban": true
+},
+"24046": {
+"code": "24046",
+"name": "strada del Friuli 119 (faro della Vittoria)",
+"lat": 45.67483816,
+"lon": 13.75751031,
+"urban": true
+},
+"24047": {
+"code": "24047",
+"name": "strada del Friuli 86",
+"lat": 45.67383682,
+"lon": 13.75896084,
+"urban": true
+},
+"24048": {
+"code": "24048",
+"name": "strada del Friuli 60",
+"lat": 45.67142239,
+"lon": 13.7600028,
+"urban": true
+},
+"24049": {
+"code": "24049",
+"name": "strada del Friuli 38",
+"lat": 45.66996418,
+"lon": 13.76244748,
+"urban": true
+},
+"24051": {
+"code": "24051",
+"name": "viale Miramare 61 (polizia locale)",
+"lat": 45.66546908,
+"lon": 13.76547743,
+"urban": true
+},
+"24053": {
+"code": "24053",
+"name": "viale Miramare (porto vecchio)",
+"lat": 45.66976488,
+"lon": 13.75890915,
+"urban": true
+},
+"24054": {
+"code": "24054",
+"name": "Porto Vecchio TCC",
+"lat": 45.66759106,
+"lon": 13.76009406,
+"urban": true
+},
+"24055": {
+"code": "24055",
+"name": "Porto Vecchio",
+"lat": 45.66618565,
+"lon": 13.760802,
+"urban": true
+},
+"25001": {
+"code": "25001",
+"name": "via Colautti 2 (angolo via de Amicis)",
+"lat": 45.64191716,
+"lon": 13.76538817,
+"urban": true
+},
+"25002": {
+"code": "25002",
+"name": "largo del Promontorio 1",
+"lat": 45.64265169,
+"lon": 13.7617341,
+"urban": true
+},
+"25003": {
+"code": "25003",
+"name": "via Colautti 6 (angolo via de Amicis)",
+"lat": 45.64163311,
+"lon": 13.76533987,
+"urban": true
+},
+"25004": {
+"code": "25004",
+"name": "viale della Terza Armata 6",
+"lat": 45.64514043,
+"lon": 13.76505749,
+"urban": true
+},
+"25005": {
+"code": "25005",
+"name": "via Ciamician (angolo via Tigor)",
+"lat": 45.64506288,
+"lon": 13.76621093,
+"urban": true
+},
+"25006": {
+"code": "25006",
+"name": "via Muzio 1",
+"lat": 45.64260721,
+"lon": 13.76635788,
+"urban": true
+},
+"25007": {
+"code": "25007",
+"name": "via Muzio 1",
+"lat": 45.6427659,
+"lon": 13.76646668,
+"urban": true
+},
+"25008": {
+"code": "25008",
+"name": "via Tigor 20 (angolo via don Minzoni)",
+"lat": 45.64473581,
+"lon": 13.76634644,
+"urban": true
+},
+"25009": {
+"code": "25009",
+"name": "via Principe di Montfort 1/g",
+"lat": 45.64517925,
+"lon": 13.76448558,
+"urban": true
+},
+"25010": {
+"code": "25010",
+"name": "largo Papa Giovanni XXIII (civico museo Sartorio)",
+"lat": 45.64563273,
+"lon": 13.76318472,
+"urban": true
+},
+"25011": {
+"code": "25011",
+"name": "via don Minzoni 5",
+"lat": 45.64390824,
+"lon": 13.76681054,
+"urban": true
+},
+"25012": {
+"code": "25012",
+"name": "via Catraro 1",
+"lat": 45.6438512,
+"lon": 13.7690392,
+"urban": true
+},
+"25013": {
+"code": "25013",
+"name": "via Navali 2",
+"lat": 45.64482822,
+"lon": 13.77216543,
+"urban": true
+},
+"26001": {
+"code": "26001",
+"name": "viale dei Campi Elisi 95 (ponte ferrovia)",
+"lat": 45.63911034,
+"lon": 13.7713687,
+"urban": true
+},
+"26002": {
+"code": "26002",
+"name": "via Besenghi 53 (angolo via Nicolò de Rin)",
+"lat": 45.64173189,
+"lon": 13.76907181,
+"urban": true
+},
+"26003": {
+"code": "26003",
+"name": "via Besenghi 46 (angolo via Nicolò de Rin)",
+"lat": 45.64148575,
+"lon": 13.76878247,
+"urban": true
+},
+"26004": {
+"code": "26004",
+"name": "via Besenghi 12 (seminario)",
+"lat": 45.64267036,
+"lon": 13.77180056,
+"urban": true
+},
+"26005": {
+"code": "26005",
+"name": "via Schiaparelli 20 (piazzale della Resistenza)",
+"lat": 45.63921629,
+"lon": 13.76825156,
+"urban": true
+},
+"26006": {
+"code": "26006",
+"name": "VIA ALBERTI",
+"lat": 45.64111694,
+"lon": 13.77426466,
+"urban": true
+},
+"26007": {
+"code": "26007",
+"name": "VIA ALBERTI",
+"lat": 45.64084423,
+"lon": 13.77459128,
+"urban": true
+},
+"27002": {
+"code": "27002",
+"name": "via Augusto 12 (mercato ortofrutticolo)",
+"lat": 45.64629566,
+"lon": 13.75621901,
+"urban": true
+},
+"27003": {
+"code": "27003",
+"name": "via Giulio Cesare (via di Campo Marzio, museo ferroviario)",
+"lat": 45.64484312,
+"lon": 13.75425567,
+"urban": true
+},
+"27005": {
+"code": "27005",
+"name": "passeggio Sant'Andrea (palo 394)",
+"lat": 45.64049905,
+"lon": 13.75580555,
+"urban": true
+},
+"27006": {
+"code": "27006",
+"name": "TRIESTE passeggio Sant'Andrea (fronte 6/a)",
+"lat": 45.63936037,
+"lon": 13.75981602,
+"urban": true
+},
+"27007": {
+"code": "27007",
+"name": "passeggio Sant'Andrea (guardia di finanza)",
+"lat": 45.63846898,
+"lon": 13.76364868,
+"urban": true
+},
+"27008": {
+"code": "27008",
+"name": "passeggio Sant'Andrea 12 (via delle Fiamme Gialle 6)",
+"lat": 45.63864038,
+"lon": 13.76285258,
+"urban": true
+},
+"27009": {
+"code": "27009",
+"name": "TRIESTE Largo Irneri (Lloyd)",
+"lat": 45.64004818,
+"lon": 13.759129,
+"urban": true
+},
+"27010": {
+"code": "27010",
+"name": "passeggio Sant'Andrea",
+"lat": 45.64051716,
+"lon": 13.75622859,
+"urban": true
+},
+"27011": {
+"code": "27011",
+"name": "passeggio Sant'Andrea (passerella area ferroviaria)",
+"lat": 45.64128199,
+"lon": 13.7537283,
+"urban": true
+},
+"27014": {
+"code": "27014",
+"name": "VIA DI CAMPO MARZIO 20",
+"lat": 45.64436617,
+"lon": 13.75509074,
+"urban": true
+},
+"27015": {
+"code": "27015",
+"name": "via Franca 15 (angolo via Belpoggio)",
+"lat": 45.64256683,
+"lon": 13.75806275,
+"urban": true
+},
+"27016": {
+"code": "27016",
+"name": "via Hermet (piazza Carlo Alberto)",
+"lat": 45.64296543,
+"lon": 13.75499024,
+"urban": true
+},
+"27017": {
+"code": "27017",
+"name": "VIA MURAT",
+"lat": 45.64412605,
+"lon": 13.75453143,
+"urban": true
+},
+"27018": {
+"code": "27018",
+"name": "via Hermet (piazza Carlo Alberto)",
+"lat": 45.64293786,
+"lon": 13.75452568,
+"urban": true
+},
+"27019": {
+"code": "27019",
+"name": "via Franca 14 (angolo via Belpoggio)",
+"lat": 45.6424481,
+"lon": 13.75831881,
+"urban": true
+},
+"27020": {
+"code": "27020",
+"name": "via Franca 1 (largo del Promontorio)",
+"lat": 45.64251798,
+"lon": 13.7614387,
+"urban": true
+},
+"27021": {
+"code": "27021",
+"name": "via Maestri del Lavoro, (palazzo della Marineria, piscina)",
+"lat": 45.63994987,
+"lon": 13.75993344,
+"urban": true
+},
+"27022": {
+"code": "27022",
+"name": "VIA LOCCHI",
+"lat": 45.64073737,
+"lon": 13.76241505,
+"urban": true
+},
+"27023": {
+"code": "27023",
+"name": "riva Traiana (stabilimento balnerare Ausonia)",
+"lat": 45.64749841,
+"lon": 13.75384389,
+"urban": true
+},
+"28001": {
+"code": "28001",
+"name": "viale dei Campi Elisi 32 (angolo via de Coletti)",
+"lat": 45.63852975,
+"lon": 13.76802281,
+"urban": true
+},
+"28002": {
+"code": "28002",
+"name": "viale dei Campi Elisi 59 (ponte ferrovia)",
+"lat": 45.63894186,
+"lon": 13.77118633,
+"urban": true
+},
+"28003": {
+"code": "28003",
+"name": "VIALE CAMPI ELISI",
+"lat": 45.6396198,
+"lon": 13.77396557,
+"urban": true
+},
+"28004": {
+"code": "28004",
+"name": "VIALE CAMPI ELISI 16",
+"lat": 45.6386259,
+"lon": 13.76775766,
+"urban": true
+},
+"28005": {
+"code": "28005",
+"name": "via Schiaparelli 3 (angolo viale dei Campi Elisi)",
+"lat": 45.63899356,
+"lon": 13.76888197,
+"urban": true
+},
+"28006": {
+"code": "28006",
+"name": "via Colautti (piazzale della Resistenza)",
+"lat": 45.64033916,
+"lon": 13.76554192,
+"urban": true
+},
+"28007": {
+"code": "28007",
+"name": "via Schiaparelli 9 (piazzale della Resistenza)",
+"lat": 45.63934165,
+"lon": 13.76694,
+"urban": true
+},
+"28008": {
+"code": "28008",
+"name": "TORRE DEL LLOYD",
+"lat": 45.63721503,
+"lon": 13.76963946,
+"urban": true
+},
+"28009": {
+"code": "28009",
+"name": "via Colautti 14/a (piazzale della Resistenza)",
+"lat": 45.64059358,
+"lon": 13.76534706,
+"urban": true
+},
+"28010": {
+"code": "28010",
+"name": "via Caduti sul Lavoro (Trieste Trasporti)",
+"lat": 45.63758718,
+"lon": 13.77663386,
+"urban": true
+},
+"28011": {
+"code": "28011",
+"name": "VIALE CAMPI ELISI (EX PAM)",
+"lat": 45.63949196,
+"lon": 13.77421537,
+"urban": true
+},
+"28012": {
+"code": "28012",
+"name": "VIA SVEVO (CANTIERI)",
+"lat": 45.63627943,
+"lon": 13.77765029,
+"urban": true
+},
+"28013": {
+"code": "28013",
+"name": "via Locchi (piazzale della Resistenza)",
+"lat": 45.63982193,
+"lon": 13.7651555,
+"urban": true
+},
+"28014": {
+"code": "28014",
+"name": "via San Marco 52",
+"lat": 45.63855585,
+"lon": 13.77211862,
+"urban": true
+},
+"28015": {
+"code": "28015",
+"name": "via San Marco 52",
+"lat": 45.63860341,
+"lon": 13.77193794,
+"urban": true
+},
+"28016": {
+"code": "28016",
+"name": "via von Bruck 12",
+"lat": 45.63721525,
+"lon": 13.77049592,
+"urban": true
+},
+"28017": {
+"code": "28017",
+"name": "VIA VON BRUCK 30 (GIRONE)",
+"lat": 45.63693233,
+"lon": 13.77264487,
+"urban": true
+},
+"29001": {
+"code": "29001",
+"name": "via Orlandini 15 (angolo via Ponziana)",
+"lat": 45.63983351,
+"lon": 13.78131981,
+"urban": true
+},
+"29002": {
+"code": "29002",
+"name": "via Orlandini 31 (angolo via Ucekar)",
+"lat": 45.63829586,
+"lon": 13.78146222,
+"urban": true
+},
+"29003": {
+"code": "29003",
+"name": "via Orlandini (angolo via San Giovanni Bosco)",
+"lat": 45.63695674,
+"lon": 13.78165163,
+"urban": true
+},
+"29004": {
+"code": "29004",
+"name": "via Zorutti 20 (angolo via Battera)",
+"lat": 45.63545504,
+"lon": 13.78221023,
+"urban": true
+},
+"29005": {
+"code": "29005",
+"name": "via Lorenzetti (angolo via Doda)",
+"lat": 45.63395687,
+"lon": 13.78267891,
+"urban": true
+},
+"29006": {
+"code": "29006",
+"name": "via Zorutti 18 (angolo via Battera)",
+"lat": 45.63580187,
+"lon": 13.782238,
+"urban": true
+},
+"29007": {
+"code": "29007",
+"name": "via d'Alviano 14 (gasometro)",
+"lat": 45.63952956,
+"lon": 13.7768835,
+"urban": true
+},
+"29008": {
+"code": "29008",
+"name": "via d'Alviano 15 (Trieste Trasporti, vigili del fuoco)",
+"lat": 45.63737444,
+"lon": 13.77946452,
+"urban": true
+},
+"29009": {
+"code": "29009",
+"name": "via d'Alviano 27 (centro Commerciale Torri d'Europa)",
+"lat": 45.63508137,
+"lon": 13.78093207,
+"urban": true
+},
+"29010": {
+"code": "29010",
+"name": "via d'Alviano 37 (ufficio postale)",
+"lat": 45.63254729,
+"lon": 13.78174719,
+"urban": true
+},
+"29011": {
+"code": "29011",
+"name": "VIA SVEVO 38 (CASA EMMAUS)",
+"lat": 45.62966373,
+"lon": 13.78102067,
+"urban": true
+},
+"29012": {
+"code": "29012",
+"name": "via d'Alviano 14 (distributore carburante)",
+"lat": 45.63983796,
+"lon": 13.77752478,
+"urban": true
+},
+"29013": {
+"code": "29013",
+"name": "via d'Alviano 39 (ufficio postale)",
+"lat": 45.63263521,
+"lon": 13.78197302,
+"urban": true
+},
+"29014": {
+"code": "29014",
+"name": "via d'Alviano 86 (centro Commerciale Torri d'Europa)",
+"lat": 45.63544108,
+"lon": 13.78090182,
+"urban": true
+},
+"29015": {
+"code": "29015",
+"name": "via d'Alviano 66 (Trieste Trasporti, vigili del fuoco)",
+"lat": 45.63756743,
+"lon": 13.77983563,
+"urban": true
+},
+"29016": {
+"code": "29016",
+"name": "VIA SVEVO",
+"lat": 45.63030835,
+"lon": 13.78111896,
+"urban": true
+},
+"29017": {
+"code": "29017",
+"name": "via Svevo 22 (centro commerciale Torri d'Europa)",
+"lat": 45.6323811,
+"lon": 13.78051271,
+"urban": true
+},
+"29018": {
+"code": "29018",
+"name": "via dei Lavoratori 4",
+"lat": 45.63718944,
+"lon": 13.77878767,
+"urban": true
+},
+"29019": {
+"code": "29019",
+"name": "VIA SVEVO (ACEGAS)",
+"lat": 45.63633412,
+"lon": 13.77771446,
+"urban": true
+},
+"29020": {
+"code": "29020",
+"name": "via Caduti sul Lavoro (Trieste Trasporti)",
+"lat": 45.63823067,
+"lon": 13.77662627,
+"urban": true
+},
+"29021": {
+"code": "29021",
+"name": "via Svevo 36 (angolo via Capodistria, centro Emmaus)",
+"lat": 45.62980973,
+"lon": 13.78120674,
+"urban": true
+},
+"29022": {
+"code": "29022",
+"name": "via Svevo 14 (centro commerciale Torri d'Europa)",
+"lat": 45.63379419,
+"lon": 13.78008593,
+"urban": true
+},
+"31001": {
+"code": "31001",
+"name": "via dell'Istria 142 (angolo via Orsera)",
+"lat": 45.63325612,
+"lon": 13.78873063,
+"urban": true
+},
+"31002": {
+"code": "31002",
+"name": "via Baiamonti 52 (angolo via Pirano)",
+"lat": 45.63023731,
+"lon": 13.78840117,
+"urban": true
+},
+"31003": {
+"code": "31003",
+"name": "via Capodistria 31 (angolo via Orsera)",
+"lat": 45.63023365,
+"lon": 13.785938,
+"urban": true
+},
+"31005": {
+"code": "31005",
+"name": "via Baiamonti 38 (banca)",
+"lat": 45.62951647,
+"lon": 13.78621007,
+"urban": true
+},
+"31006": {
+"code": "31006",
+"name": "via Baiamonti 14 (angolo via Svevo)",
+"lat": 45.6285978,
+"lon": 13.78319585,
+"urban": true
+},
+"32001": {
+"code": "32001",
+"name": "via dell'Istria 69 (ospedale Burlo, parcheggio Maddalena)",
+"lat": 45.63495906,
+"lon": 13.78677579,
+"urban": true
+},
+"32002": {
+"code": "32002",
+"name": "via dell'Istria 102 (angolo via Marenzi)",
+"lat": 45.63787425,
+"lon": 13.78499635,
+"urban": true
+},
+"32003": {
+"code": "32003",
+"name": "via Molino a Vento 154 (centro salute mentale Maddalena)",
+"lat": 45.63764775,
+"lon": 13.78737856,
+"urban": true
+},
+"32004": {
+"code": "32004",
+"name": "strada di Fiume 7 (centro salute mentale della Maddalena)",
+"lat": 45.63699893,
+"lon": 13.78815599,
+"urban": true
+},
+"32005": {
+"code": "32005",
+"name": "strada di Fiume 73 (angolo via Zammattio)",
+"lat": 45.63670982,
+"lon": 13.79101168,
+"urban": true
+},
+"32006": {
+"code": "32006",
+"name": "via del Molino a Vento 88",
+"lat": 45.63892519,
+"lon": 13.78561877,
+"urban": true
+},
+"32007": {
+"code": "32007",
+"name": "VIA DEL MOLINO A VENTO 85",
+"lat": 45.63870165,
+"lon": 13.78575832,
+"urban": true
+},
+"33001": {
+"code": "33001",
+"name": "PIAZZA PERUGINO",
+"lat": 45.64320306,
+"lon": 13.78499981,
+"urban": true
+},
+"33002": {
+"code": "33002",
+"name": "piazza del Perugino 6",
+"lat": 45.64300121,
+"lon": 13.78590885,
+"urban": true
+},
+"33003": {
+"code": "33003",
+"name": "viale d'Annunzio 48 (angolo via Limitanea, teatro Bobbio)",
+"lat": 45.64146342,
+"lon": 13.78646216,
+"urban": true
+},
+"33004": {
+"code": "33004",
+"name": "viale Gabriele d'Annunzio 38/a (piazza del Perugino)",
+"lat": 45.64271951,
+"lon": 13.78481176,
+"urban": true
+},
+"33005": {
+"code": "33005",
+"name": "viale Gabriele d'Annunzio 27 (piazza del Perugino)",
+"lat": 45.64278301,
+"lon": 13.78443504,
+"urban": true
+},
+"33006": {
+"code": "33006",
+"name": "piazza del Perugino 7/a",
+"lat": 45.6430447,
+"lon": 13.78576675,
+"urban": true
+},
+"34001": {
+"code": "34001",
+"name": "via Rossetti 93 (angolo Ananian, teatro Pellico)",
+"lat": 45.64411263,
+"lon": 13.79013241,
+"urban": true
+},
+"34002": {
+"code": "34002",
+"name": "piazza dei Foraggi 7",
+"lat": 45.63991776,
+"lon": 13.78881805,
+"urban": true
+},
+"34003": {
+"code": "34003",
+"name": "viale d'Annunzio 51 (angolo via Limitanea, teatro Bobbio)",
+"lat": 45.64115405,
+"lon": 13.78657149,
+"urban": true
+},
+"34004": {
+"code": "34004",
+"name": "viale Gabriele d'Annunzio 79 (piazza dei Foraggi)",
+"lat": 45.63997334,
+"lon": 13.78811753,
+"urban": true
+},
+"34005": {
+"code": "34005",
+"name": "viale dell'Ippodromo 12 (ippodrome, ex fiera)",
+"lat": 45.63967014,
+"lon": 13.793061,
+"urban": true
+},
+"34006": {
+"code": "34006",
+"name": "strada di Fiume 52 (angolo via Zammattio)",
+"lat": 45.63687187,
+"lon": 13.7901796,
+"urban": true
+},
+"35001": {
+"code": "35001",
+"name": "via Rossetti 113 (angolo via Revoltella, fiera)",
+"lat": 45.64266749,
+"lon": 13.79178719,
+"urban": true
+},
+"35004": {
+"code": "35004",
+"name": "via Revoltella 38/a (angolo via Lonza)",
+"lat": 45.64217781,
+"lon": 13.79613176,
+"urban": true
+},
+"35005": {
+"code": "35005",
+"name": "via Revoltella 29 (polizia locale)",
+"lat": 45.64201254,
+"lon": 13.79326413,
+"urban": true
+},
+"35006": {
+"code": "35006",
+"name": "via dei Piccardi 66 (angolo via Revoltella, teatro Pellico)",
+"lat": 45.64271918,
+"lon": 13.7907178,
+"urban": true
+},
+"35007": {
+"code": "35007",
+"name": "via Dei Piccardi 40/B (angolo via dell'Eremo)",
+"lat": 45.64445551,
+"lon": 13.78893801,
+"urban": true
+},
+"36001": {
+"code": "36001",
+"name": "via San Pasquale 89 (chiesa)",
+"lat": 45.64542355,
+"lon": 13.80135217,
+"urban": true
+},
+"36002": {
+"code": "36002",
+"name": "via San Pasquale 111 (scuola)",
+"lat": 45.64574583,
+"lon": 13.80333119,
+"urban": true
+},
+"36003": {
+"code": "36003",
+"name": "via San Pasquale 101 (scuola)",
+"lat": 45.64599397,
+"lon": 13.80296017,
+"urban": true
+},
+"36004": {
+"code": "36004",
+"name": "via Archi 4 (San Luigi)",
+"lat": 45.65193756,
+"lon": 13.79127622,
+"urban": true
+},
+"36005": {
+"code": "36005",
+"name": "via del Farneto 3 (azienda sanitaria)",
+"lat": 45.65247876,
+"lon": 13.7871383,
+"urban": true
+},
+"36006": {
+"code": "36006",
+"name": "via del Farneto 40 (campo San Luigi 2)",
+"lat": 45.65270541,
+"lon": 13.788988,
+"urban": true
+},
+"36007": {
+"code": "36007",
+"name": "via Archi 4 (San Luigi)",
+"lat": 45.65203219,
+"lon": 13.79128702,
+"urban": true
+},
+"36008": {
+"code": "36008",
+"name": "via de Marchesetti 13 (angolo via Biasoletto)",
+"lat": 45.65048414,
+"lon": 13.79427856,
+"urban": true
+},
+"36009": {
+"code": "36009",
+"name": "via de Marchesetti (angolo via Felluga)",
+"lat": 45.65011167,
+"lon": 13.79608651,
+"urban": true
+},
+"36010": {
+"code": "36010",
+"name": "via de Marchesetti (angolo via dei Mille)",
+"lat": 45.64822807,
+"lon": 13.79970741,
+"urban": true
+},
+"36011": {
+"code": "36011",
+"name": "via de Marchesetti (angolo via Barzilai)",
+"lat": 45.646872,
+"lon": 13.80343233,
+"urban": true
+},
+"36012": {
+"code": "36012",
+"name": "via San Pasquale 87 (chiesa)",
+"lat": 45.6452755,
+"lon": 13.80139704,
+"urban": true
+},
+"36013": {
+"code": "36013",
+"name": "via San Pasquale 40 (angolo via dell'Eremo)",
+"lat": 45.64444212,
+"lon": 13.80303853,
+"urban": true
+},
+"36014": {
+"code": "36014",
+"name": "via Felluga (angolo via de Marchesetti)",
+"lat": 45.64969511,
+"lon": 13.79584839,
+"urban": true
+},
+"36015": {
+"code": "36015",
+"name": "via Felluga 3",
+"lat": 45.64875706,
+"lon": 13.79523643,
+"urban": true
+},
+"36016": {
+"code": "36016",
+"name": "via Felluga 5",
+"lat": 45.64769516,
+"lon": 13.7956827,
+"urban": true
+},
+"36017": {
+"code": "36017",
+"name": "CHIADINO",
+"lat": 45.64681664,
+"lon": 13.79687577,
+"urban": true
+},
+"36018": {
+"code": "36018",
+"name": "via Felluga 46 (farmacia)",
+"lat": 45.64754112,
+"lon": 13.79601325,
+"urban": true
+},
+"36019": {
+"code": "36019",
+"name": "via Felluga 20",
+"lat": 45.64865956,
+"lon": 13.79537969,
+"urban": true
+},
+"36020": {
+"code": "36020",
+"name": "via Felluga (angolo via de Marchesetti)",
+"lat": 45.64984305,
+"lon": 13.79622061,
+"urban": true
+},
+"36021": {
+"code": "36021",
+"name": "via Felluga (Chiadino, campo sportivo)",
+"lat": 45.646558,
+"lon": 13.79710267,
+"urban": true
+},
+"37001": {
+"code": "37001",
+"name": "via de Marchesetti (angolo via Gasser)",
+"lat": 45.64690955,
+"lon": 13.80357911,
+"urban": true
+},
+"37002": {
+"code": "37002",
+"name": "via de Marchesetti (angolo via dei Mille)",
+"lat": 45.64818581,
+"lon": 13.79996819,
+"urban": true
+},
+"37003": {
+"code": "37003",
+"name": "via de Marchesetti (angolo via Felluga)",
+"lat": 45.64998977,
+"lon": 13.79647735,
+"urban": true
+},
+"37004": {
+"code": "37004",
+"name": "via de Marchesetti 26 (angolo via Biasoletto)",
+"lat": 45.65076202,
+"lon": 13.79416993,
+"urban": true
+},
+"37005": {
+"code": "37005",
+"name": "via de Marchesetti (orto botanico)",
+"lat": 45.65211354,
+"lon": 13.78962001,
+"urban": true
+},
+"37006": {
+"code": "37006",
+"name": "via de Marchesetti (orto botanico)",
+"lat": 45.65208944,
+"lon": 13.78989326,
+"urban": true
+},
+"37007": {
+"code": "37007",
+"name": "strada di Guardiella 9 (angolo strada per Longera)",
+"lat": 45.65425477,
+"lon": 13.80190537,
+"urban": true
+},
+"37008": {
+"code": "37008",
+"name": "strada per Longera 1 (angolo strada di Guardiella)",
+"lat": 45.65385562,
+"lon": 13.80375567,
+"urban": true
+},
+"37009": {
+"code": "37009",
+"name": "strada per Longera 6 (angolo via Antoni)",
+"lat": 45.65336007,
+"lon": 13.80542831,
+"urban": true
+},
+"37010": {
+"code": "37010",
+"name": "strada per Longera 39 (angolo via Timignano)",
+"lat": 45.65275099,
+"lon": 13.80743703,
+"urban": true
+},
+"37011": {
+"code": "37011",
+"name": "strada per Longera 127 (angolo del Farnetello)",
+"lat": 45.65220032,
+"lon": 13.8090077,
+"urban": true
+},
+"37012": {
+"code": "37012",
+"name": "strada per Longera 66 (angolo via Levier)",
+"lat": 45.65169945,
+"lon": 13.81190603,
+"urban": true
+},
+"37013": {
+"code": "37013",
+"name": "SOTTOLONGERA",
+"lat": 45.65063998,
+"lon": 13.81389204,
+"urban": true
+},
+"37014": {
+"code": "37014",
+"name": "strada per Longera 207",
+"lat": 45.64979511,
+"lon": 13.81574511,
+"urban": true
+},
+"37015": {
+"code": "37015",
+"name": "strada per Longera 82 (Sottolongera)",
+"lat": 45.65080339,
+"lon": 13.81402655,
+"urban": true
+},
+"37016": {
+"code": "37016",
+"name": "strada per Longera 66 (angolo via Levier)",
+"lat": 45.65176241,
+"lon": 13.81190149,
+"urban": true
+},
+"37017": {
+"code": "37017",
+"name": "strada per Longera 131 (angolo del Farnetello)",
+"lat": 45.65213577,
+"lon": 13.81015453,
+"urban": true
+},
+"37018": {
+"code": "37018",
+"name": "strada per Longera 37 (angolo via Timignano)",
+"lat": 45.65289011,
+"lon": 13.80739878,
+"urban": true
+},
+"37019": {
+"code": "37019",
+"name": "strada per Longera 4 (angolo via Cozzi)",
+"lat": 45.6535509,
+"lon": 13.80517077,
+"urban": true
+},
+"37020": {
+"code": "37020",
+"name": "strada per Longera 1",
+"lat": 45.65390286,
+"lon": 13.80396965,
+"urban": true
+},
+"37021": {
+"code": "37021",
+"name": "strada di Guardiella 18 (angolo strada per Longera)",
+"lat": 45.65436468,
+"lon": 13.80208592,
+"urban": true
+},
+"38001": {
+"code": "38001",
+"name": "via Giulia 80 (centro commerciale Il Giulia)",
+"lat": 45.65552651,
+"lon": 13.79487988,
+"urban": true
+},
+"38002": {
+"code": "38002",
+"name": "via Giulia 48 (scuola)",
+"lat": 45.65505101,
+"lon": 13.79119359,
+"urban": true
+},
+"38003": {
+"code": "38003",
+"name": "via Giulia 22 (piazza dei Volontari Giuliani)",
+"lat": 45.65441395,
+"lon": 13.78840889,
+"urban": true
+},
+"38004": {
+"code": "38004",
+"name": "via Giulia 37 (piazza dei Volontari Giuliani)",
+"lat": 45.65417937,
+"lon": 13.78793225,
+"urban": true
+},
+"38005": {
+"code": "38005",
+"name": "via Giulia 55 (scuola)",
+"lat": 45.65499697,
+"lon": 13.7916151,
+"urban": true
+},
+"38006": {
+"code": "38006",
+"name": "via Giulia 77 (centro commerciale il Giulia)",
+"lat": 45.65533637,
+"lon": 13.7952753,
+"urban": true
+},
+"38007": {
+"code": "38007",
+"name": "via di Cologna 27 (angolo via Kandler)",
+"lat": 45.65584763,
+"lon": 13.78864791,
+"urban": true
+},
+"38008": {
+"code": "38008",
+"name": "pendice dello Scoglietto 3 (scala Ferolli)",
+"lat": 45.65605672,
+"lon": 13.78969268,
+"urban": true
+},
+"39001": {
+"code": "39001",
+"name": "via Fabio Severo 107 (angolo via Sottoripa)",
+"lat": 45.65874427,
+"lon": 13.79018993,
+"urban": true
+},
+"39002": {
+"code": "39002",
+"name": "via Fabio Severo 143 (curva Masè)",
+"lat": 45.66062884,
+"lon": 13.79263637,
+"urban": true
+},
+"39003": {
+"code": "39003",
+"name": "via Fabio Severo 85 (angolo via Vero)",
+"lat": 45.65716971,
+"lon": 13.7885488,
+"urban": true
+},
+"39004": {
+"code": "39004",
+"name": "via Fabio Severo (università, piazzale Europa)",
+"lat": 45.65889334,
+"lon": 13.79236882,
+"urban": true
+},
+"39006": {
+"code": "39006",
+"name": "pendice dello Scoglietto 7 (scuola dell'infanzia)",
+"lat": 45.65656265,
+"lon": 13.79199536,
+"urban": true
+},
+"39007": {
+"code": "39007",
+"name": "pendice dello Scoglietto 20",
+"lat": 45.65686016,
+"lon": 13.79118996,
+"urban": true
+},
+"39008": {
+"code": "39008",
+"name": "pendice dello Scoglietto (angolo via dello Scoglio)",
+"lat": 45.65714379,
+"lon": 13.79375416,
+"urban": true
+},
+"39009": {
+"code": "39009",
+"name": "via di Cologna 86 (angolo via Fabio Severo)",
+"lat": 45.66064974,
+"lon": 13.79205829,
+"urban": true
+},
+"39010": {
+"code": "39010",
+"name": "via di Cologna 76 (angolo via Sottoripa)",
+"lat": 45.65860012,
+"lon": 13.79102736,
+"urban": true
+},
+"39011": {
+"code": "39011",
+"name": "via di Cologna 32 (angolo pendice dello Scoglietto)",
+"lat": 45.65699163,
+"lon": 13.78915591,
+"urban": true
+},
+"39012": {
+"code": "39012",
+"name": "via di Cologna 18 (angolo via Kandler)",
+"lat": 45.65557562,
+"lon": 13.78803729,
+"urban": true
+},
+"41001": {
+"code": "41001",
+"name": "via dell'Istria 99",
+"lat": 45.6318961,
+"lon": 13.79204756,
+"urban": true
+},
+"41002": {
+"code": "41002",
+"name": "VIA DELL'ISTRIA 127",
+"lat": 45.63030073,
+"lon": 13.79311661,
+"urban": true
+},
+"41003": {
+"code": "41003",
+"name": "VIA DELL'ISTRIA (CIMITERO)",
+"lat": 45.62812263,
+"lon": 13.7939824,
+"urban": true
+},
+"41004": {
+"code": "41004",
+"name": "PIAZZALE VALMAURA",
+"lat": 45.62532288,
+"lon": 13.79436636,
+"urban": true
+},
+"41005": {
+"code": "41005",
+"name": "via Valmaura (stadio Rocco e Grezar)",
+"lat": 45.62375361,
+"lon": 13.79151693,
+"urban": true
+},
+"41006": {
+"code": "41006",
+"name": "via Valmaura 37 (angolo via de Jenner, Risiera San Sabba)",
+"lat": 45.62231895,
+"lon": 13.78906202,
+"urban": true
+},
+"41007": {
+"code": "41007",
+"name": "via Valmaura 35 (Risiera di San Sabba)",
+"lat": 45.62262243,
+"lon": 13.78991228,
+"urban": true
+},
+"41009": {
+"code": "41009",
+"name": "PIAZZALE VALMAURA",
+"lat": 45.62519754,
+"lon": 13.79442998,
+"urban": true
+},
+"41010": {
+"code": "41010",
+"name": "via Flavia 10 (palatrieste)",
+"lat": 45.62284975,
+"lon": 13.79627618,
+"urban": true
+},
+"41011": {
+"code": "41011",
+"name": "via Flavia 1 (Valmaura, stadio Grezar, stadio Rocco)",
+"lat": 45.62432806,
+"lon": 13.79519906,
+"urban": true
+},
+"41012": {
+"code": "41012",
+"name": "via Salata 6 (chiosco muratura)",
+"lat": 45.63171851,
+"lon": 13.79142593,
+"urban": true
+},
+"41013": {
+"code": "41013",
+"name": "via Salata 3 (supermercato)",
+"lat": 45.63191609,
+"lon": 13.79095981,
+"urban": true
+},
+"41014": {
+"code": "41014",
+"name": "via Flavia 1 (Valmaura, stadio Grezar, stadio Rocco)",
+"lat": 45.62488376,
+"lon": 13.79497549,
+"urban": true
+},
+"41015": {
+"code": "41015",
+"name": "via Flavia 3 (palatrieste Allianz Dome)",
+"lat": 45.62333781,
+"lon": 13.79544096,
+"urban": true
+},
+"41016": {
+"code": "41016",
+"name": "via Baiamonti 61",
+"lat": 45.62912934,
+"lon": 13.78535567,
+"urban": true
+},
+"41017": {
+"code": "41017",
+"name": "via Baiamonti 93 (angolo via Pirano)",
+"lat": 45.63031528,
+"lon": 13.78896398,
+"urban": true
+},
+"41018": {
+"code": "41018",
+"name": "via Baiamonti 103 (angolo via dell'Istria)",
+"lat": 45.63100751,
+"lon": 13.79100821,
+"urban": true
+},
+"41019": {
+"code": "41019",
+"name": "via dei Soncini 3 (ponte)",
+"lat": 45.63055543,
+"lon": 13.7920924,
+"urban": true
+},
+"41020": {
+"code": "41020",
+"name": "via dei Soncini 55 (angolo via Zara)",
+"lat": 45.62885702,
+"lon": 13.78980362,
+"urban": true
+},
+"41021": {
+"code": "41021",
+"name": "via dei Soncini 79 (angolo via Giacometti)",
+"lat": 45.62720578,
+"lon": 13.78772242,
+"urban": true
+},
+"41022": {
+"code": "41022",
+"name": "via dei Soncini 107",
+"lat": 45.62589638,
+"lon": 13.78562755,
+"urban": true
+},
+"41023": {
+"code": "41023",
+"name": "via del Carpineto 12",
+"lat": 45.62427253,
+"lon": 13.7903705,
+"urban": true
+},
+"41024": {
+"code": "41024",
+"name": "VALMAURA",
+"lat": 45.62488143,
+"lon": 13.79390118,
+"urban": true
+},
+"41025": {
+"code": "41025",
+"name": "VALMAURA",
+"lat": 45.62506611,
+"lon": 13.79424567,
+"urban": true
+},
+"41026": {
+"code": "41026",
+"name": "via Baiamonti 68 (angolo via dell'Istria)",
+"lat": 45.63109123,
+"lon": 13.79083963,
+"urban": true
+},
+"41027": {
+"code": "41027",
+"name": "via Miani (angolo via Alberto Puschi)",
+"lat": 45.62167339,
+"lon": 13.79270006,
+"urban": true
+},
+"41028": {
+"code": "41028",
+"name": "via Valmaura (angolo Ratto della Pileria)",
+"lat": 45.62130983,
+"lon": 13.78981571,
+"urban": true
+},
+"42001": {
+"code": "42001",
+"name": "VIA DELL'ISTRIA 206 (CIMITERO)",
+"lat": 45.62875747,
+"lon": 13.79400727,
+"urban": true
+},
+"42002": {
+"code": "42002",
+"name": "VIA PUCCINI",
+"lat": 45.62339664,
+"lon": 13.80507077,
+"urban": true
+},
+"42003": {
+"code": "42003",
+"name": "via dell'Istria 101 (angolo via Baiamonti)",
+"lat": 45.63169472,
+"lon": 13.79215533,
+"urban": true
+},
+"42004": {
+"code": "42004",
+"name": "via dell'Istria 138 (angolo via Orsera)",
+"lat": 45.63362781,
+"lon": 13.78855583,
+"urban": true
+},
+"42005": {
+"code": "42005",
+"name": "piazzale Cagni 2",
+"lat": 45.62135911,
+"lon": 13.80046094,
+"urban": true
+},
+"42006": {
+"code": "42006",
+"name": "via Flavia 23/1 (incubatore BIC)",
+"lat": 45.62186461,
+"lon": 13.80446195,
+"urban": true
+},
+"42007": {
+"code": "42007",
+"name": "via Flavia 14 (piazzale Cagni)",
+"lat": 45.62150402,
+"lon": 13.80140387,
+"urban": true
+},
+"42008": {
+"code": "42008",
+"name": "VIA PAISIELLO",
+"lat": 45.62431806,
+"lon": 13.80237976,
+"urban": true
+},
+"42009": {
+"code": "42009",
+"name": "via Paisiello 9 (angolo via Zandonai)",
+"lat": 45.62437493,
+"lon": 13.80007912,
+"urban": true
+},
+"42010": {
+"code": "42010",
+"name": "via Costalunga 240 (cimitero Sant'Anna, obitorio)",
+"lat": 45.6298684,
+"lon": 13.79864047,
+"urban": true
+},
+"42011": {
+"code": "42011",
+"name": "via Costalunga 240 (cimitero)",
+"lat": 45.62975978,
+"lon": 13.79858186,
+"urban": true
+},
+"42012": {
+"code": "42012",
+"name": "via Mascagni (piazzale Cagni)",
+"lat": 45.62169956,
+"lon": 13.80030937,
+"urban": true
+},
+"42013": {
+"code": "42013",
+"name": "via Puccini 24 (angolo via Pietro Mascagni)",
+"lat": 45.62315574,
+"lon": 13.80140715,
+"urban": true
+},
+"42014": {
+"code": "42014",
+"name": "via Puccini 50 (distretto sanitario)",
+"lat": 45.62327822,
+"lon": 13.80321647,
+"urban": true
+},
+"42015": {
+"code": "42015",
+"name": "via erta di Sant'Anna 51",
+"lat": 45.62782994,
+"lon": 13.81027487,
+"urban": true
+},
+"42016": {
+"code": "42016",
+"name": "via erta di Sant'Anna 92 (angolo via dei Vergottini)",
+"lat": 45.62644719,
+"lon": 13.81016942,
+"urban": true
+},
+"42017": {
+"code": "42017",
+"name": "via erta di Sant'Anna 10 (piazzetta)",
+"lat": 45.62611574,
+"lon": 13.80816237,
+"urban": true
+},
+"42018": {
+"code": "42018",
+"name": "via Zandonai (scuola)",
+"lat": 45.62279216,
+"lon": 13.79849981,
+"urban": true
+},
+"42021": {
+"code": "42021",
+"name": "VIA DELL'ISTRIA 190 (PONTE VIA SONCINI)",
+"lat": 45.63122194,
+"lon": 13.79255919,
+"urban": true
+},
+"42022": {
+"code": "42022",
+"name": "VIA DELLA PACE (PONTE DEI SONCINI)",
+"lat": 45.63101344,
+"lon": 13.79284592,
+"urban": true
+},
+"42023": {
+"code": "42023",
+"name": "via Costalunga 232 (angolo via della Pace)",
+"lat": 45.63266507,
+"lon": 13.79582549,
+"urban": true
+},
+"42024": {
+"code": "42024",
+"name": "via Costalunga 272 (angolo via Santa Maria Maddalena)",
+"lat": 45.62862089,
+"lon": 13.79984098,
+"urban": true
+},
+"42025": {
+"code": "42025",
+"name": "via Costalunga 125",
+"lat": 45.62774721,
+"lon": 13.80235804,
+"urban": true
+},
+"42026": {
+"code": "42026",
+"name": "via Costalunga 151",
+"lat": 45.62656707,
+"lon": 13.80483944,
+"urban": true
+},
+"42027": {
+"code": "42027",
+"name": "via Costalunga 177 (piazzetta)",
+"lat": 45.62602544,
+"lon": 13.80727271,
+"urban": true
+},
+"42028": {
+"code": "42028",
+"name": "via Paisiello 11 (sottopasso, tunnel)",
+"lat": 45.62490774,
+"lon": 13.80669029,
+"urban": true
+},
+"42029": {
+"code": "42029",
+"name": "via Santa Maria Maddalena 2 (angolo via Costalunga)",
+"lat": 45.62832899,
+"lon": 13.79990174,
+"urban": true
+},
+"42030": {
+"code": "42030",
+"name": "via Paisiello (angolo salita di Zugnano)",
+"lat": 45.62567806,
+"lon": 13.79903146,
+"urban": true
+},
+"43001": {
+"code": "43001",
+"name": "via delle Campanelle 257 (scuola)",
+"lat": 45.63334303,
+"lon": 13.80424033,
+"urban": true
+},
+"43002": {
+"code": "43002",
+"name": "via delle Campanelle 260 (angolo via Zarotti)",
+"lat": 45.633719,
+"lon": 13.80318347,
+"urban": true
+},
+"43003": {
+"code": "43003",
+"name": "via delle Campanelle (angolo via Ventura)",
+"lat": 45.63446412,
+"lon": 13.80213797,
+"urban": true
+},
+"43004": {
+"code": "43004",
+"name": "via delle Campanelle 203 (angolo via Antico)",
+"lat": 45.63508916,
+"lon": 13.79994347,
+"urban": true
+},
+"43005": {
+"code": "43005",
+"name": "via delle Campanelle 138 (ponte)",
+"lat": 45.63578746,
+"lon": 13.79787245,
+"urban": true
+},
+"43006": {
+"code": "43006",
+"name": "via delle Campanelle 120 (angolo via Stancovich)",
+"lat": 45.63627303,
+"lon": 13.79483722,
+"urban": true
+},
+"43007": {
+"code": "43007",
+"name": "via delle Campanelle 108 (angolo via Patrizio)",
+"lat": 45.63622999,
+"lon": 13.79374432,
+"urban": true
+},
+"43008": {
+"code": "43008",
+"name": "via Patrizio (angolo via delle Campanelle)",
+"lat": 45.63623154,
+"lon": 13.7930386,
+"urban": true
+},
+"43009": {
+"code": "43009",
+"name": "via delle Campanelle 143 (angolo via Stancovich)",
+"lat": 45.63616444,
+"lon": 13.79478181,
+"urban": true
+},
+"43010": {
+"code": "43010",
+"name": "via delle Campanelle 138 (ponte)",
+"lat": 45.63574883,
+"lon": 13.79762308,
+"urban": true
+},
+"43011": {
+"code": "43011",
+"name": "via delle Campanelle 203 (angolo via Antico)",
+"lat": 45.63501713,
+"lon": 13.7999418,
+"urban": true
+},
+"43012": {
+"code": "43012",
+"name": "via delle Campanelle (angolo via Ventura)",
+"lat": 45.6343422,
+"lon": 13.80209887,
+"urban": true
+},
+"43013": {
+"code": "43013",
+"name": "via delle Campanelle 260 (angolo via Zarotti)",
+"lat": 45.6336865,
+"lon": 13.80308793,
+"urban": true
+},
+"43014": {
+"code": "43014",
+"name": "via delle Campanelle 257 (scuola)",
+"lat": 45.63322305,
+"lon": 13.80438722,
+"urban": true
+},
+"43015": {
+"code": "43015",
+"name": "via Costalunga 230 (angolo della Pace)",
+"lat": 45.63288385,
+"lon": 13.79566003,
+"urban": true
+},
+"43016": {
+"code": "43016",
+"name": "strada di Fiume 131",
+"lat": 45.63690404,
+"lon": 13.79449971,
+"urban": true
+},
+"43017": {
+"code": "43017",
+"name": "strada di Fiume 155 (scuola)",
+"lat": 45.63700355,
+"lon": 13.79710867,
+"urban": true
+},
+"43018": {
+"code": "43018",
+"name": "strada di Fiume 223 (giardino di Villa Sartorio)",
+"lat": 45.63750943,
+"lon": 13.80199288,
+"urban": true
+},
+"43019": {
+"code": "43019",
+"name": "strada di Fiume 277",
+"lat": 45.63812157,
+"lon": 13.80543784,
+"urban": true
+},
+"43020": {
+"code": "43020",
+"name": "strada di Fiume 198 (angolo via Brigata Casale)",
+"lat": 45.6383274,
+"lon": 13.81049859,
+"urban": true
+},
+"43021": {
+"code": "43021",
+"name": "strada di Fiume 181 (chiesa di San Marco Evangelista)",
+"lat": 45.63716524,
+"lon": 13.7992159,
+"urban": true
+},
+"43022": {
+"code": "43022",
+"name": "VIA DELLE CAMPANELLE 150",
+"lat": 45.63587872,
+"lon": 13.79941998,
+"urban": true
+},
+"44001": {
+"code": "44001",
+"name": "VIA REVOLTELLA 41 (FARMACIA)",
+"lat": 45.6421234,
+"lon": 13.79694776,
+"urban": true
+},
+"44002": {
+"code": "44002",
+"name": "via Revoltella 83 (scala Bonghi)",
+"lat": 45.6420444,
+"lon": 13.79970514,
+"urban": true
+},
+"44003": {
+"code": "44003",
+"name": "VIA CUMANO",
+"lat": 45.64019808,
+"lon": 13.80474891,
+"urban": true
+},
+"44004": {
+"code": "44004",
+"name": "via Fittke 5",
+"lat": 45.64065706,
+"lon": 13.79916376,
+"urban": true
+},
+"44005": {
+"code": "44005",
+"name": "via dei Tominz (museo di storia naturale)",
+"lat": 45.64055285,
+"lon": 13.80209803,
+"urban": true
+},
+"44006": {
+"code": "44006",
+"name": "via Costantino Cumano 2 (angolo via Eugenio Scomparini)",
+"lat": 45.63968782,
+"lon": 13.79601508,
+"urban": true
+},
+"44007": {
+"code": "44007",
+"name": "viale dell'Ippodromo 16 (ex fiera)",
+"lat": 45.63981758,
+"lon": 13.79338503,
+"urban": true
+},
+"44008": {
+"code": "44008",
+"name": "via Costantino Cumano 2 (angolo via Eugenio Scomparini)",
+"lat": 45.63948936,
+"lon": 13.79640106,
+"urban": true
+},
+"44009": {
+"code": "44009",
+"name": "via Costantino Cumano 20 (musei)",
+"lat": 45.63941397,
+"lon": 13.80035798,
+"urban": true
+},
+"44010": {
+"code": "44010",
+"name": "via Costantino Cumano 9 (angolo via Rietti)",
+"lat": 45.63977154,
+"lon": 13.80355503,
+"urban": true
+},
+"44011": {
+"code": "44011",
+"name": "strada di Fiume 198 (angolo via Brigata Casale)",
+"lat": 45.63843799,
+"lon": 13.8094505,
+"urban": true
+},
+"44012": {
+"code": "44012",
+"name": "strada di Fiume 152 (trattoria alla Gloria)",
+"lat": 45.63823288,
+"lon": 13.80575304,
+"urban": true
+},
+"44013": {
+"code": "44013",
+"name": "strada di Fiume 112 (giardino di Villa Sartorio)",
+"lat": 45.63752537,
+"lon": 13.80136703,
+"urban": true
+},
+"44014": {
+"code": "44014",
+"name": "strada di Fiume 141 (scuola)",
+"lat": 45.63707068,
+"lon": 13.79621869,
+"urban": true
+},
+"44015": {
+"code": "44015",
+"name": "strada di Fiume 131 (angolo via Patrizio)",
+"lat": 45.636992,
+"lon": 13.79430536,
+"urban": true
+},
+"44016": {
+"code": "44016",
+"name": "strada di Fiume 175 (chiesa di San Marco Evangelista)",
+"lat": 45.63720886,
+"lon": 13.79865682,
+"urban": true
+},
+"44017": {
+"code": "44017",
+"name": "via Costantino Cumano 22 (musei)",
+"lat": 45.63953003,
+"lon": 13.80198189,
+"urban": true
+},
+"44018": {
+"code": "44018",
+"name": "via Revoltella 29",
+"lat": 45.641927,
+"lon": 13.79349208,
+"urban": true
+},
+"45001": {
+"code": "45001",
+"name": "via Revoltella 126 (angolo via d'Angeli)",
+"lat": 45.64186739,
+"lon": 13.80342379,
+"urban": true
+},
+"45002": {
+"code": "45002",
+"name": "via Revoltella (scuola, chiesa)",
+"lat": 45.64200181,
+"lon": 13.8068086,
+"urban": true
+},
+"45003": {
+"code": "45003",
+"name": "via Revoltella 138 (angolo via Beda)",
+"lat": 45.64230458,
+"lon": 13.80951616,
+"urban": true
+},
+"45004": {
+"code": "45004",
+"name": "via Revoltella (Rozzol)",
+"lat": 45.64168663,
+"lon": 13.8111108,
+"urban": true
+},
+"45005": {
+"code": "45005",
+"name": "via San Pasquale 23",
+"lat": 45.64293513,
+"lon": 13.80913067,
+"urban": true
+},
+"45006": {
+"code": "45006",
+"name": "via San Pasquale",
+"lat": 45.64320079,
+"lon": 13.80655537,
+"urban": true
+},
+"45007": {
+"code": "45007",
+"name": "via San Pasquale 40 (angolo via dell'Eremo)",
+"lat": 45.64450199,
+"lon": 13.80316879,
+"urban": true
+},
+"45008": {
+"code": "45008",
+"name": "via San Pasquale 113",
+"lat": 45.64507013,
+"lon": 13.80542168,
+"urban": true
+},
+"45009": {
+"code": "45009",
+"name": "via San Pasquale 133",
+"lat": 45.64471493,
+"lon": 13.80760757,
+"urban": true
+},
+"45010": {
+"code": "45010",
+"name": "FERDINANDEO",
+"lat": 45.64512281,
+"lon": 13.81051538,
+"urban": true
+},
+"45011": {
+"code": "45011",
+"name": "via de Marchesetti 8/2 (casa Serena)",
+"lat": 45.64405544,
+"lon": 13.81776568,
+"urban": true
+},
+"45012": {
+"code": "45012",
+"name": "via San Pasquale 84",
+"lat": 45.64496159,
+"lon": 13.80795524,
+"urban": true
+},
+"45013": {
+"code": "45013",
+"name": "via San Pasquale 76",
+"lat": 45.64527415,
+"lon": 13.80513462,
+"urban": true
+},
+"45014": {
+"code": "45014",
+"name": "via San Pasquale",
+"lat": 45.64305505,
+"lon": 13.80682152,
+"urban": true
+},
+"45015": {
+"code": "45015",
+"name": "via San Pasquale 17",
+"lat": 45.64278103,
+"lon": 13.80945795,
+"urban": true
+},
+"45016": {
+"code": "45016",
+"name": "via Revoltella 148 (Rozzol)",
+"lat": 45.64208001,
+"lon": 13.81085546,
+"urban": true
+},
+"45017": {
+"code": "45017",
+"name": "via Revoltella 138 (angolo via Francesco Beda)",
+"lat": 45.64235716,
+"lon": 13.80808427,
+"urban": true
+},
+"45018": {
+"code": "45018",
+"name": "via Revoltella 130 (chiesa, scuola)",
+"lat": 45.64201367,
+"lon": 13.80622128,
+"urban": true
+},
+"45019": {
+"code": "45019",
+"name": "via Revoltella 126 (angolo via d'Angeli)",
+"lat": 45.64197742,
+"lon": 13.80318727,
+"urban": true
+},
+"45020": {
+"code": "45020",
+"name": "via Revoltella 75 (scala Bonghi)",
+"lat": 45.64224465,
+"lon": 13.79948914,
+"urban": true
+},
+"45021": {
+"code": "45021",
+"name": "via Forlanini 9 (angolo strada di Rozzol)",
+"lat": 45.64116283,
+"lon": 13.81397376,
+"urban": true
+},
+"45022": {
+"code": "45022",
+"name": "via Forlanini (angolo via Sofianopulo)",
+"lat": 45.64108405,
+"lon": 13.81548958,
+"urban": true
+},
+"45023": {
+"code": "45023",
+"name": "via Forlanini 37 (angolo via Gortan)",
+"lat": 45.64047906,
+"lon": 13.81878083,
+"urban": true
+},
+"45024": {
+"code": "45024",
+"name": "via Forlanini 37",
+"lat": 45.64060742,
+"lon": 13.81857282,
+"urban": true
+},
+"45025": {
+"code": "45025",
+"name": "via Forlanini 21",
+"lat": 45.64142559,
+"lon": 13.81631004,
+"urban": true
+},
+"45026": {
+"code": "45026",
+"name": "via Forlanini 9",
+"lat": 45.64138231,
+"lon": 13.81387289,
+"urban": true
+},
+"45027": {
+"code": "45027",
+"name": "via de Marchesetti 10/2 (angolo via Koch)",
+"lat": 45.6426515,
+"lon": 13.82126953,
+"urban": true
+},
+"45028": {
+"code": "45028",
+"name": "via de Marchesetti 10",
+"lat": 45.64318557,
+"lon": 13.8198179,
+"urban": true
+},
+"45030": {
+"code": "45030",
+"name": "FERDINANDEO",
+"lat": 45.64529157,
+"lon": 13.81112115,
+"urban": true
+},
+"45031": {
+"code": "45031",
+"name": "via de Marchesetti 21/2",
+"lat": 45.64571993,
+"lon": 13.80665618,
+"urban": true
+},
+"45032": {
+"code": "45032",
+"name": "via de Marchesetti 21/4 (largo Battaglia)",
+"lat": 45.64556189,
+"lon": 13.80682886,
+"urban": true
+},
+"45033": {
+"code": "45033",
+"name": "via de Marchesetti 2 (Ferdinandeo)",
+"lat": 45.6452529,
+"lon": 13.81049552,
+"urban": true
+},
+"45034": {
+"code": "45034",
+"name": "via de Marchesetti 25 (angolo via dell'Eremo)",
+"lat": 45.64451095,
+"lon": 13.81395122,
+"urban": true
+},
+"45035": {
+"code": "45035",
+"name": "via de Marchesetti 39 (villa Revoltella)",
+"lat": 45.64447285,
+"lon": 13.81591862,
+"urban": true
+},
+"45036": {
+"code": "45036",
+"name": "via de Marchesetti 49 (angolo Melara)",
+"lat": 45.64347593,
+"lon": 13.81873709,
+"urban": true
+},
+"45037": {
+"code": "45037",
+"name": "via de Marchesetti 57/1 (angolo Koch)",
+"lat": 45.64246484,
+"lon": 13.82149801,
+"urban": true
+},
+"45038": {
+"code": "45038",
+"name": "via de Marchesetti 12/1",
+"lat": 45.64121518,
+"lon": 13.82513639,
+"urban": true
+},
+"46001": {
+"code": "46001",
+"name": "via Valerio 20",
+"lat": 45.65997522,
+"lon": 13.79808374,
+"urban": true
+},
+"46002": {
+"code": "46002",
+"name": "via Valerio 113",
+"lat": 45.66067481,
+"lon": 13.80838372,
+"urban": true
+},
+"46003": {
+"code": "46003",
+"name": "strada nuova per Opicina (cava Faccanoni)",
+"lat": 45.65856816,
+"lon": 13.81330145,
+"urban": true
+},
+"46004": {
+"code": "46004",
+"name": "strada nuova per Opicina 9",
+"lat": 45.66273938,
+"lon": 13.80675319,
+"urban": true
+},
+"46005": {
+"code": "46005",
+"name": "strada nuova per Opicina 2/1 (Casa le Beatitudini)",
+"lat": 45.66491302,
+"lon": 13.80502253,
+"urban": true
+},
+"46006": {
+"code": "46006",
+"name": "strada nuova per Opicina 2/1 (Casa le Beatitudini)",
+"lat": 45.66483011,
+"lon": 13.80484136,
+"urban": true
+},
+"46007": {
+"code": "46007",
+"name": "strada nuova per Opicina 9",
+"lat": 45.66237156,
+"lon": 13.80730015,
+"urban": true
+},
+"46008": {
+"code": "46008",
+"name": "via Valerio (cava faccanoni)",
+"lat": 45.65832506,
+"lon": 13.81329375,
+"urban": true
+},
+"46009": {
+"code": "46009",
+"name": "via Valerio 142",
+"lat": 45.66146196,
+"lon": 13.80725208,
+"urban": true
+},
+"46010": {
+"code": "46010",
+"name": "piazzale Gioberti 1",
+"lat": 45.65639886,
+"lon": 13.80509094,
+"urban": true
+},
+"46011": {
+"code": "46011",
+"name": "viale Raffaello Sanzio 30 (angolo via Brunelleschi)",
+"lat": 45.65546079,
+"lon": 13.80189569,
+"urban": true
+},
+"46012": {
+"code": "46012",
+"name": "viale Raffaello Sanzio (rotonda del Boschetto)",
+"lat": 45.65495427,
+"lon": 13.79908921,
+"urban": true
+},
+"46013": {
+"code": "46013",
+"name": "viale Raffaello Sanzio 1 (rotonda del Boschetto)",
+"lat": 45.65484797,
+"lon": 13.79925192,
+"urban": true
+},
+"46014": {
+"code": "46014",
+"name": "VIALE SANZIO 17",
+"lat": 45.65540563,
+"lon": 13.80221454,
+"urban": true
+},
+"46015": {
+"code": "46015",
+"name": "PIAZZALE GIOBERTI",
+"lat": 45.65606774,
+"lon": 13.80570445,
+"urban": true
+},
+"46016": {
+"code": "46016",
+"name": "via San Pelagio 15 (angolo via delle Docce)",
+"lat": 45.65749293,
+"lon": 13.80858141,
+"urban": true
+},
+"46017": {
+"code": "46017",
+"name": "via alle Cave 53 (angolo via San Pelagio)",
+"lat": 45.65703227,
+"lon": 13.8101539,
+"urban": true
+},
+"46018": {
+"code": "46018",
+"name": "via del Capofonte 13",
+"lat": 45.65708716,
+"lon": 13.81153577,
+"urban": true
+},
+"46019": {
+"code": "46019",
+"name": "BORGO SAN PELAGIO",
+"lat": 45.65765116,
+"lon": 13.81210785,
+"urban": true
+},
+"46020": {
+"code": "46020",
+"name": "via del Capofonte 13",
+"lat": 45.65692897,
+"lon": 13.81147173,
+"urban": true
+},
+"46021": {
+"code": "46021",
+"name": "via alle Cave 55 (angolo via San Pelagio)",
+"lat": 45.65713682,
+"lon": 13.81025437,
+"urban": true
+},
+"46022": {
+"code": "46022",
+"name": "via alle Cave 35 (via della Francesca)",
+"lat": 45.65672444,
+"lon": 13.80911754,
+"urban": true
+},
+"46023": {
+"code": "46023",
+"name": "SAN CILINO",
+"lat": 45.66323441,
+"lon": 13.8033088,
+"urban": true
+},
+"46024": {
+"code": "46024",
+"name": "via Valerio 38 (angolo clivo Artemisio)",
+"lat": 45.66082064,
+"lon": 13.79953916,
+"urban": true
+},
+"46025": {
+"code": "46025",
+"name": "via San Pelagio 27 (angolo via delle Cave)",
+"lat": 45.65687892,
+"lon": 13.80925867,
+"urban": true
+},
+"46026": {
+"code": "46026",
+"name": "strada di Guardiella 2 (rotonda del Boschetto)",
+"lat": 45.65455114,
+"lon": 13.7992711,
+"urban": true
+},
+"46027": {
+"code": "46027",
+"name": "strada di Guardiella 4 (rotonda del Boschetto)",
+"lat": 45.65463348,
+"lon": 13.79939769,
+"urban": true
+},
+"46028": {
+"code": "46028",
+"name": "PIAZZALE GIOBERTI",
+"lat": 45.65627925,
+"lon": 13.80570316,
+"urban": true
+},
+"46029": {
+"code": "46029",
+"name": "via Alfonso Valerio 73",
+"lat": 45.66284547,
+"lon": 13.80355778,
+"urban": true
+},
+"46030": {
+"code": "46030",
+"name": "via alle Cave 1/1 (angolo via San Cilino)",
+"lat": 45.65562157,
+"lon": 13.80693648,
+"urban": true
+},
+"46031": {
+"code": "46031",
+"name": "via del Donatello 4",
+"lat": 45.65583039,
+"lon": 13.80066205,
+"urban": true
+},
+"46033": {
+"code": "46033",
+"name": "piazzale Canestrini 6",
+"lat": 45.65753943,
+"lon": 13.80141174,
+"urban": true
+},
+"46034": {
+"code": "46034",
+"name": "via Weiss 5",
+"lat": 45.65947984,
+"lon": 13.80279798,
+"urban": true
+},
+"46035": {
+"code": "46035",
+"name": "PARCO SAN GIOVANNI",
+"lat": 45.6612527,
+"lon": 13.80359492,
+"urban": true
+},
+"46037": {
+"code": "46037",
+"name": "via Weiss 4",
+"lat": 45.65880997,
+"lon": 13.80197508,
+"urban": true
+},
+"46038": {
+"code": "46038",
+"name": "piazzale Canestrini 1",
+"lat": 45.65756093,
+"lon": 13.80045823,
+"urban": true
+},
+"46040": {
+"code": "46040",
+"name": "via del Donatello 3",
+"lat": 45.65583344,
+"lon": 13.800524,
+"urban": true
+},
+"46041": {
+"code": "46041",
+"name": "via delle Docce 18",
+"lat": 45.65733251,
+"lon": 13.80787244,
+"urban": true
+},
+"46042": {
+"code": "46042",
+"name": "via Alfonso Valerio (via San Cilino)",
+"lat": 45.66343635,
+"lon": 13.80325356,
+"urban": true
+},
+"47001": {
+"code": "47001",
+"name": "via Alfonso Valerio 2",
+"lat": 45.65802369,
+"lon": 13.79397273,
+"urban": true
+},
+"47002": {
+"code": "47002",
+"name": "strada nuova per Opicina 18",
+"lat": 45.6683668,
+"lon": 13.79449882,
+"urban": true
+},
+"47003": {
+"code": "47003",
+"name": "via della Bellavista 1 (casa cantoniera)",
+"lat": 45.66762574,
+"lon": 13.79123465,
+"urban": true
+},
+"47004": {
+"code": "47004",
+"name": "strada nuova per Opicina 18",
+"lat": 45.66824596,
+"lon": 13.7945624,
+"urban": true
+},
+"47005": {
+"code": "47005",
+"name": "strada nuova per Opicina 14 (angolo via dei Baiardi)",
+"lat": 45.66713808,
+"lon": 13.79876168,
+"urban": true
+},
+"47006": {
+"code": "47006",
+"name": "via Alfonso Valerio 20 (via dello Scoglio)",
+"lat": 45.66006886,
+"lon": 13.7980011,
+"urban": true
+},
+"47007": {
+"code": "47007",
+"name": "via Alfonso Valerio 2 (università)",
+"lat": 45.65804544,
+"lon": 13.79356572,
+"urban": true
+},
+"47008": {
+"code": "47008",
+"name": "via Fabio Severo 143 (curva Masè)",
+"lat": 45.66091098,
+"lon": 13.79266735,
+"urban": true
+},
+"47009": {
+"code": "47009",
+"name": "via Cesare Cantù 1 (angolo vicolo del Castagneto)",
+"lat": 45.66094405,
+"lon": 13.79095124,
+"urban": true
+},
+"47010": {
+"code": "47010",
+"name": "via Cesare Cantù 39 (angolo via Monte San Gabriele)",
+"lat": 45.66026221,
+"lon": 13.78733968,
+"urban": true
+},
+"47011": {
+"code": "47011",
+"name": "via Cesare Cantù 43 (scuola)",
+"lat": 45.66084253,
+"lon": 13.78604672,
+"urban": true
+},
+"47012": {
+"code": "47012",
+"name": "via Cesare Cantù 34 (angolo via Guicciardini)",
+"lat": 45.66110904,
+"lon": 13.78191084,
+"urban": true
+},
+"47013": {
+"code": "47013",
+"name": "VIA CANTU'",
+"lat": 45.6608828,
+"lon": 13.77968863,
+"urban": true
+},
+"47014": {
+"code": "47014",
+"name": "via Alfonso Valerio 10 (università)",
+"lat": 45.6590992,
+"lon": 13.79652325,
+"urban": true
+},
+"47015": {
+"code": "47015",
+"name": "via Fabio Severo (università, piazzale Europa)",
+"lat": 45.65877297,
+"lon": 13.79247731,
+"urban": true
+},
+"47016": {
+"code": "47016",
+"name": "via Cesare Cantù 39 (scuole)",
+"lat": 45.6601669,
+"lon": 13.78768831,
+"urban": true
+},
+"47017": {
+"code": "47017",
+"name": "via Cesare Cantù 1 (angolo vicolo del Castagneto)",
+"lat": 45.66098417,
+"lon": 13.79129255,
+"urban": true
+},
+"47018": {
+"code": "47018",
+"name": "via Alfonso Valerio 38 (angolo clivo Artemisio)",
+"lat": 45.66117699,
+"lon": 13.79980978,
+"urban": true
+},
+"47019": {
+"code": "47019",
+"name": "via Cesare Cantù 12 (angolo via del Montello)",
+"lat": 45.66106797,
+"lon": 13.78481597,
+"urban": true
+},
+"47020": {
+"code": "47020",
+"name": "via dello Scoglio 167 (angolo via Zanella Gianella)",
+"lat": 45.65861962,
+"lon": 13.79628322,
+"urban": true
+},
+"48001": {
+"code": "48001",
+"name": "strada nuova per Opicina 29 (angolo via dei Baiardi)",
+"lat": 45.66753464,
+"lon": 13.79881097,
+"urban": true
+},
+"48002": {
+"code": "48002",
+"name": "via della Bellavista 5 (angolo via dei Mantovani)",
+"lat": 45.66912256,
+"lon": 13.79233861,
+"urban": true
+},
+"48003": {
+"code": "48003",
+"name": "via della Bellavista 12 (fontana)",
+"lat": 45.67001204,
+"lon": 13.79431586,
+"urban": true
+},
+"48004": {
+"code": "48004",
+"name": "CONCONELLO",
+"lat": 45.67060201,
+"lon": 13.79478143,
+"urban": true
+},
+"48005": {
+"code": "48005",
+"name": "via della Bellavista 12 (trattoria Ferluga)",
+"lat": 45.67003782,
+"lon": 13.79419976,
+"urban": true
+},
+"48006": {
+"code": "48006",
+"name": "via della Bellavista 5 (angolo via dei Mantovani)",
+"lat": 45.66923907,
+"lon": 13.79229117,
+"urban": true
+},
+"48007": {
+"code": "48007",
+"name": "strada nuova per Opicina 31 (direzione Conconello)",
+"lat": 45.67239292,
+"lon": 13.79177396,
+"urban": true
+},
+"48008": {
+"code": "48008",
+"name": "strada nuova per Opicina 26 (angolo via Commerciale)",
+"lat": 45.67468907,
+"lon": 13.78973481,
+"urban": true
+},
+"48009": {
+"code": "48009",
+"name": "strada nuova per Opicina 22 (direzione Conconello)",
+"lat": 45.67236423,
+"lon": 13.79161409,
+"urban": true
+},
+"48011": {
+"code": "48011",
+"name": "salita a Conconello",
+"lat": 45.6711314,
+"lon": 13.78976066,
+"urban": true
+},
+"49001": {
+"code": "49001",
+"name": "strada del Friuli 261 (angolo via dei Righetti)",
+"lat": 45.67938416,
+"lon": 13.76194927,
+"urban": true
+},
+"49002": {
+"code": "49002",
+"name": "strada del Friuli 293",
+"lat": 45.67992955,
+"lon": 13.76053756,
+"urban": true
+},
+"49003": {
+"code": "49003",
+"name": "strada del Friuli 339 (angolo via della Mandria)",
+"lat": 45.68125231,
+"lon": 13.75925956,
+"urban": true
+},
+"49004": {
+"code": "49004",
+"name": "strada del Friuli 417 (angolo via Moncolano)",
+"lat": 45.68320477,
+"lon": 13.75629495,
+"urban": true
+},
+"49005": {
+"code": "49005",
+"name": "strada del Friuli 431",
+"lat": 45.68536196,
+"lon": 13.75687897,
+"urban": true
+},
+"49006": {
+"code": "49006",
+"name": "strada del Friuli 469",
+"lat": 45.68631337,
+"lon": 13.75329483,
+"urban": true
+},
+"49007": {
+"code": "49007",
+"name": "strada del Friuli 517",
+"lat": 45.68955678,
+"lon": 13.7490492,
+"urban": true
+},
+"49008": {
+"code": "49008",
+"name": "strada del Friuli 527 (ex dazio)",
+"lat": 45.69094981,
+"lon": 13.74598392,
+"urban": true
+},
+"49009": {
+"code": "49009",
+"name": "strada del Friuli 236/2 (ex dazio)",
+"lat": 45.6907941,
+"lon": 13.74614795,
+"urban": true
+},
+"49010": {
+"code": "49010",
+"name": "strada del Friuli 230",
+"lat": 45.68925561,
+"lon": 13.74949258,
+"urban": true
+},
+"49011": {
+"code": "49011",
+"name": "strada del Friuli 216",
+"lat": 45.68654662,
+"lon": 13.75281127,
+"urban": true
+},
+"49012": {
+"code": "49012",
+"name": "strada del Friuli 198",
+"lat": 45.68563114,
+"lon": 13.75593939,
+"urban": true
+},
+"49013": {
+"code": "49013",
+"name": "strada del Friuli 194 (angolo via Moncolano)",
+"lat": 45.68287879,
+"lon": 13.75653011,
+"urban": true
+},
+"49014": {
+"code": "49014",
+"name": "strada del Friuli 166 (angolo via della Mandria)",
+"lat": 45.68141579,
+"lon": 13.75897986,
+"urban": true
+},
+"49015": {
+"code": "49015",
+"name": "strada del Friuli 150",
+"lat": 45.67987887,
+"lon": 13.76042953,
+"urban": true
+},
+"49016": {
+"code": "49016",
+"name": "strada del Friuli 267",
+"lat": 45.67947506,
+"lon": 13.76220403,
+"urban": true
+},
+"49017": {
+"code": "49017",
+"name": "strada del Friuli 124",
+"lat": 45.67888836,
+"lon": 13.76170983,
+"urban": true
+},
+"49018": {
+"code": "49018",
+"name": "strada del Friuli 171",
+"lat": 45.67761958,
+"lon": 13.76125305,
+"urban": true
+},
+"49019": {
+"code": "49019",
+"name": "strada del Friuli 106",
+"lat": 45.67667425,
+"lon": 13.75750216,
+"urban": true
+},
+"49020": {
+"code": "49020",
+"name": "strada del Friuli 505",
+"lat": 45.68808511,
+"lon": 13.75192665,
+"urban": true
+},
+"49021": {
+"code": "49021",
+"name": "strada del Friuli 509",
+"lat": 45.68814554,
+"lon": 13.75169093,
+"urban": true
+},
+"51001": {
+"code": "51001",
+"name": "via Flavia 23/1 (incubatore BIC)",
+"lat": 45.62177065,
+"lon": 13.80494498,
+"urban": true
+},
+"51002": {
+"code": "51002",
+"name": "via Flavia 27",
+"lat": 45.62101997,
+"lon": 13.80804588,
+"urban": true
+},
+"51003": {
+"code": "51003",
+"name": "via Flavia 45 (angolo via dei Gravisi)",
+"lat": 45.62011766,
+"lon": 13.80999227,
+"urban": true
+},
+"51004": {
+"code": "51004",
+"name": "via Flavia 55 (angolo via Brigata Casale)",
+"lat": 45.61871221,
+"lon": 13.8128952,
+"urban": true
+},
+"51005": {
+"code": "51005",
+"name": "via Flavia 70 (angolo via Brigata Casale)",
+"lat": 45.61899818,
+"lon": 13.81269676,
+"urban": true
+},
+"51006": {
+"code": "51006",
+"name": "via Flavia 58 (angolo via dei Gravisi)",
+"lat": 45.6205217,
+"lon": 13.80946422,
+"urban": true
+},
+"51007": {
+"code": "51007",
+"name": "via Flavia 27",
+"lat": 45.62121311,
+"lon": 13.80800972,
+"urban": true
+},
+"51008": {
+"code": "51008",
+"name": "via Grego 39",
+"lat": 45.62104639,
+"lon": 13.81621269,
+"urban": true
+},
+"52001": {
+"code": "52001",
+"name": "CAMPANELLE",
+"lat": 45.63053274,
+"lon": 13.80620206,
+"urban": true
+},
+"52002": {
+"code": "52002",
+"name": "via delle Campanelle (via dell'Acqua)",
+"lat": 45.63277805,
+"lon": 13.8061608,
+"urban": true
+},
+"52003": {
+"code": "52003",
+"name": "via delle Campanelle (angolo via dell'Acqua)",
+"lat": 45.63267269,
+"lon": 13.80598342,
+"urban": true
+},
+"52004": {
+"code": "52004",
+"name": "strada di Fiume 419 (angolo via Nicolich)",
+"lat": 45.63548336,
+"lon": 13.82225062,
+"urban": true
+},
+"52005": {
+"code": "52005",
+"name": "via del Castelliere 12 (angolo via del Botro)",
+"lat": 45.63419236,
+"lon": 13.82187672,
+"urban": true
+},
+"52006": {
+"code": "52006",
+"name": "via del Castelliere 67",
+"lat": 45.6335598,
+"lon": 13.81945546,
+"urban": true
+},
+"52007": {
+"code": "52007",
+"name": "via del Castelliere 47",
+"lat": 45.63283,
+"lon": 13.81590726,
+"urban": true
+},
+"52008": {
+"code": "52008",
+"name": "RAUTE",
+"lat": 45.63249894,
+"lon": 13.81219678,
+"urban": true
+},
+"52009": {
+"code": "52009",
+"name": "via del Castelliere 47",
+"lat": 45.63274473,
+"lon": 13.81636452,
+"urban": true
+},
+"52010": {
+"code": "52010",
+"name": "via del Castelliere 67",
+"lat": 45.63354922,
+"lon": 13.81973795,
+"urban": true
+},
+"52011": {
+"code": "52011",
+"name": "via del Castelliere 12 (angolo via del Botro)",
+"lat": 45.63420162,
+"lon": 13.82233842,
+"urban": true
+},
+"52012": {
+"code": "52012",
+"name": "CATTINARA (OSPEDALE)",
+"lat": 45.63465946,
+"lon": 13.82703157,
+"urban": true
+},
+"52013": {
+"code": "52013",
+"name": "via delle Campanelle 300 (campo sportivo)",
+"lat": 45.63068203,
+"lon": 13.80627587,
+"urban": true
+},
+"52014": {
+"code": "52014",
+"name": "CATTINARA (OSPEDALE)",
+"lat": 45.63469693,
+"lon": 13.82717472,
+"urban": true
+},
+"52015": {
+"code": "52015",
+"name": "CATTINARA (OSPEDALE)",
+"lat": 45.63467821,
+"lon": 13.82710455,
+"urban": true
+},
+"52016": {
+"code": "52016",
+"name": "CATTINARA (OSPEDALE)",
+"lat": 45.63483626,
+"lon": 13.8262801,
+"urban": true
+},
+"52018": {
+"code": "52018",
+"name": "strada di Fiume 320 (ospedale di Cattinara)",
+"lat": 45.63492526,
+"lon": 13.82530634,
+"urban": true
+},
+"52019": {
+"code": "52019",
+"name": "via del Botro 21",
+"lat": 45.6335603,
+"lon": 13.82299336,
+"urban": true
+},
+"52020": {
+"code": "52020",
+"name": "via del Botro 32",
+"lat": 45.63332484,
+"lon": 13.82285395,
+"urban": true
+},
+"52021": {
+"code": "52021",
+"name": "STRADA DI FIUME 302",
+"lat": 45.63512456,
+"lon": 13.82411856,
+"urban": true
+},
+"53001": {
+"code": "53001",
+"name": "via Forlanini 77",
+"lat": 45.6391613,
+"lon": 13.82322574,
+"urban": true
+},
+"53002": {
+"code": "53002",
+"name": "via Forlanini 40 (angolo via de Marchesetti)",
+"lat": 45.63691218,
+"lon": 13.82946694,
+"urban": true
+},
+"53003": {
+"code": "53003",
+"name": "via de Marchesetti 12/14",
+"lat": 45.63759634,
+"lon": 13.82991461,
+"urban": true
+},
+"53004": {
+"code": "53004",
+"name": "via de Marchesetti (Rozzol Melara)",
+"lat": 45.63962161,
+"lon": 13.8272869,
+"urban": true
+},
+"53005": {
+"code": "53005",
+"name": "via de Marchesetti (Rozzol Melara)",
+"lat": 45.63916244,
+"lon": 13.8277135,
+"urban": true
+},
+"53006": {
+"code": "53006",
+"name": "via de Marchesetti 12/14",
+"lat": 45.63744345,
+"lon": 13.82992741,
+"urban": true
+},
+"53007": {
+"code": "53007",
+"name": "via Forlanini 117 (Rozzol Melara)",
+"lat": 45.63794681,
+"lon": 13.82547416,
+"urban": true
+},
+"53008": {
+"code": "53008",
+"name": "via Forlanini 131/145 (scuola)",
+"lat": 45.63753898,
+"lon": 13.82695504,
+"urban": true
+},
+"53009": {
+"code": "53009",
+"name": "strada di Fiume (supermercato Zazzeron)",
+"lat": 45.63539318,
+"lon": 13.83099653,
+"urban": true
+},
+"53010": {
+"code": "53010",
+"name": "VIA FORLANINI (SCUOLA)",
+"lat": 45.63773829,
+"lon": 13.82664293,
+"urban": true
+},
+"53011": {
+"code": "53011",
+"name": "via Forlanini 117",
+"lat": 45.6384869,
+"lon": 13.82460318,
+"urban": true
+},
+"53012": {
+"code": "53012",
+"name": "via Forlanini 77",
+"lat": 45.63967298,
+"lon": 13.82309312,
+"urban": true
+},
+"53013": {
+"code": "53013",
+"name": "via Forlanini (angolo via Koch, chiesa)",
+"lat": 45.64071698,
+"lon": 13.82133577,
+"urban": true
+},
+"53014": {
+"code": "53014",
+"name": "via Forlanini (angolo via Koch, chiesa)",
+"lat": 45.6406296,
+"lon": 13.82159103,
+"urban": true
+},
+"53015": {
+"code": "53015",
+"name": "via de Marchesetti 12/1 (Rozzol Melara)",
+"lat": 45.64151709,
+"lon": 13.82473549,
+"urban": true
+},
+"53016": {
+"code": "53016",
+"name": "strada di Fiume 294 (angolo via Nicolich)",
+"lat": 45.63536276,
+"lon": 13.82277599,
+"urban": true
+},
+"53017": {
+"code": "53017",
+"name": "strada di Fiume 525 (ospedale di Cattinara)",
+"lat": 45.63497564,
+"lon": 13.83021614,
+"urban": true
+},
+"53018": {
+"code": "53018",
+"name": "via Forlanini 40 (angolo via de Marchesetti)",
+"lat": 45.63711616,
+"lon": 13.82917078,
+"urban": true
+},
+"53019": {
+"code": "53019",
+"name": "strada di Fiume 300 (angolo via del Castelliere)",
+"lat": 45.63525303,
+"lon": 13.82392021,
+"urban": true
+},
+"54001": {
+"code": "54001",
+"name": "via de Marchesetti 8/1 (casa Serena)",
+"lat": 45.64457309,
+"lon": 13.81647152,
+"urban": true
+},
+"54002": {
+"code": "54002",
+"name": "strada per Longera 207 (angolo via Masaccio)",
+"lat": 45.64982401,
+"lon": 13.81549424,
+"urban": true
+},
+"54003": {
+"code": "54003",
+"name": "strada per Longera 212",
+"lat": 45.64789293,
+"lon": 13.81936933,
+"urban": true
+},
+"54004": {
+"code": "54004",
+"name": "strada per Longera 224",
+"lat": 45.64668381,
+"lon": 13.8221314,
+"urban": true
+},
+"54005": {
+"code": "54005",
+"name": "strada per Longera 232",
+"lat": 45.6455159,
+"lon": 13.82409364,
+"urban": true
+},
+"54006": {
+"code": "54006",
+"name": "strada per Longera 251 (chiesa)",
+"lat": 45.64107055,
+"lon": 13.82946053,
+"urban": true
+},
+"54007": {
+"code": "54007",
+"name": "LONGERA",
+"lat": 45.64013826,
+"lon": 13.83115127,
+"urban": true
+},
+"54008": {
+"code": "54008",
+"name": "strada per Longera 238 (chiesa)",
+"lat": 45.64113801,
+"lon": 13.82945592,
+"urban": true
+},
+"54009": {
+"code": "54009",
+"name": "strada per Longera 228",
+"lat": 45.64569268,
+"lon": 13.82377874,
+"urban": true
+},
+"54010": {
+"code": "54010",
+"name": "strada per Longera 224",
+"lat": 45.6468092,
+"lon": 13.82207102,
+"urban": true
+},
+"54011": {
+"code": "54011",
+"name": "strada per Longera 210",
+"lat": 45.64809014,
+"lon": 13.81929139,
+"urban": true
+},
+"54012": {
+"code": "54012",
+"name": "strada statale 14 per Basovizza 62",
+"lat": 45.65065559,
+"lon": 13.82018038,
+"urban": true
+},
+"54013": {
+"code": "54013",
+"name": "strada statale 14 per Basovizza 112",
+"lat": 45.63807649,
+"lon": 13.83594488,
+"urban": true
+},
+"54014": {
+"code": "54014",
+"name": "strada statale 14 per Basovizza 112 (ex dazio)",
+"lat": 45.63787849,
+"lon": 13.83638845,
+"urban": true
+},
+"54015": {
+"code": "54015",
+"name": "strada statale 14 per Basovizza 56",
+"lat": 45.65151558,
+"lon": 13.81934775,
+"urban": true
+},
+"55002": {
+"code": "55002",
+"name": "via di Giarizzole 1 (piazzale di Giarizzole)",
+"lat": 45.6209413,
+"lon": 13.79796253,
+"urban": true
+},
+"55003": {
+"code": "55003",
+"name": "via di Giarizzole 39 (angolo via Schmidl)",
+"lat": 45.61663216,
+"lon": 13.79604731,
+"urban": true
+},
+"55004": {
+"code": "55004",
+"name": "via Schmidl 28",
+"lat": 45.61758529,
+"lon": 13.79211804,
+"urban": true
+},
+"55005": {
+"code": "55005",
+"name": "via Rossi 52 (angolo via Schmidl)",
+"lat": 45.61868334,
+"lon": 13.79126072,
+"urban": true
+},
+"55006": {
+"code": "55006",
+"name": "via Rossi 12 (angolo via San Pantaleone)",
+"lat": 45.62065063,
+"lon": 13.79642948,
+"urban": true
+},
+"55007": {
+"code": "55007",
+"name": "via San Pantaleone (angolo via Ercole Miani)",
+"lat": 45.62163291,
+"lon": 13.79568651,
+"urban": true
+},
+"55008": {
+"code": "55008",
+"name": "via Schmidl 48",
+"lat": 45.61669367,
+"lon": 13.79377253,
+"urban": true
+},
+"56001": {
+"code": "56001",
+"name": "via Flavia (piazzale Cagni)",
+"lat": 45.62115229,
+"lon": 13.79919545,
+"urban": true
+},
+"56002": {
+"code": "56002",
+"name": "via Flavia 59",
+"lat": 45.61782312,
+"lon": 13.8161238,
+"urban": true
+},
+"56003": {
+"code": "56003",
+"name": "strada provinciale 12 della Rosandra (magazzino Obi)",
+"lat": 45.61598209,
+"lon": 13.82000718,
+"urban": true
+},
+"56004": {
+"code": "56004",
+"name": "strada provinciale 12 della Rosandra 2 (magazzino Obi)",
+"lat": 45.61592383,
+"lon": 13.82046693,
+"urban": true
+},
+"56005": {
+"code": "56005",
+"name": "via Flavia 102 (Enel)",
+"lat": 45.61718893,
+"lon": 13.81833367,
+"urban": true
+},
+"56006": {
+"code": "56006",
+"name": "via Flavia 84",
+"lat": 45.61803296,
+"lon": 13.81587709,
+"urban": true
+},
+"56007": {
+"code": "56007",
+"name": "strada di Monte d'Oro 14 (zona industriale est)",
+"lat": 45.60822576,
+"lon": 13.81894512,
+"urban": true
+},
+"56008": {
+"code": "56008",
+"name": "via Caboto 10 (Orion, ufficio postale)",
+"lat": 45.61912712,
+"lon": 13.8013427,
+"urban": true
+},
+"56009": {
+"code": "56009",
+"name": "via Caboto 17 (Italcementi)",
+"lat": 45.61762881,
+"lon": 13.80352306,
+"urban": true
+},
+"56010": {
+"code": "56010",
+"name": "via Caboto 20/2",
+"lat": 45.61680328,
+"lon": 13.80737114,
+"urban": true
+},
+"56011": {
+"code": "56011",
+"name": "via Caboto 29 (angolo via Querini)",
+"lat": 45.61670336,
+"lon": 13.81103774,
+"urban": true
+},
+"56012": {
+"code": "56012",
+"name": "via Caboto (angolo via Malaspina)",
+"lat": 45.61650038,
+"lon": 13.8152142,
+"urban": true
+},
+"56013": {
+"code": "56013",
+"name": "via di Giarizzole 29 (angolo via Racheli)",
+"lat": 45.61814024,
+"lon": 13.79736824,
+"urban": true
+},
+"56014": {
+"code": "56014",
+"name": "via Caboto 28 (angolo via Querini)",
+"lat": 45.61713341,
+"lon": 13.81211404,
+"urban": true
+},
+"56015": {
+"code": "56015",
+"name": "via Caboto 20/2",
+"lat": 45.61691679,
+"lon": 13.80730553,
+"urban": true
+},
+"56016": {
+"code": "56016",
+"name": "via Caboto 16 (Italcementi)",
+"lat": 45.6174894,
+"lon": 13.80396213,
+"urban": true
+},
+"56017": {
+"code": "56017",
+"name": "via Caboto 10 (Orion, ufficio postale)",
+"lat": 45.61896098,
+"lon": 13.801808,
+"urban": true
+},
+"56018": {
+"code": "56018",
+"name": "via Caboto (piazzale Cagni)",
+"lat": 45.62063452,
+"lon": 13.80003106,
+"urban": true
+},
+"56019": {
+"code": "56019",
+"name": "via Flavia (ponte ferroviario)",
+"lat": 45.60852952,
+"lon": 13.81406758,
+"urban": true
+},
+"56020": {
+"code": "56020",
+"name": "via Flavia 126 (Diaco)",
+"lat": 45.61005999,
+"lon": 13.81701496,
+"urban": true
+},
+"56021": {
+"code": "56021",
+"name": "via Flavia 114 (illycaffè)",
+"lat": 45.61327778,
+"lon": 13.81947025,
+"urban": true
+},
+"56022": {
+"code": "56022",
+"name": "via Flavia 104",
+"lat": 45.61699971,
+"lon": 13.8183152,
+"urban": true
+},
+"56023": {
+"code": "56023",
+"name": "via Flavia 118 (illycaffè)",
+"lat": 45.61301035,
+"lon": 13.81924696,
+"urban": true
+},
+"56024": {
+"code": "56024",
+"name": "via Flavia 126 (Diaco)",
+"lat": 45.6100091,
+"lon": 13.81659614,
+"urban": true
+},
+"56026": {
+"code": "56026",
+"name": "via Mafalda di Savoia (imbocco via Caboto)",
+"lat": 45.62024382,
+"lon": 13.79968344,
+"urban": true
+},
+"56027": {
+"code": "56027",
+"name": "strada provinciale 12 della Rosandra 50 (Pane Quotidiano)",
+"lat": 45.61445585,
+"lon": 13.82300515,
+"urban": true
+},
+"56028": {
+"code": "56028",
+"name": "DOMIO",
+"lat": 45.61354034,
+"lon": 13.82413051,
+"urban": true
+},
+"56029": {
+"code": "56029",
+"name": "via Rossi 36 (angolo via Puschi)",
+"lat": 45.619893,
+"lon": 13.79329666,
+"urban": true
+},
+"56030": {
+"code": "56030",
+"name": "via Morpurgo 12 (angolo via Petracco)",
+"lat": 45.616162,
+"lon": 13.82261353,
+"urban": true
+},
+"56031": {
+"code": "56031",
+"name": "via Rossi 32 (angolo via Cesca)",
+"lat": 45.62023534,
+"lon": 13.7946041,
+"urban": true
+},
+"56032": {
+"code": "56032",
+"name": "via Grego 8",
+"lat": 45.61878674,
+"lon": 13.81704268,
+"urban": true
+},
+"57001": {
+"code": "57001",
+"name": "via Petracco 10 (scuola, angolo via Curiel)",
+"lat": 45.6158628,
+"lon": 13.82371321,
+"urban": true
+},
+"57002": {
+"code": "57002",
+"name": "via Curiel (angolo via Rosani)",
+"lat": 45.61696421,
+"lon": 13.82534478,
+"urban": true
+},
+"57003": {
+"code": "57003",
+"name": "BORGO SAN SERGIO",
+"lat": 45.61833182,
+"lon": 13.82572988,
+"urban": true
+},
+"57004": {
+"code": "57004",
+"name": "via Vincenzo Gigante (piazzale Sartori)",
+"lat": 45.61945778,
+"lon": 13.82668763,
+"urban": true
+},
+"57005": {
+"code": "57005",
+"name": "via Maovaz 36 (angolo via Sala)",
+"lat": 45.62094427,
+"lon": 13.82857109,
+"urban": true
+},
+"57006": {
+"code": "57006",
+"name": "via Maovaz 6/b (angolo via di Peco)",
+"lat": 45.62250409,
+"lon": 13.82663691,
+"urban": true
+},
+"57007": {
+"code": "57007",
+"name": "via Forti 70",
+"lat": 45.62147634,
+"lon": 13.82428849,
+"urban": true
+},
+"57008": {
+"code": "57008",
+"name": "via Forti 54 (parco giochi)",
+"lat": 45.62000776,
+"lon": 13.82327699,
+"urban": true
+},
+"57009": {
+"code": "57009",
+"name": "via Forti 30 (scuola)",
+"lat": 45.6190774,
+"lon": 13.82121531,
+"urban": true
+},
+"57010": {
+"code": "57010",
+"name": "strada provinciale 12 della Rosandra 56 (Domio)",
+"lat": 45.61354419,
+"lon": 13.82494164,
+"urban": true
+},
+"57011": {
+"code": "57011",
+"name": "via Grego 38 (angolo via Forti)",
+"lat": 45.62236687,
+"lon": 13.82292298,
+"urban": true
+},
+"57012": {
+"code": "57012",
+"name": "via Forti 15 (scuola)",
+"lat": 45.61928157,
+"lon": 13.8222468,
+"urban": true
+},
+"57013": {
+"code": "57013",
+"name": "via Forti 74",
+"lat": 45.62167288,
+"lon": 13.82458262,
+"urban": true
+},
+"57014": {
+"code": "57014",
+"name": "via Rosani 1",
+"lat": 45.6162162,
+"lon": 13.82788355,
+"urban": true
+},
+"57015": {
+"code": "57015",
+"name": "via Rosani 29/1",
+"lat": 45.61804795,
+"lon": 13.83096224,
+"urban": true
+},
+"57016": {
+"code": "57016",
+"name": "via Maovaz 11",
+"lat": 45.61930401,
+"lon": 13.82880688,
+"urban": true
+},
+"57017": {
+"code": "57017",
+"name": "via Maovaz 6",
+"lat": 45.62212955,
+"lon": 13.82697784,
+"urban": true
+},
+"57018": {
+"code": "57018",
+"name": "via Maovaz 3",
+"lat": 45.61956367,
+"lon": 13.8286732,
+"urban": true
+},
+"57019": {
+"code": "57019",
+"name": "via Rosani 14",
+"lat": 45.61838393,
+"lon": 13.83125027,
+"urban": true
+},
+"57020": {
+"code": "57020",
+"name": "via Rosani 9",
+"lat": 45.61638863,
+"lon": 13.82802105,
+"urban": true
+},
+"57021": {
+"code": "57021",
+"name": "via Petracco 10",
+"lat": 45.61619679,
+"lon": 13.82336914,
+"urban": true
+},
+"58002": {
+"code": "58002",
+"name": "via delle Alpi Giulie 2 (piscina)",
+"lat": 45.62686723,
+"lon": 13.81898662,
+"urban": true
+},
+"58003": {
+"code": "58003",
+"name": "via delle Alpi Giulie 5 (grattacielo)",
+"lat": 45.62672466,
+"lon": 13.82043282,
+"urban": true
+},
+"58004": {
+"code": "58004",
+"name": "via delle Alpi Giulie (palo elettrico 226)",
+"lat": 45.62771221,
+"lon": 13.82149293,
+"urban": true
+},
+"58005": {
+"code": "58005",
+"name": "via delle Alpi Giulie (angolo via Monte Peralba)",
+"lat": 45.62825461,
+"lon": 13.81954119,
+"urban": true
+},
+"58006": {
+"code": "58006",
+"name": "via delle Alpi Giulie 1",
+"lat": 45.63064346,
+"lon": 13.81945255,
+"urban": true
+},
+"58007": {
+"code": "58007",
+"name": "via delle Alpi Giulie 12 (angolo via del Montasio)",
+"lat": 45.63027921,
+"lon": 13.82209664,
+"urban": true
+},
+"58008": {
+"code": "58008",
+"name": "via delle Alpi Giulie (chiosco in cemento)",
+"lat": 45.63075557,
+"lon": 13.82377694,
+"urban": true
+},
+"58009": {
+"code": "58009",
+"name": "via delle Alpi Giulie 12 (angolo via del Montasio)",
+"lat": 45.63030181,
+"lon": 13.82166959,
+"urban": true
+},
+"58010": {
+"code": "58010",
+"name": "via delle Alpi Giulie 1 (cabina elettrica Acegas)",
+"lat": 45.63073649,
+"lon": 13.81930947,
+"urban": true
+},
+"58011": {
+"code": "58011",
+"name": "via delle Alpi Giulie (angolo via Monte Peralba)",
+"lat": 45.62816317,
+"lon": 13.81983818,
+"urban": true
+},
+"58012": {
+"code": "58012",
+"name": "via delle Alpi Giulie 2 (piscina)",
+"lat": 45.62685603,
+"lon": 13.81964432,
+"urban": true
+},
+"58013": {
+"code": "58013",
+"name": "via Grego 38 (angolo via Sergio Forti)",
+"lat": 45.62234756,
+"lon": 13.82235897,
+"urban": true
+},
+"58014": {
+"code": "58014",
+"name": "via Rio Storto (angolo via del Montasio)",
+"lat": 45.63113982,
+"lon": 13.8239421,
+"urban": true
+},
+"58015": {
+"code": "58015",
+"name": "via Grego 32/1 (angolo via Sillani)",
+"lat": 45.62212902,
+"lon": 13.8194998,
+"urban": true
+},
+"58016": {
+"code": "58016",
+"name": "via Grego (angolo via Sillani)",
+"lat": 45.62200645,
+"lon": 13.82026882,
+"urban": true
+},
+"58017": {
+"code": "58017",
+"name": "via Rio Storto (angolo via del Montasio)",
+"lat": 45.63107596,
+"lon": 13.82386005,
+"urban": true
+},
+"58018": {
+"code": "58018",
+"name": "via delle Alpi Giulie 27 (scuola)",
+"lat": 45.63034759,
+"lon": 13.81825921,
+"urban": true
+},
+"58019": {
+"code": "58019",
+"name": "via delle Alpi Giulie 23 (scuola Don Milani)",
+"lat": 45.63012641,
+"lon": 13.81819651,
+"urban": true
+},
+"58020": {
+"code": "58020",
+"name": "via Grego 10",
+"lat": 45.61880301,
+"lon": 13.81687559,
+"urban": true
+},
+"58021": {
+"code": "58021",
+"name": "via Grego 35",
+"lat": 45.62087474,
+"lon": 13.81615217,
+"urban": true
+},
+"59001": {
+"code": "59001",
+"name": "via Gruden 1 (località Basovizza, chiesa)",
+"lat": 45.64122916,
+"lon": 13.86208228,
+"urban": true
+},
+"59002": {
+"code": "59002",
+"name": "strada provinciale 1 del Carso (parcheggio Basovizza)",
+"lat": 45.64510262,
+"lon": 13.86193648,
+"urban": true
+},
+"59003": {
+"code": "59003",
+"name": "strada provinciale 1 del Carso (cimitero)",
+"lat": 45.64647217,
+"lon": 13.85846948,
+"urban": true
+},
+"59004": {
+"code": "59004",
+"name": "strada provinciale 1 del Carso 228",
+"lat": 45.65297889,
+"lon": 13.84717121,
+"urban": true
+},
+"59005": {
+"code": "59005",
+"name": "strada provinciale 1 del Carso 228",
+"lat": 45.65283151,
+"lon": 13.84728333,
+"urban": true
+},
+"59006": {
+"code": "59006",
+"name": "strada provinciale 1 del Carso (cimitero)",
+"lat": 45.64579754,
+"lon": 13.85986593,
+"urban": true
+},
+"59007": {
+"code": "59007",
+"name": "strada provinciale 1 del Carso (parcheggio Basovizza)",
+"lat": 45.64476394,
+"lon": 13.86227378,
+"urban": true
+},
+"59008": {
+"code": "59008",
+"name": "via Gruden 74 (località Basovizza, chiesa)",
+"lat": 45.64152346,
+"lon": 13.8627115,
+"urban": true
+},
+"59009": {
+"code": "59009",
+"name": "via Gruden 25 (località Basovizza, scuola)",
+"lat": 45.64086495,
+"lon": 13.86030924,
+"urban": true
+},
+"59010": {
+"code": "59010",
+"name": "via Gruden 32 (località Basovizza, scuola)",
+"lat": 45.64077569,
+"lon": 13.85948301,
+"urban": true
+},
+"59011": {
+"code": "59011",
+"name": "COMPRENSORIO SINCROTRONE ELETTRA",
+"lat": 45.64541038,
+"lon": 13.8459606,
+"urban": true
+},
+"59012": {
+"code": "59012",
+"name": "strada provinciale 1 del Carso 173 (Padriciano)",
+"lat": 45.65114864,
+"lon": 13.84909859,
+"urban": true
+},
+"59013": {
+"code": "59013",
+"name": "strada provinciale 1 del Carso 173 (Padriciano)",
+"lat": 45.65076673,
+"lon": 13.84916096,
+"urban": true
+},
+"59014": {
+"code": "59014",
+"name": "comprensorio Sincrotrone Elettra (parcheggio)",
+"lat": 45.64401471,
+"lon": 13.84724524,
+"urban": true
+},
+"61001": {
+"code": "61001",
+"name": "GEMONA ALTA piazza Giuseppe Garibaldi 9",
+"lat": 46.27834198,
+"lon": 13.13976298,
+"urban": false
+},
+"61002": {
+"code": "61002",
+"name": "GEMONA via Salcons (fronte Santa Maria degli Angeli)",
+"lat": 46.27685398,
+"lon": 13.13428998,
+"urban": false
+},
+"61003": {
+"code": "61003",
+"name": "GEMONA via Trasaghis 159 (semaforo Campagnola)",
+"lat": 46.28083198,
+"lon": 13.11031998,
+"urban": false
+},
+"61006": {
+"code": "61006",
+"name": "GEMONA via Praviolai (centro studi stallo esterno)",
+"lat": 46.28331998,
+"lon": 13.12833998,
+"urban": false
+},
+"61007": {
+"code": "61007",
+"name": "OSPEDALETTO via Nazionale 27 (direzione Udine)",
+"lat": 46.29837098,
+"lon": 13.11891998,
+"urban": false
+},
+"61008": {
+"code": "61008",
+"name": "GEMONA via Campagnola 4 (semaforo Campagnola, dir.Carnia)",
+"lat": 46.28208998,
+"lon": 13.10975098,
+"urban": false
+},
+"61009": {
+"code": "61009",
+"name": "GEMONA via Taboga (fronte civico 127, semaforo Taboga)",
+"lat": 46.26634998,
+"lon": 13.10777998,
+"urban": false
+},
+"61010": {
+"code": "61010",
+"name": "CAMPOLESSI via Lessi 64 (direzione Carnia)",
+"lat": 46.25170198,
+"lon": 13.11649598,
+"urban": false
+},
+"61014": {
+"code": "61014",
+"name": "GEMONA via Roma (autostazione)",
+"lat": 46.27546998,
+"lon": 13.12796998,
+"urban": false
+},
+"61015": {
+"code": "61015",
+"name": "GEMONA via Battiferro (fronte 18, ospedale)",
+"lat": 46.28606998,
+"lon": 13.12488498,
+"urban": false
+},
+"61017": {
+"code": "61017",
+"name": "",
+"lat": 46.26136498,
+"lon": 13.10963398,
+"urban": true
+},
+"61019": {
+"code": "61019",
+"name": "GEMONA ALTA via Artico di Prampero 85",
+"lat": 46.27885598,
+"lon": 13.13587798,
+"urban": false
+},
+"61023": {
+"code": "61023",
+"name": "MANIAGLIA via Artegna 23 (direzione Gemona)",
+"lat": 46.25884198,
+"lon": 13.14773198,
+"urban": false
+},
+"61024": {
+"code": "61024",
+"name": "GEMONA via Praviolai (centro Studi Stallo Interno)",
+"lat": 46.28358098,
+"lon": 13.12800298,
+"urban": false
+},
+"61029": {
+"code": "61029",
+"name": "GEMONA largo Beorcje (fronte civico 13)",
+"lat": 46.29281598,
+"lon": 13.12138998,
+"urban": false
+},
+"61030": {
+"code": "61030",
+"name": "GEMONA ALTA via Bersaglio 122 (Vigili del Fuoco)",
+"lat": 46.29073598,
+"lon": 13.12897098,
+"urban": false
+},
+"61031": {
+"code": "61031",
+"name": "GEMONA ALTA via Bersaglio (fronte civico 63, ex latteria)",
+"lat": 46.28647898,
+"lon": 13.13205298,
+"urban": false
+},
+"61036": {
+"code": "61036",
+"name": "GEMONA via Piovega (fronte parco giochi)",
+"lat": 46.27268598,
+"lon": 13.13412498,
+"urban": false
+},
+"61037": {
+"code": "61037",
+"name": "GEMONA via Godo (fronte civico 232, direzione Artegna)",
+"lat": 46.27072998,
+"lon": 13.13995898,
+"urban": false
+},
+"61038": {
+"code": "61038",
+"name": "GEMONA via Uarbe (fronte civico 57, direzione Artegna)",
+"lat": 46.26709598,
+"lon": 13.14299298,
+"urban": false
+},
+"61045": {
+"code": "61045",
+"name": "",
+"lat": 46.28137398,
+"lon": 13.12829798,
+"urban": true
+},
+"61046": {
+"code": "61046",
+"name": "CAMPOLESSI via del Campo (fronte civico 130)",
+"lat": 46.25300498,
+"lon": 13.11686998,
+"urban": false
+},
+"61047": {
+"code": "61047",
+"name": "GEMONA ALTA via Carlo Caneva (fronte 165, Carabinieri)",
+"lat": 46.28134298,
+"lon": 13.13581698,
+"urban": false
+},
+"61048": {
+"code": "61048",
+"name": "",
+"lat": 46.25351098,
+"lon": 13.11158298,
+"urban": true
+},
+"61051": {
+"code": "61051",
+"name": "OSPEDALETTO via Ippolito Nievo 9",
+"lat": 46.29776192,
+"lon": 13.11900792,
+"urban": false
+},
+"61052": {
+"code": "61052",
+"name": "GEMONA via Bariglaria (fronte 162, bivio ospedale dir.Udine)",
+"lat": 46.28702098,
+"lon": 13.12214598,
+"urban": false
+},
+"61053": {
+"code": "61053",
+"name": "GEMONA via Osoppo 267 (semaforo Taboga, dir. stazione FS)",
+"lat": 46.26624898,
+"lon": 13.10953698,
+"urban": false
+},
+"61055": {
+"code": "61055",
+"name": "GEMONA via Campagnola 47 (Casa Cantoniera, direzione Udine)",
+"lat": 46.28701498,
+"lon": 13.11207698,
+"urban": false
+},
+"61056": {
+"code": "61056",
+"name": "CAMPOLESSI via Buja 1 (fronte chiesa San Marco)",
+"lat": 46.25145298,
+"lon": 13.11593998,
+"urban": false
+},
+"61058": {
+"code": "61058",
+"name": "GEMONA via Salcons (S. Maria degli Angeli, dir.centro studi)",
+"lat": 46.27690798,
+"lon": 13.13439698,
+"urban": false
+},
+"61059": {
+"code": "61059",
+"name": "GEMONA via Trasaghis 298 (semaforo Campagnola)",
+"lat": 46.28090198,
+"lon": 13.11051598,
+"urban": false
+},
+"61060": {
+"code": "61060",
+"name": "OSPEDALETTO via Nazionale 44",
+"lat": 46.29841698,
+"lon": 13.11910698,
+"urban": false
+},
+"61061": {
+"code": "61061",
+"name": "GEMONA via Taboga 305 (semaforo Campagnola, dir. Udine)",
+"lat": 46.27943998,
+"lon": 13.10911998,
+"urban": false
+},
+"61062": {
+"code": "61062",
+"name": ">>> SOSPESA >>> CAMPOLESSI via Nazionale (direzione Artegna)",
+"lat": 46.25220582,
+"lon": 13.11553682,
+"urban": false
+},
+"61063": {
+"code": "61063",
+"name": "MANIAGLIA via Artegna (fronte civico 23, direzione Artegna)",
+"lat": 46.25881298,
+"lon": 13.14760098,
+"urban": false
+},
+"61064": {
+"code": "61064",
+"name": "GEMONA largo Beorcje 13 (direzione Udine)",
+"lat": 46.29277298,
+"lon": 13.12131198,
+"urban": false
+},
+"61065": {
+"code": "61065",
+"name": "GEMONA via Piovega (lato parco giochi, direz. stazione FS)",
+"lat": 46.27275398,
+"lon": 13.13408398,
+"urban": false
+},
+"61066": {
+"code": "61066",
+"name": "GEMONA via Godo 232 (fronte via San Biagio)",
+"lat": 46.27086298,
+"lon": 13.14027698,
+"urban": false
+},
+"61067": {
+"code": "61067",
+"name": "GEMONA via Uarbe 57",
+"lat": 46.26706898,
+"lon": 13.14310198,
+"urban": false
+},
+"61068": {
+"code": "61068",
+"name": "OSPEDALETTO via Ippolito Nievo 2 (direzione Udine)",
+"lat": 46.29757198,
+"lon": 13.11826398,
+"urban": false
+},
+"61069": {
+"code": "61069",
+"name": "GEMONA via Bariglaria (bivio per ospedale, direzione Carnia)",
+"lat": 46.28682398,
+"lon": 13.12237898,
+"urban": false
+},
+"61070": {
+"code": "61070",
+"name": "GEMONA via Osoppo (fronte civico 267, semaforo Taboga)",
+"lat": 46.26633398,
+"lon": 13.10959398,
+"urban": false
+},
+"61071": {
+"code": "61071",
+"name": "GEMONA via Campagnola (fronte civico 47, Casa Cantoniera)",
+"lat": 46.28695898,
+"lon": 13.11223398,
+"urban": false
+},
+"61072": {
+"code": "61072",
+"name": "GEMONA largo Beorcje (fronte civico 4, direzione Udine)",
+"lat": 46.29272598,
+"lon": 13.12148398,
+"urban": false
+},
+"61073": {
+"code": "61073",
+"name": "CAMPOLESSI via Buja 6",
+"lat": 46.25100198,
+"lon": 13.11580798,
+"urban": false
+},
+"61074": {
+"code": "61074",
+"name": "Ospedaletto via Cjamparis fronte 96",
+"lat": 46.29688398,
+"lon": 13.11939898,
+"urban": false
+},
+"61075": {
+"code": "61075",
+"name": "",
+"lat": 46.26236716,
+"lon": 13.10904852,
+"urban": true
+},
+"61076": {
+"code": "61076",
+"name": "CAMPOLESSI via Lessi 141 dir. Artegna",
+"lat": 46.25306908,
+"lon": 13.11465807,
+"urban": false
+},
+"61077": {
+"code": "61077",
+"name": "CAMPOLESSI via Lessi 78 prov. Artegna",
+"lat": 46.25257017,
+"lon": 13.1153313,
+"urban": false
+},
+"75002": {
+"code": "75002",
+"name": "BEVAZZANA DI S.MICHELE via Bevazzana 15 (direzione Lignano)",
+"lat": 45.67000998,
+"lon": 13.05779898,
+"urban": false
+},
+"75003": {
+"code": "75003",
+"name": "BEVAZZANA DI S.MICHELE via Bevazzana 37 (direzione Lignano)",
+"lat": 45.66697798,
+"lon": 13.06037798,
+"urban": false
+},
+"75004": {
+"code": "75004",
+"name": "BEVAZZANA DI SAN MICHELE via Bevazzana (fronte civico 41)",
+"lat": 45.66618298,
+"lon": 13.05997098,
+"urban": false
+},
+"75005": {
+"code": "75005",
+"name": "BEVAZZANA DI SAN MICHELE via Bevazzana (fronte civico 15)",
+"lat": 45.67004298,
+"lon": 13.05755598,
+"urban": false
+},
+"81001": {
+"code": "81001",
+"name": "CAVAZZO via Zorutti 14 (albergo)",
+"lat": 46.36842098,
+"lon": 13.03990898,
+"urban": false
+},
+"81005": {
+"code": "81005",
+"name": "CESCLANS Strada Statale 512 (bivio)",
+"lat": 46.35735698,
+"lon": 13.05636098,
+"urban": false
+},
+"81006": {
+"code": "81006",
+"name": "CESCLANS via della Fontana 10",
+"lat": 46.35237598,
+"lon": 13.05841998,
+"urban": false
+},
+"81007": {
+"code": "81007",
+"name": "MENA Strada Regionale 512 (bivio, direzione Cavazzo)",
+"lat": 46.35356598,
+"lon": 13.06324898,
+"urban": false
+},
+"81008": {
+"code": "81008",
+"name": "SOMPLAGO Strada Regionale 512 (bar, direzione Cavazzo)",
+"lat": 46.34687698,
+"lon": 13.06788398,
+"urban": false
+},
+"81009": {
+"code": "81009",
+"name": "CAVAZZO via San Rocco, località Salet",
+"lat": 46.37193298,
+"lon": 13.05270398,
+"urban": false
+},
+"81011": {
+"code": "81011",
+"name": "SOMPLAGO via Alessandro Volta (fronte 21, Centrale Enel)",
+"lat": 46.34206798,
+"lon": 13.06804298,
+"urban": false
+},
+"81012": {
+"code": "81012",
+"name": "CESCLANS via Plantas (fronte civico 8, campo giochi)",
+"lat": 46.35295798,
+"lon": 13.05382998,
+"urban": false
+},
+"81013": {
+"code": "81013",
+"name": "",
+"lat": 46.36939998,
+"lon": 13.03282098,
+"urban": true
+},
+"81014": {
+"code": "81014",
+"name": "",
+"lat": 46.36822098,
+"lon": 13.03465298,
+"urban": true
+},
+"81015": {
+"code": "81015",
+"name": "CAVAZZO via Zorutti 7 (albergo)",
+"lat": 46.36847398,
+"lon": 13.03982598,
+"urban": false
+},
+"81016": {
+"code": "81016",
+"name": "MENA Strada Regionale 512 (bivio, direzione Somplago)",
+"lat": 46.35368298,
+"lon": 13.06302198,
+"urban": false
+},
+"81017": {
+"code": "81017",
+"name": "SOMPLAGO via Alessandro Volta (provenienza centrale)",
+"lat": 46.34677998,
+"lon": 13.06758398,
+"urban": false
+},
+"81018": {
+"code": "81018",
+"name": "SOMPLAGO via Alessandro Volta (bar, direzione centrale)",
+"lat": 46.34691198,
+"lon": 13.06731998,
+"urban": false
+},
+"81019": {
+"code": "81019",
+"name": "SOMPLAGO SR 512 (fronte civico 23, bar direzione Osoppo)",
+"lat": 46.34674998,
+"lon": 13.06801898,
+"urban": false
+},
+"82001": {
+"code": "82001",
+"name": "ZUGLIO via Giulio Cesare 12 (centro)",
+"lat": 46.46154198,
+"lon": 13.02623898,
+"urban": false
+},
+"82002": {
+"code": "82002",
+"name": "FORMEASO via Tre Croci (direzione Zuglio)",
+"lat": 46.45620998,
+"lon": 13.02698998,
+"urban": false
+},
+"82004": {
+"code": "82004",
+"name": "ZUGLIO via Fielis",
+"lat": 46.46347798,
+"lon": 13.02537898,
+"urban": false
+},
+"82005": {
+"code": "82005",
+"name": "ZUGLIO via Roma (bivio Sezza, direzione Tolmezzo)",
+"lat": 46.45996798,
+"lon": 13.02665098,
+"urban": false
+},
+"82009": {
+"code": "82009",
+"name": "ZUGLIO via Giulio Cesare 1 (centro)",
+"lat": 46.46095198,
+"lon": 13.02633598,
+"urban": false
+},
+"82010": {
+"code": "82010",
+"name": "FORMEASO via Tre Croci 8 (direzione Tolmezzo)",
+"lat": 46.45631098,
+"lon": 13.02685698,
+"urban": false
+},
+"82011": {
+"code": "82011",
+"name": "ZUGLIO via Roma (bivio Sezza, direzione Arta)",
+"lat": 46.45994298,
+"lon": 13.02676298,
+"urban": false
+},
+"82012": {
+"code": "82012",
+"name": "FIELIS via Los",
+"lat": 46.47072598,
+"lon": 13.00672598,
+"urban": false
+},
+"82013": {
+"code": "82013",
+"name": "SEZZA via Cazzaso",
+"lat": 46.45929998,
+"lon": 13.01506198,
+"urban": false
+},
+"82014": {
+"code": "82014",
+"name": "ZUGLIO via Fielis (area parcheggio)",
+"lat": 46.46425198,
+"lon": 13.02376198,
+"urban": false
+},
+"83001": {
+"code": "83001",
+"name": "PRATO CARNICO SS 465 (civico  88, centro direzione Pesariis)",
+"lat": 46.51992298,
+"lon": 12.80825498,
+"urban": false
+},
+"83002": {
+"code": "83002",
+"name": "AVAUSA Strada Statale 465 (direzione Comeglians)",
+"lat": 46.51826998,
+"lon": 12.82049998,
+"urban": false
+},
+"83003": {
+"code": "83003",
+"name": "CROCE Strada Statale 465 (bivio Sostasio, direz. Comeglians)",
+"lat": 46.51427298,
+"lon": 12.83531498,
+"urban": false
+},
+"83004": {
+"code": "83004",
+"name": "PIERIA SS 465 (fronte 69, municipio direzione Comeglians)",
+"lat": 46.52019598,
+"lon": 12.79854498,
+"urban": false
+},
+"83005": {
+"code": "83005",
+"name": "OSAIS Strada Statale 465 (direzione Comeglians)",
+"lat": 46.52106598,
+"lon": 12.78454298,
+"urban": false
+},
+"83006": {
+"code": "83006",
+"name": "PESARIIS Strada Statale 465 (centro)",
+"lat": 46.52216098,
+"lon": 12.77199998,
+"urban": false
+},
+"83007": {
+"code": "83007",
+"name": "PESARIIS Strada Statale 465 (stabilimento Solari)",
+"lat": 46.52147998,
+"lon": 12.75996998,
+"urban": false
+},
+"83008": {
+"code": "83008",
+"name": "PESARIIS Strada Statale 465 (bivio, direzione Comeglians)",
+"lat": 46.52208498,
+"lon": 12.77334198,
+"urban": false
+},
+"83009": {
+"code": "83009",
+"name": "PESARIIS SS 465 (direzione Comeglians), località Sant'Antoni",
+"lat": 46.52190998,
+"lon": 12.77678098,
+"urban": false
+},
+"83010": {
+"code": "83010",
+"name": "PRATO CARNICO SS 465 (civico 93, Casa Popolo dir.Pesariis)",
+"lat": 46.52036698,
+"lon": 12.80281298,
+"urban": false
+},
+"83011": {
+"code": "83011",
+"name": "PRATO CARNICO SS 465 (civ. 88, dir.Comeglians),  loc.Muliton",
+"lat": 46.52035798,
+"lon": 12.80039598,
+"urban": false
+},
+"83014": {
+"code": "83014",
+"name": "PESARIIS Strada Statale 465 (bivio Lavaret)",
+"lat": 46.52159598,
+"lon": 12.76569198,
+"urban": false
+},
+"83015": {
+"code": "83015",
+"name": "PRATO CARNICO SS 465 (centro, direzione Comeglians)",
+"lat": 46.51985998,
+"lon": 12.80847998,
+"urban": false
+},
+"83016": {
+"code": "83016",
+"name": "AVAUSA Strada Statale 465 (direzione Pesariis)",
+"lat": 46.51847998,
+"lon": 12.82021998,
+"urban": false
+},
+"83017": {
+"code": "83017",
+"name": "CROCE Strada Statale 465 (bivio Sostasio, direz. Pesariis)",
+"lat": 46.51423598,
+"lon": 12.83520498,
+"urban": false
+},
+"83018": {
+"code": "83018",
+"name": "PIERIA SS 465 (civico 69, municipio direzione Pesariis)",
+"lat": 46.52029398,
+"lon": 12.79826498,
+"urban": false
+},
+"83019": {
+"code": "83019",
+"name": "OSAIS Strada Statale 465 (direzione Pesariis)",
+"lat": 46.52113598,
+"lon": 12.78455398,
+"urban": false
+},
+"83020": {
+"code": "83020",
+"name": "PESARIIS Strada Statale 465 (bivio, provenienza Comeglians)",
+"lat": 46.52199398,
+"lon": 12.77336698,
+"urban": false
+},
+"83021": {
+"code": "83021",
+"name": "PESARIIS SS 465 (direzione Pesariis), località Sant'Antonio",
+"lat": 46.52196398,
+"lon": 12.77687498,
+"urban": false
+},
+"83022": {
+"code": "83022",
+"name": "PRATO CARNICO SS 465 (civ. 91, Casa Popolo dir.Comeglians)",
+"lat": 46.52028598,
+"lon": 12.80292998,
+"urban": false
+},
+"83023": {
+"code": "83023",
+"name": "PRATO CARNICO SS 465 (civ. 85, dir.Pesariis), loc. Muliton",
+"lat": 46.52041298,
+"lon": 12.80037098,
+"urban": false
+},
+"95001": {
+"code": "95001",
+"name": "SAPPADA Strada Regionale 355 (chiesa), borgata Palù",
+"lat": 46.56537798,
+"lon": 12.67941798,
+"urban": false
+},
+"95002": {
+"code": "95002",
+"name": "SAPPADA Strada Regionale 355 (civico 38), borgata Lerpa",
+"lat": 46.56526998,
+"lon": 12.66922498,
+"urban": false
+},
+"95003": {
+"code": "95003",
+"name": "SAPPADA Strada Regionale 355 (civico 58), borgata Bach",
+"lat": 46.56595398,
+"lon": 12.68550798,
+"urban": false
+},
+"95004": {
+"code": "95004",
+"name": "CIMA SAPPADA SR 355 (civico 95, fronte chiesa), borgata Cima",
+"lat": 46.56925998,
+"lon": 12.72119998,
+"urban": false
+},
+"95005": {
+"code": "95005",
+"name": "CIMA SAPPADA SR 355 (fronte 95, lato chiesa), borgata Cima",
+"lat": 46.56892098,
+"lon": 12.72131698,
+"urban": false
+},
+"95007": {
+"code": "95007",
+"name": "SAPPADA SR 355 (civico 13, municipio), borgata Bach",
+"lat": 46.56592698,
+"lon": 12.68403598,
+"urban": false
+},
+"95008": {
+"code": "95008",
+"name": "SAPPADA SR 355 (civico 45, albergo), borgata Fontana",
+"lat": 46.56822198,
+"lon": 12.69747398,
+"urban": false
+},
+"95009": {
+"code": "95009",
+"name": "SAPPADA SR 355 (civico 2, caserma), borgata Cretta",
+"lat": 46.57027098,
+"lon": 12.71062098,
+"urban": false
+},
+"95010": {
+"code": "95010",
+"name": "SAPPADA SR 355 (fronte civico 45, albergo), borgata Fontana",
+"lat": 46.56812698,
+"lon": 12.69745498,
+"urban": false
+},
+"95011": {
+"code": "95011",
+"name": "SAPPADA SR 355 (civico 123), borgata Lerpa",
+"lat": 46.56524298,
+"lon": 12.66974598,
+"urban": false
+},
+"95012": {
+"code": "95012",
+"name": "SAPPADA SR 352 (fronte civico 2, caserma), borgata Cretta",
+"lat": 46.57019298,
+"lon": 12.71062598,
+"urban": false
+},
+"95013": {
+"code": "95013",
+"name": "SAPPADA SR 355 (fronte chiesa), borgata Palù",
+"lat": 46.56515498,
+"lon": 12.67833298,
+"urban": false
+},
+"95016": {
+"code": "95016",
+"name": "SAPPADA Borgata Hoffe 42 (Zambelli)",
+"lat": 46.56762798,
+"lon": 12.69429098,
+"urban": false
+},
+"00004": {
+"code": "00004",
+"name": "deposito di Prosecco",
+"lat": 45.70828385,
+"lon": 13.74174294,
+"urban": true
+},
+"00005": {
+"code": "00005",
+"name": "deposito di Opicina (Trieste Trasporti)",
+"lat": 45.68645804,
+"lon": 13.78679416,
+"urban": true
+},
+"00006": {
+"code": "00006",
+"name": "Muggia",
+"lat": 45.60233546,
+"lon": 13.76998946,
+"urban": true
+},
+"00007": {
+"code": "00007",
+"name": "deposito San Marco (Trieste Trasporti)",
+"lat": 45.63840245,
+"lon": 13.77501861,
+"urban": true
+},
+"01001": {
+"code": "01001",
+"name": "via Filzi 3 (piazza Sant'Antonio Nuovo, Ponte Rosso)",
+"lat": 45.65222507,
+"lon": 13.7734944,
+"urban": true
+},
+"01002": {
+"code": "01002",
+"name": "via Roma 18/b (Ponte Rosso)",
+"lat": 45.65255922,
+"lon": 13.77234163,
+"urban": true
+},
+"01003": {
+"code": "01003",
+"name": "piazza Duca degli Abruzzi 2",
+"lat": 45.65365758,
+"lon": 13.76997947,
+"urban": true
+},
+"01004": {
+"code": "01004",
+"name": "piazza Duca degli Abruzzi 2",
+"lat": 45.65369784,
+"lon": 13.77025035,
+"urban": true
+},
+"02001": {
+"code": "02001",
+"name": "PIAZZA DELLA REPUBBLICA",
+"lat": 45.65048127,
+"lon": 13.77413566,
+"urban": true
+},
+"02002": {
+"code": "02002",
+"name": "VIA MAZZINI 4",
+"lat": 45.65163193,
+"lon": 13.7702314,
+"urban": true
+},
+"02003": {
+"code": "02003",
+"name": "via Mazzini (angolo Cassa di Risparmio)",
+"lat": 45.65136475,
+"lon": 13.77091425,
+"urban": true
+},
+"02004": {
+"code": "02004",
+"name": "PIAZZA TOMMASEO",
+"lat": 45.65155972,
+"lon": 13.76895918,
+"urban": true
+},
+"02005": {
+"code": "02005",
+"name": "PIAZZA TOMMASEO",
+"lat": 45.65162956,
+"lon": 13.76917584,
+"urban": true
+},
+"02006": {
+"code": "02006",
+"name": "via Roma 8 (angolo via San Nicolò)",
+"lat": 45.65100661,
+"lon": 13.77150925,
+"urban": true
+},
+"03001": {
+"code": "03001",
+"name": "PIAZZA OBERDAN",
+"lat": 45.65368562,
+"lon": 13.77593969,
+"urban": true
+},
+"03002": {
+"code": "03002",
+"name": "VIA CARDUCCI (LUMINOSA)",
+"lat": 45.65223898,
+"lon": 13.77662292,
+"urban": true
+},
+"03003": {
+"code": "03003",
+"name": "PIAZZA GOLDONI",
+"lat": 45.64990036,
+"lon": 13.77704237,
+"urban": true
+},
+"03004": {
+"code": "03004",
+"name": "PIAZZA GOLDONI",
+"lat": 45.65056215,
+"lon": 13.77706326,
+"urban": true
+},
+"03005": {
+"code": "03005",
+"name": "piazza Oberdan (trenovia)",
+"lat": 45.65417833,
+"lon": 13.77559837,
+"urban": true
+},
+"03006": {
+"code": "03006",
+"name": "PIAZZA GOLDONI",
+"lat": 45.64999001,
+"lon": 13.77700834,
+"urban": true
+},
+"03007": {
+"code": "03007",
+"name": "piazza della Repubblica 2",
+"lat": 45.65058048,
+"lon": 13.77422737,
+"urban": true
+},
+"03008": {
+"code": "03008",
+"name": "via Filzi 23",
+"lat": 45.65467938,
+"lon": 13.77489758,
+"urban": true
+},
+"03009": {
+"code": "03009",
+"name": "via Imbriani 5",
+"lat": 45.65026172,
+"lon": 13.77590512,
+"urban": true
+},
+"03010": {
+"code": "03010",
+"name": "PIAZZA GOLDONI",
+"lat": 45.64967209,
+"lon": 13.77673933,
+"urban": true
+},
+"03011": {
+"code": "03011",
+"name": "PIAZZA GOLDONI",
+"lat": 45.64997067,
+"lon": 13.77688363,
+"urban": true
+},
+"03012": {
+"code": "03012",
+"name": "PIAZZA GOLDONI",
+"lat": 45.65020161,
+"lon": 13.77743688,
+"urban": true
+},
+"03013": {
+"code": "03013",
+"name": "piazza San Giovanni 5/d",
+"lat": 45.65117984,
+"lon": 13.7763279,
+"urban": true
+},
+"03016": {
+"code": "03016",
+"name": "piazza della Repubblica 2",
+"lat": 45.65063323,
+"lon": 13.77401703,
+"urban": true
+},
+"03017": {
+"code": "03017",
+"name": "via Imbriani 2",
+"lat": 45.65073722,
+"lon": 13.77618032,
+"urban": true
+},
+"03018": {
+"code": "03018",
+"name": "PIAZZA OBERDAN",
+"lat": 45.6545759,
+"lon": 13.77536901,
+"urban": true
+},
+"04002": {
+"code": "04002",
+"name": "via Ghega 9 (conservatorio Tartini)",
+"lat": 45.65566012,
+"lon": 13.77360591,
+"urban": true
+},
+"04003": {
+"code": "04003",
+"name": "via Roma 28 (piazza Vittorio Veneto, posta centrale)",
+"lat": 45.65501749,
+"lon": 13.77369334,
+"urban": true
+},
+"04007": {
+"code": "04007",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.6568814,
+"lon": 13.77292143,
+"urban": true
+},
+"04010": {
+"code": "04010",
+"name": "via Ghega 9 (conservatorio Tartini)",
+"lat": 45.65569038,
+"lon": 13.77348973,
+"urban": true
+},
+"04011": {
+"code": "04011",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65618171,
+"lon": 13.77188743,
+"urban": true
+},
+"04012": {
+"code": "04012",
+"name": "VIA GALATTI",
+"lat": 45.65444359,
+"lon": 13.77515301,
+"urban": true
+},
+"04014": {
+"code": "04014",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65706414,
+"lon": 13.77135922,
+"urban": true
+},
+"04015": {
+"code": "04015",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65677104,
+"lon": 13.77065773,
+"urban": true
+},
+"04016": {
+"code": "04016",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65697112,
+"lon": 13.77141356,
+"urban": true
+},
+"04017": {
+"code": "04017",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65668806,
+"lon": 13.77069043,
+"urban": true
+},
+"04018": {
+"code": "04018",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65679416,
+"lon": 13.77109935,
+"urban": true
+},
+"04019": {
+"code": "04019",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65688393,
+"lon": 13.77146346,
+"urban": true
+},
+"04022": {
+"code": "04022",
+"name": "STAZIONE FERROVIARIA",
+"lat": 45.65678547,
+"lon": 13.77213178,
+"urban": true
+},
+"04023": {
+"code": "04023",
+"name": "stazione ferroviaria (varco porto Vecchio)",
+"lat": 45.65650474,
+"lon": 13.77054165,
+"urban": true
+},
+"05001": {
+"code": "05001",
+"name": "riva Tre Novembre (Prefettura, teatro Verdi, municipio)",
+"lat": 45.65114796,
+"lon": 13.7675019,
+"urban": true
+},
+"05002": {
+"code": "05002",
+"name": "riva Caduti per l'italianità di Trieste (teatro Verdi)",
+"lat": 45.65089752,
+"lon": 13.76764857,
+"urban": true
+},
+"05005": {
+"code": "05005",
+"name": "corso Italia (galleria Rossoni)",
+"lat": 45.64960864,
+"lon": 13.77376006,
+"urban": true
+},
+"05006": {
+"code": "05006",
+"name": "via San Michele 10 (parco giochi)",
+"lat": 45.64652134,
+"lon": 13.76957647,
+"urban": true
+},
+"05008": {
+"code": "05008",
+"name": "corso Italia (Questura, teatro romano)",
+"lat": 45.65023016,
+"lon": 13.7712888,
+"urban": true
+},
+"05009": {
+"code": "05009",
+"name": "PIAZZA GOLDONI",
+"lat": 45.64936898,
+"lon": 13.77659193,
+"urban": true
+},
+"05010": {
+"code": "05010",
+"name": "CORSO ITALIA",
+"lat": 45.64979711,
+"lon": 13.77287041,
+"urban": true
+},
+"05011": {
+"code": "05011",
+"name": "CORSO ITALIA",
+"lat": 45.65013057,
+"lon": 13.77165354,
+"urban": true
+},
+"05012": {
+"code": "05012",
+"name": "PIAZZA TOMMASEO",
+"lat": 45.65113893,
+"lon": 13.76916854,
+"urban": true
+},
+"06001": {
+"code": "06001",
+"name": "piazza del Sansovino (Croce Rossa)",
+"lat": 45.64567134,
+"lon": 13.77591529,
+"urban": true
+},
+"06002": {
+"code": "06002",
+"name": "piazza del Sansovino 6 (Croce Rossa)",
+"lat": 45.64547759,
+"lon": 13.77589384,
+"urban": true
+},
+"06003": {
+"code": "06003",
+"name": "VIA SAN GIUSTO 9",
+"lat": 45.64597581,
+"lon": 13.77347474,
+"urban": true
+},
+"06004": {
+"code": "06004",
+"name": "via Grossi 10",
+"lat": 45.647324,
+"lon": 13.77516704,
+"urban": true
+},
+"06005": {
+"code": "06005",
+"name": "via Rota 7",
+"lat": 45.64756552,
+"lon": 13.77167432,
+"urban": true
+},
+"07001": {
+"code": "07001",
+"name": "via San Giacomo in monte 12 (giardino Basevi)",
+"lat": 45.64443435,
+"lon": 13.77765539,
+"urban": true
+},
+"07002": {
+"code": "07002",
+"name": "piazza Vico 9 (angolo via del Bosco)",
+"lat": 45.64504118,
+"lon": 13.77548628,
+"urban": true
+},
+"07003": {
+"code": "07003",
+"name": "CORSO SABA",
+"lat": 45.64900281,
+"lon": 13.77770039,
+"urban": true
+},
+"07004": {
+"code": "07004",
+"name": "via Bernini 6 (angolo via del Bosco)",
+"lat": 45.64507354,
+"lon": 13.7768266,
+"urban": true
+},
+"07005": {
+"code": "07005",
+"name": "via Bernini 6 (angolo via del Bosco)",
+"lat": 45.64519173,
+"lon": 13.77693632,
+"urban": true
+},
+"08001": {
+"code": "08001",
+"name": "via d'Azeglio (angolo via Vasari)",
+"lat": 45.64801007,
+"lon": 13.78208856,
+"urban": true
+},
+"08002": {
+"code": "08002",
+"name": "piazza dell'Ospitale 1 (ospedale Maggiore)",
+"lat": 45.64940629,
+"lon": 13.7805022,
+"urban": true
+},
+"08003": {
+"code": "08003",
+"name": "PONTE DELLA FABRA",
+"lat": 45.6500001,
+"lon": 13.7775311,
+"urban": true
+},
+"08004": {
+"code": "08004",
+"name": "piazza dell'Ospitale 3/d (ospedale Maggiore)",
+"lat": 45.64948987,
+"lon": 13.78032071,
+"urban": true
+},
+"08007": {
+"code": "08007",
+"name": "LARGO BARRIERA",
+"lat": 45.6475958,
+"lon": 13.77953728,
+"urban": true
+},
+"08008": {
+"code": "08008",
+"name": "LARGO BARRIERA",
+"lat": 45.64848715,
+"lon": 13.77871904,
+"urban": true
+},
+"08009": {
+"code": "08009",
+"name": "via Carducci 39 (mercato coperto)",
+"lat": 45.64924546,
+"lon": 13.77808654,
+"urban": true
+},
+"08010": {
+"code": "08010",
+"name": "largo della Barriera Vecchia 17",
+"lat": 45.64829872,
+"lon": 13.77877447,
+"urban": true
+},
+"08011": {
+"code": "08011",
+"name": "LARGO BARRIERA",
+"lat": 45.64808168,
+"lon": 13.77910002,
+"urban": true
+},
+"08013": {
+"code": "08013",
+"name": "via Carducci 22 (angolo via Francesco Crispi)",
+"lat": 45.65054597,
+"lon": 13.77765398,
+"urban": true
+},
+"09001": {
+"code": "09001",
+"name": "VIA BATTISTI (GALLERIA FENICE)",
+"lat": 45.65196393,
+"lon": 13.77834664,
+"urban": true
+},
+"09002": {
+"code": "09002",
+"name": "VIA BATTISTI (GALLERIA FENICE)",
+"lat": 45.65184692,
+"lon": 13.77852408,
+"urban": true
+},
+"09003": {
+"code": "09003",
+"name": "via Carducci 14 (guida luminosa)",
+"lat": 45.65188358,
+"lon": 13.77704388,
+"urban": true
+},
+"09004": {
+"code": "09004",
+"name": "VIA DELLA GINNASTICA (LARGO SANTORIO)",
+"lat": 45.65035101,
+"lon": 13.77878119,
+"urban": true
+},
+"09005": {
+"code": "09005",
+"name": "VIA BATTISTI (PORTICI DI CHIOZZA)",
+"lat": 45.65148031,
+"lon": 13.77748927,
+"urban": true
+},
+"60101": {
+"code": "60101",
+"name": "TRICESIMO via Nazionale 8 (piazza Mazzini, direzione Udine)",
+"lat": 46.16144898,
+"lon": 13.21065898,
+"urban": false
+},
+"60106": {
+"code": "60106",
+"name": "TRICESIMO via Roma 70 (Terminal, direzione Udine)",
+"lat": 46.15821898,
+"lon": 13.21656098,
+"urban": false
+},
+"60107": {
+"code": "60107",
+"name": "TRICESIMO largo Bruno Zanuttini 7",
+"lat": 46.16021798,
+"lon": 13.21001098,
+"urban": false
+},
+"60108": {
+"code": "60108",
+"name": "TRICESIMO via Dante (fronte incrocio via della Ferrovia)",
+"lat": 46.17291998,
+"lon": 13.21733998,
+"urban": false
+},
+"60109": {
+"code": "60109",
+"name": "TRICESIMO via dei Caduti 6 (piazza Mazzini, dir. Tarcento)",
+"lat": 46.16257498,
+"lon": 13.21106998,
+"urban": false
+},
+"60104": {
+"code": "60104",
+"name": "TRICESIMO via dei Caduti (incr. via Castello, dir. Tarcento)",
+"lat": 46.16618798,
+"lon": 13.21348698,
+"urban": false
+},
+"60110": {
+"code": "60110",
+"name": "ARA GRANDE via Fella 22",
+"lat": 46.15988098,
+"lon": 13.17858198,
+"urban": false
+},
+"60111": {
+"code": "60111",
+"name": "ARA PICCOLA via Piave (fronte civico 30)",
+"lat": 46.15815298,
+"lon": 13.19069998,
+"urban": false
+},
+"60112": {
+"code": "60112",
+"name": "",
+"lat": 46.15978598,
+"lon": 13.21605098,
+"urban": true
+},
+"60115": {
+"code": "60115",
+"name": "TRICESIMO via Pontebbana 70 (bivio Cassacco)",
+"lat": 46.16761198,
+"lon": 13.20762198,
+"urban": false
+},
+"60120": {
+"code": "60120",
+"name": "TRICESIMO via 11 Febbraio 50 (Colgallo)",
+"lat": 46.15729798,
+"lon": 13.21303198,
+"urban": false
+},
+"60122": {
+"code": "60122",
+"name": "FELETTANO via Sante Patussi (area verde, direzione Udine)",
+"lat": 46.14759398,
+"lon": 13.19617898,
+"urban": false
+},
+"60125": {
+"code": "60125",
+"name": "FRAELACCO via dei Boreatti 1",
+"lat": 46.18144898,
+"lon": 13.22000498,
+"urban": false
+},
+"60130": {
+"code": "60130",
+"name": "LEONACCO via Pozzuolo (incr. via San Martino, dir.Tricesimo)",
+"lat": 46.13888298,
+"lon": 13.20203698,
+"urban": false
+},
+"60132": {
+"code": "60132",
+"name": "LEONACCO via Pozzuolo (fronte civico 17, direzione Udine)",
+"lat": 46.14284298,
+"lon": 13.20294498,
+"urban": false
+},
+"60135": {
+"code": "60135",
+"name": "LEONACCO via Vittorio Veneto (bivio Luseriacco, dir.Udine)",
+"lat": 46.14957898,
+"lon": 13.20739498,
+"urban": false
+},
+"60137": {
+"code": "60137",
+"name": "FELETTANO via Natività (fronte 126, dir.Udine), Monastetto",
+"lat": 46.15661898,
+"lon": 13.20252998,
+"urban": false
+},
+"60139": {
+"code": "60139",
+"name": "REANA via Celio Nanino 129 (rotonda SS13, direzione Rizzolo)",
+"lat": 46.14442998,
+"lon": 13.22186698,
+"urban": false
+},
+"60151": {
+"code": "60151",
+"name": "TRICESIMO via San Pelagio (stazione FS)",
+"lat": 46.15908998,
+"lon": 13.23453998,
+"urban": false
+},
+"60152": {
+"code": "60152",
+"name": "TRICESIMO via Roma 125 (bivio Reana)",
+"lat": 46.15261998,
+"lon": 13.21929798,
+"urban": false
+},
+"60153": {
+"code": "60153",
+"name": "ARA GRANDE via Fella 15 (direzione Tricesimo)",
+"lat": 46.15938698,
+"lon": 13.17882098,
+"urban": false
+},
+"60154": {
+"code": "60154",
+"name": "TRICESIMO via Ippolito Nievo 14 (direzione Ara)",
+"lat": 46.16053498,
+"lon": 13.19879398,
+"urban": false
+},
+"60155": {
+"code": "60155",
+"name": "TRICESIMO via 11 Febbraio (fronte civico 25)",
+"lat": 46.15928498,
+"lon": 13.20571098,
+"urban": false
+},
+"60156": {
+"code": "60156",
+"name": "TRICESIMO via dei Caduti (incr. via Roncuz, direzione Udine)",
+"lat": 46.16623598,
+"lon": 13.21324498,
+"urban": false
+},
+"60157": {
+"code": "60157",
+"name": "TRICESIMO via Roma (fronte civico 60, Terminal)",
+"lat": 46.15857498,
+"lon": 13.21609998,
+"urban": false
+},
+"60158": {
+"code": "60158",
+"name": "TRICESIMO via Dante 49 (incr.via della Ferrovia, dir. Udine)",
+"lat": 46.17263998,
+"lon": 13.21721998,
+"urban": false
+},
+"60159": {
+"code": "60159",
+"name": "ARA PICCOLA via Piave 30 (direzione Tricesimo)",
+"lat": 46.15804698,
+"lon": 13.19074398,
+"urban": false
+},
+"60160": {
+"code": "60160",
+"name": "TRICESIMO via Pontebbana (fronte 70, bivio direzione Udine)",
+"lat": 46.16755998,
+"lon": 13.20750198,
+"urban": false
+},
+"60162": {
+"code": "60162",
+"name": "FELETTANO via Sante Patussi (area verde, direz. Tricesimo)",
+"lat": 46.14746398,
+"lon": 13.19624798,
+"urban": false
+},
+"60161": {
+"code": "60161",
+"name": "TRICESIMO via 11 Febbraio (fronte 50, direz. Ara), Colgallo",
+"lat": 46.15738598,
+"lon": 13.21313498,
+"urban": false
+},
+"60163": {
+"code": "60163",
+"name": "FRAELACCO via dei Boreatti 2 (direzione Udine)",
+"lat": 46.18147998,
+"lon": 13.21982998,
+"urban": false
+},
+"60164": {
+"code": "60164",
+"name": "LEONACCO via Pozzuolo (incrocio via San Martino, dir. Udine)",
+"lat": 46.13890598,
+"lon": 13.20190498,
+"urban": false
+},
+"60165": {
+"code": "60165",
+"name": "LEONACCO via Pozzuolo 17",
+"lat": 46.14268498,
+"lon": 13.20301698,
+"urban": false
+},
+"60166": {
+"code": "60166",
+"name": "LEONACCO via Vittorio Veneto (bivio, direzione Tricesimo)",
+"lat": 46.14948298,
+"lon": 13.20744498,
+"urban": false
+},
+"60167": {
+"code": "60167",
+"name": "FELETTANO via della Natività 126 (dir.Tricesimo), Monastetto",
+"lat": 46.15662098,
+"lon": 13.20262498,
+"urban": false
+},
+"60168": {
+"code": "60168",
+"name": "REANA via Nazionale (rotonda SS 13, direzione Udine)",
+"lat": 46.14342598,
+"lon": 13.22100998,
+"urban": false
+},
+"60169": {
+"code": "60169",
+"name": "TRICESIMO via Roma 220 (bivio Reana, direzione Udine)",
+"lat": 46.15259998,
+"lon": 13.21912998,
+"urban": false
+},
+"60171": {
+"code": "60171",
+"name": "TRICESIMO via 11 Febbraio 25 (direzione Ara)",
+"lat": 46.15937998,
+"lon": 13.20574998,
+"urban": false
+},
+"60172": {
+"code": "60172",
+"name": "REANA via Roma 281 (rotonda SS 13, direzione Gemona)",
+"lat": 46.14501998,
+"lon": 13.22086898,
+"urban": false
+},
+"60170": {
+"code": "60170",
+"name": "TRICESIMO via Ippolito Nievo 13",
+"lat": 46.16036998,
+"lon": 13.19841698,
+"urban": false
+},
+"60174": {
+"code": "60174",
+"name": "ARA GRANDE via Fella 15",
+"lat": 46.1589855,
+"lon": 13.17923308,
+"urban": false
+},
+"60175": {
+"code": "60175",
+"name": "TRICESIMO piazza Giuseppe Verdi 20",
+"lat": 46.15906053,
+"lon": 13.21446626,
+"urban": false
+},
+"60173": {
+"code": "60173",
+"name": "TRICESIMO via Roma 10",
+"lat": 46.15871589,
+"lon": 13.21549489,
+"urban": false
+},
+"70101": {
+"code": "70101",
+"name": "UDINE viale Europa Unita 37 (autostazione)",
+"lat": 46.05710798,
+"lon": 13.24287198,
+"urban": false
+},
+"70102": {
+"code": "70102",
+"name": "UDINE via Cividale 591 (dir.Cividale), località San Gottardo",
+"lat": 46.07569798,
+"lon": 13.28355398,
+"urban": false
+},
+"70104": {
+"code": "70104",
+"name": "UDINE Z.I.U. via Zanussi (rotonda Enel, direzione Udine)",
+"lat": 46.01121998,
+"lon": 13.26768998,
+"urban": false
+},
+"70105": {
+"code": "70105",
+"name": "UDINE Z.I.U. via Zanussi 306 (Tecnocom, direzione Udine)",
+"lat": 46.00447998,
+"lon": 13.27029998,
+"urban": false
+},
+"70106": {
+"code": "70106",
+"name": "MOLIN NUOVO via Molin Nuovo (fronte 93, direzione Udine)",
+"lat": 46.10109998,
+"lon": 13.23758998,
+"urban": false
+},
+"70109": {
+"code": "70109",
+"name": "UDINE via Liguria 267(piazza, dir.Povoletto), località Godia",
+"lat": 46.10199698,
+"lon": 13.26579898,
+"urban": false
+},
+"70107": {
+"code": "70107",
+"name": "",
+"lat": 46.07976398,
+"lon": 13.20948598,
+"urban": true
+},
+"70111": {
+"code": "70111",
+"name": "",
+"lat": 46.06472298,
+"lon": 13.21624198,
+"urban": true
+},
+"70112": {
+"code": "70112",
+"name": "",
+"lat": 46.06528398,
+"lon": 13.22036198,
+"urban": true
+},
+"70113": {
+"code": "70113",
+"name": "",
+"lat": 46.07303898,
+"lon": 13.22414498,
+"urban": true
+},
+"70117": {
+"code": "70117",
+"name": "UDINE via Tricesimo 264 (Tre Sorelle)",
+"lat": 46.09721398,
+"lon": 13.23063098,
+"urban": false
+},
+"70122": {
+"code": "70122",
+"name": "TAVAGNACCO Autostrada A 23 (casello ingresso)",
+"lat": 46.11258998,
+"lon": 13.20738998,
+"urban": false
+},
+"70124": {
+"code": "70124",
+"name": "UDINE Z.I.U. via Linussio (parco scientifico tecnologico)",
+"lat": 46.01450098,
+"lon": 13.26620898,
+"urban": false
+},
+"70132": {
+"code": "70132",
+"name": "UDINE via Tricesimo 76 (bivio Paderno)",
+"lat": 46.08565198,
+"lon": 13.23307898,
+"urban": false
+},
+"70135": {
+"code": "70135",
+"name": "UDINE via Cividale (fronte 591), località San Gottardo",
+"lat": 46.07573598,
+"lon": 13.28322298,
+"urban": false
+},
+"70139": {
+"code": "70139",
+"name": "",
+"lat": 46.06921598,
+"lon": 13.24203598,
+"urban": true
+},
+"70140": {
+"code": "70140",
+"name": "(via Gorizia)",
+"lat": 46.07079627,
+"lon": 13.23945894,
+"urban": true
+},
+"70142": {
+"code": "70142",
+"name": "UDINE Z.I.U. via Zanussi (rotonda Enel, direzione Lauzacco)",
+"lat": 46.01121498,
+"lon": 13.26741898,
+"urban": false
+},
+"70143": {
+"code": "70143",
+"name": "UDINE Z.I.U. via Zanussi 305 (Tecnocom)",
+"lat": 46.00444998,
+"lon": 13.27004998,
+"urban": false
+},
+"70148": {
+"code": "70148",
+"name": "UDINE piazzale Chiavris 64",
+"lat": 46.07853998,
+"lon": 13.23473698,
+"urban": false
+},
+"70151": {
+"code": "70151",
+"name": "",
+"lat": 46.06002698,
+"lon": 13.22841098,
+"urban": true
+},
+"70160": {
+"code": "70160",
+"name": "UDINE via Liguria 236 (piazza), località Godia",
+"lat": 46.10208798,
+"lon": 13.26581898,
+"urban": false
+},
+"70164": {
+"code": "70164",
+"name": "UDINE viale Leonardo 23 (Area 2, fronte Liceo Marinelli)",
+"lat": 46.06855698,
+"lon": 13.22319698,
+"urban": false
+},
+"70165": {
+"code": "70165",
+"name": "UDINE viale Palmanova (fronte 404, semaforo via Verona)",
+"lat": 46.03231398,
+"lon": 13.25660798,
+"urban": false
+},
+"70171": {
+"code": "70171",
+"name": "MOLIN NUOVO via Nazionale (fronte Unicredit, dir. Gemona)",
+"lat": 46.09934598,
+"lon": 13.23038898,
+"urban": false
+},
+"70173": {
+"code": "70173",
+"name": "MOLIN NUOVO via Molin Nuovo 93",
+"lat": 46.10111898,
+"lon": 13.23771598,
+"urban": false
+},
+"70175": {
+"code": "70175",
+"name": "UDINE via Tricesimo (fronte civico 106, bivio Paderno)",
+"lat": 46.08707598,
+"lon": 13.23292098,
+"urban": false
+},
+"70179": {
+"code": "70179",
+"name": "UDINE viale Vat (fronte civico 6, parco piazzale Chiavris)",
+"lat": 46.07830598,
+"lon": 13.23555798,
+"urban": false
+},
+"70184": {
+"code": "70184",
+"name": "UDINE viale Giuseppe Duodo 50 (piazzale 26 Luglio)",
+"lat": 46.05849998,
+"lon": 13.22877898,
+"urban": false
+},
+"70187": {
+"code": "70187",
+"name": "UDINE viale Cadore 1 (cavalcavia)",
+"lat": 46.07300698,
+"lon": 13.22196098,
+"urban": false
+},
+"70191": {
+"code": "70191",
+"name": "UDINE viale Monsignor Nogara (fronte Stringher)",
+"lat": 46.06381098,
+"lon": 13.21102398,
+"urban": false
+},
+"70192": {
+"code": "70192",
+"name": "UDINE viale Monsignor Nogara 2 (Marinoni)",
+"lat": 46.06603798,
+"lon": 13.21570598,
+"urban": false
+},
+"70193": {
+"code": "70193",
+"name": "UDINE via San Cromazio di Aquileia (Terminal Nord)",
+"lat": 46.09430398,
+"lon": 13.23547098,
+"urban": true
+},
+"70194": {
+"code": "70194",
+"name": "UDINE via Marco Volpe 45",
+"lat": 46.06524798,
+"lon": 13.22700298,
+"urban": false
+},
+"80102": {
+"code": "80102",
+"name": "PRATO DI RESIA via Tesa (Lipovaz, direzione San Giorgio)",
+"lat": 46.37357998,
+"lon": 13.30400798,
+"urban": false
+},
+"80101": {
+"code": "80101",
+"name": "LISCHIAZZE (bivio Gost)",
+"lat": 46.35582398,
+"lon": 13.29432098,
+"urban": false
+},
+"80103": {
+"code": "80103",
+"name": "S.GIORGIO DI RESIA via Prato (fronte 1A, chiesa dir.Stolvizz",
+"lat": 46.37791898,
+"lon": 13.28545198,
+"urban": false
+},
+"80105": {
+"code": "80105",
+"name": "RESIA SP 42 (bivio per Lischiazze, direzione Stolvizza)",
+"lat": 46.37011398,
+"lon": 13.29484898,
+"urban": false
+},
+"80104": {
+"code": "80104",
+"name": "TIGO DI RESIA Strada Provinciale 42 (direzione Stolvizza)",
+"lat": 46.37680898,
+"lon": 13.27869398,
+"urban": false
+},
+"80106": {
+"code": "80106",
+"name": "RESIA SP 52 (ponte Rop, direzione Stolvizza)",
+"lat": 46.37080098,
+"lon": 13.30419198,
+"urban": false
+},
+"80107": {
+"code": "80107",
+"name": "OSEACCO DI RESIA via Flavia (bivio Oseacco, dir.Resiutta)",
+"lat": 46.36990698,
+"lon": 13.30727598,
+"urban": false
+},
+"80109": {
+"code": "80109",
+"name": "OSEACCO DI RESIA via Aldo Madotto (campanile)",
+"lat": 46.36312698,
+"lon": 13.31234998,
+"urban": false
+},
+"80108": {
+"code": "80108",
+"name": "S.GIORGIO DI RESIA via Prato (direzione Resiutta), loc.Poie",
+"lat": 46.37624298,
+"lon": 13.29472798,
+"urban": false
+},
+"80110": {
+"code": "80110",
+"name": "STOLVIZZA via Udine (direzione Resiutta), loc. Zamlin",
+"lat": 46.36552598,
+"lon": 13.32520898,
+"urban": false
+},
+"80111": {
+"code": "80111",
+"name": "STOLVIZZA via Udine",
+"lat": 46.36210098,
+"lon": 13.35029098,
+"urban": false
+},
+"80112": {
+"code": "80112",
+"name": "OSEACCO DI RESIA via dei Corazzieri (dir.centro), loc. Rauna",
+"lat": 46.36737898,
+"lon": 13.30860298,
+"urban": false
+},
+"80113": {
+"code": "80113",
+"name": "PRATO DI RESIA via S.Giorgio (dir.San Giorgio), loc. Varcota",
+"lat": 46.37592598,
+"lon": 13.30034598,
+"urban": false
+},
+"80115": {
+"code": "80115",
+"name": "UCCEA Strada Regionale 646",
+"lat": 46.30568198,
+"lon": 13.40490998,
+"urban": false
+},
+"80116": {
+"code": "80116",
+"name": "PRATO DI RESIA piazza Tiglio",
+"lat": 46.37348798,
+"lon": 13.30624298,
+"urban": false
+},
+"80117": {
+"code": "80117",
+"name": "POCLANAZ DI RESIA via Giuseppe Micelli (direzione Stolvizza)",
+"lat": 46.37888298,
+"lon": 13.27084998,
+"urban": false
+},
+"80118": {
+"code": "80118",
+"name": "PRATO DI RESIA via Tesa (Lipovaz, direzione Stolvizza)",
+"lat": 46.37359398,
+"lon": 13.30392298,
+"urban": false
+},
+"80119": {
+"code": "80119",
+"name": "S.GIORGIO DI RESIA via Prato 1A (chiesa, direzione Resiutta)",
+"lat": 46.37796698,
+"lon": 13.28547398,
+"urban": false
+},
+"80121": {
+"code": "80121",
+"name": "RESIA SP 52 (ponte Rop, direzione Prato Di Resia)",
+"lat": 46.37099098,
+"lon": 13.30421198,
+"urban": false
+},
+"80120": {
+"code": "80120",
+"name": "TIGO DI RESIA Strada Provinciale 42 (direzione Resiutta)",
+"lat": 46.37672598,
+"lon": 13.27934398,
+"urban": false
+},
+"80122": {
+"code": "80122",
+"name": "OSEACCO DI RESIA, via Flavia (bivio Oseacco, dir. Stolvizza)",
+"lat": 46.36994698,
+"lon": 13.30689398,
+"urban": false
+},
+"80123": {
+"code": "80123",
+"name": "S.GIORGIO DI RESIA via Prato (direzione Stolvizza), loc.Poie",
+"lat": 46.37618198,
+"lon": 13.29472698,
+"urban": false
+},
+"80124": {
+"code": "80124",
+"name": "STOLVIZZA via Udine (direzione Stolvizza), loc. Zamlin",
+"lat": 46.36547498,
+"lon": 13.32518298,
+"urban": false
+},
+"80125": {
+"code": "80125",
+"name": "OSEACCO DI RESIA viale dei Corazzieri (dir.Resia), loc.Rauna",
+"lat": 46.36741998,
+"lon": 13.30866998,
+"urban": false
+},
+"80126": {
+"code": "80126",
+"name": "PRATO DI RESIA via S.Giorgio (direz. Stolvizza), loc.Varcota",
+"lat": 46.37595598,
+"lon": 13.30067298,
+"urban": false
+},
+"80127": {
+"code": "80127",
+"name": "POCLANAZ DI RESIA via Giuseppe Micelli (direzione Resiutta)",
+"lat": 46.37890998,
+"lon": 13.27093998,
+"urban": false
+},
+"80128": {
+"code": "80128",
+"name": "RESIA Strada Provinciale 52 (ponte Rop, prov.Prato di Resia)",
+"lat": 46.37095598,
+"lon": 13.30411498,
+"urban": false
+},
+"80129": {
+"code": "80129",
+"name": "GNIVA via Carnizza (bivio Lischiazze)",
+"lat": 46.36815698,
+"lon": 13.30192198,
+"urban": false
+},
+"98102": {
+"code": "98102",
+"name": "PRESENAIO via del Ponte 1 (direzione Santo Stefano)",
+"lat": 46.57477398,
+"lon": 12.59960698,
+"urban": false
+},
+"98103": {
+"code": "98103",
+"name": "S.PIETRO DI CADORE via Piave 21 (dir. Santo Stefano), Mare",
+"lat": 46.56886898,
+"lon": 12.58854998,
+"urban": false
+},
+"98104": {
+"code": "98104",
+"name": "PRESENAIO via del Ponte (direzione Sappada)",
+"lat": 46.57457398,
+"lon": 12.59932298,
+"urban": false
+},
+"98105": {
+"code": "98105",
+"name": "S.PIETRO DI CADORE via Piave (direzione Sappada), Mare",
+"lat": 46.56874198,
+"lon": 12.58854098,
+"urban": false
+},
+"99101": {
+"code": "99101",
+"name": "molo Bersaglieri",
+"lat": 45.64925407,
+"lon": 13.76400701,
+"urban": false
+},
+"99102": {
+"code": "99102",
+"name": "molo esterno Muggia",
+"lat": 45.60666805,
+"lon": 13.76636586,
+"urban": false
+},
+"99103": {
+"code": "99103",
+"name": "molo Barcola",
+"lat": 45.68258035,
+"lon": 13.75056677,
+"urban": true
+},
+"99104": {
+"code": "99104",
+"name": "molo Grignano",
+"lat": 45.70694044,
+"lon": 13.71285788,
+"urban": true
+},
+"99105": {
+"code": "99105",
+"name": "molo Sistiana",
+"lat": 45.77056757,
+"lon": 13.63003998,
+"urban": true
+},
+"99106": {
+"code": "99106",
+"name": "ACQUARIO",
+"lat": 45.60619399,
+"lon": 13.72483399,
+"urban": true
+},
+"99107": {
+"code": "99107",
+"name": "molo Porto Vecchio",
+"lat": 45.66582894,
+"lon": 13.7609276,
+"urban": true
+},
+"99108": {
+"code": "99108",
+"name": "molo Cedas",
+"lat": 45.69304251,
+"lon": 13.73779126,
+"urban": true
+},
+"99110": {
+"code": "99110",
+"name": "molo Monfalcone",
+"lat": 45.80437405,
+"lon": 13.53412611,
+"urban": true
+},
+"61102": {
+"code": "61102",
+"name": "MONTENARS via Zampariul (direzione Artegna)",
+"lat": 46.25273398,
+"lon": 13.16739098,
+"urban": false
+},
+"61105": {
+"code": "61105",
+"name": "FLAIPANO Strada Provinciale 34",
+"lat": 46.26795098,
+"lon": 13.21736998,
+"urban": false
+},
+"61103": {
+"code": "61103",
+"name": "MONTENARS via Zampariul (direzione municipio)",
+"lat": 46.25264798,
+"lon": 13.16746798,
+"urban": false
+},
+"61107": {
+"code": "61107",
+"name": "MONTENARS borgo Isola 1 (municipio)",
+"lat": 46.25699498,
+"lon": 13.18088198,
+"urban": false
+},
+"61108": {
+"code": "61108",
+"name": "FLAIPANO Strada Provinciale 34, borgo Frattins",
+"lat": 46.26679398,
+"lon": 13.20869898,
+"urban": false
+},
+"61109": {
+"code": "61109",
+"name": "MONTENARS Strada Provinciale 34, borgo Capovilla 18",
+"lat": 46.25982098,
+"lon": 13.18603698,
+"urban": false
+},
+"61112": {
+"code": "61112",
+"name": "MONTENARS via Curminie 50 (scuole, direzione Artegna)",
+"lat": 46.25397398,
+"lon": 13.17474598,
+"urban": false
+},
+"61111": {
+"code": "61111",
+"name": "MONTENARS via Lazzaretto (direzione municipio)",
+"lat": 46.25455398,
+"lon": 13.16969398,
+"urban": false
+},
+"61113": {
+"code": "61113",
+"name": "MONTENARS borgo Isola (fronte 1, municipio direz. Artegna)",
+"lat": 46.25699798,
+"lon": 13.18074498,
+"urban": false
+},
+"61115": {
+"code": "61115",
+"name": "MONTENARS SP 34 Borgo Capovilla fronte 18 direzione Artegna",
+"lat": 46.25986498,
+"lon": 13.18604498,
+"urban": false
+},
+"61114": {
+"code": "61114",
+"name": "FLAIPANO SP 34 (direzione Artegna), borgo Frattins",
+"lat": 46.26685198,
+"lon": 13.20867998,
+"urban": false
+},
+"61116": {
+"code": "61116",
+"name": "MONTENARS via Lazzaretto (direzione Artegna)",
+"lat": 46.25458798,
+"lon": 13.16976798,
+"urban": false
+},
+"61117": {
+"code": "61117",
+"name": "MONTENARS via Curminie 41 (scuole)",
+"lat": 46.25390298,
+"lon": 13.17467898,
+"urban": false
+}
+}
