@@ -69,6 +69,28 @@ rm data/routes.json            # refetch route shapes on next start
 
 Automating this (e.g. a weekly job) is worth doing once this outgrows the POC.
 
+## Running on a server (Docker)
+
+On an always-on host (e.g. `roxan`):
+
+```bash
+git clone git@github.com:leonardonels/nosepol.git && cd nosepol
+docker compose up -d --build
+```
+
+The map is then at `http://<host>:8080`. Options via environment / `.env`:
+`NOSEPOL_PORT` (host port, default 8080) and `NOSEPOL_LINES` (default `T06,T08,T09`).
+
+- Runs as a non-root user with a healthcheck on `/api/lines`. No restart policy: after a
+  crash or a host reboot it stays stopped until you run `docker compose up -d` again.
+- `data/` lives in the `nosepol-data` volume, seeded from the image on first run, so the
+  learned routes cache survives rebuilds and the git checkout stays clean.
+- Update code: `git pull && docker compose up -d --build`.
+- After a stop-DB resync (new `data/stops.json` in git) the volume must be reseeded:
+  `docker compose down -v && docker compose up -d --build`.
+- To install the PWA / use it away from home, put it behind HTTPS, e.g. `tailscale serve 8080`
+  or a Cloudflare Tunnel.
+
 ## Next steps
 - Validate `STOP_STRIDE` coverage against the timetable (are buses missing?).
 - Better ETA: per-segment historical speeds instead of the instantaneous `v`.

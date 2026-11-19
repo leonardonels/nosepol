@@ -1,0 +1,15 @@
+services:
+  nosepol:
+    build: .
+    image: nosepol:latest
+    container_name: nosepol
+    restart: "no"                   # no auto-start or restart loop; a reboot leaves it stopped
+    init: true                      # forwards SIGTERM so `docker compose down` is quick
+    ports:
+      - "${NOSEPOL_PORT:-8080}:8080"
+    volumes:
+      - nosepol-data:/app/data      # seeded from the image on first run; keeps the routes cache
+    command: ["python", "server/app.py", "--port", "8080", "--lines", "${NOSEPOL_LINES:-T06,T08,T09}"]
+
+volumes:
+  nosepol-data:
