@@ -82,6 +82,7 @@ class Track:
             "lat": round(lat, 6),
             "lon": round(lon, 6),
             "v": None if v is None else round(v, 2),
+            "heading": None if (h := self.variant.shape.heading(s)) is None else round(h),
             "residual": None if res is None else round(res, 1),
             "n_fixes": n,
             "age": round(now - last[0]),

@@ -276,7 +276,6 @@ const isOn = l => !hidden.has(base(l));
 const saveHidden = () => store.set("hiddenLines", [...hidden]);
 const shapeLayers = {};   // line -> layerGroup (routes)
 const stopLayer = L.layerGroup();
-const variantCoords = {}; // variant key -> [[lat, lon], ...]
 const busMarkers = {};    // trip -> marker
 let vehicles = [], me = null, meMarker = null, sel = null, follow = false, fitted = false;
 
@@ -311,7 +310,6 @@ async function loadShapes() {
   stopLayer.clearLayers();
   const seen = new Set(), all = [];
   for (const v of shapes) {
-    variantCoords[v.key] = v.coords;
     const s = style(v.line), g = shapeLayers[base(v.line)] ||= L.layerGroup();
     L.polyline(v.coords, { color: "#0E0F10", weight: 8, opacity: .55, interactive: false }).addTo(g);
     L.polyline(v.coords, { color: s.color, weight: 4, opacity: .95, interactive: false }).addTo(g);
@@ -329,22 +327,9 @@ async function loadShapes() {
 function stopVisibility() { map.getZoom() >= 15 ? stopLayer.addTo(map) : stopLayer.remove(); }
 map.on("zoomend", stopVisibility);
 
-// Heading: bearing of the route segment closest to the bus (on its own variant).
-function heading(v) {
-  const c = variantCoords[v.variant];
-  if (!c || c.length < 2) return null;
-  let best = 0, bd = Infinity;
-  for (let i = 0; i < c.length - 1; i++) {
-    const mx = (c[i][0] + c[i + 1][0]) / 2, my = (c[i][1] + c[i + 1][1]) / 2;
-    const d = (mx - v.lat) ** 2 + ((my - v.lon) * 0.7) ** 2;
-    if (d < bd) { bd = d; best = i; }
-  }
-  const [a, b] = [c[best], c[best + 1]];
-  const dy = b[0] - a[0], dx = (b[1] - a[1]) * Math.cos(a[0] * Math.PI / 180);
-  return (Math.atan2(dx, dy) * 180 / Math.PI + 360) % 360;
-}
 function busHtml(v) {
-  const s = style(v.line), h = heading(v);
+  // heading comes from the server: direction along the route around the bus's position
+  const s = style(v.line), h = v.heading;
   const kind = v.stopped_s ? (v.stop_kind || "midroute") : "";
   const cls = ["bus", kind, isStale(v) ? "stale" : "", sel?.type === "bus" && sel.id === v.trip ? "sel" : ""].join(" ");
   const flag = kind ? `<span class="flag">${kind === "midroute" ? "!" : ""}${fmtMin(v.stopped_s)}</span>` : "";

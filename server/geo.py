@@ -58,6 +58,15 @@ class Polyline:
                 best, best_cost = (d, s), cost
         return best
 
+    def heading(self, s, back=15.0, ahead=25.0):
+        """Direction of travel at s, degrees clockwise from north, taken over a stretch
+        of the route (not one piece of it), so short kinks at stops don't swing it."""
+        a = self.frame.xy(*self.at(max(0.0, s - back)))
+        b = self.frame.xy(*self.at(min(self.length, s + ahead)))
+        if math.dist(a, b) < 1:
+            return None
+        return math.degrees(math.atan2(b[0] - a[0], b[1] - a[1])) % 360
+
     def at(self, s):
         s = max(0.0, min(self.length, s))
         lo, hi = 0, len(self.cum) - 1

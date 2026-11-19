@@ -552,6 +552,13 @@ def make_handler(tracker):
         def log_message(self, *a):
             pass
 
+        def end_headers(self):
+            # Without this, browsers reuse a cached page after an update; "no-cache"
+            # makes them revalidate each time (a cheap 304 when nothing changed).
+            if not self.path.startswith("/api/"):
+                self.send_header("Cache-Control", "no-cache")
+            super().end_headers()
+
         def _json(self, obj, code=200):
             body = json.dumps(obj, ensure_ascii=False).encode()
             self.send_response(code)
