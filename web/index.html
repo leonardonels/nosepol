@@ -390,6 +390,24 @@ function haversine(a, b) {
 }
 
 // ---------- map ----------
+// leaflet-rotate redraws vector layers (routes, stops) on every 'rotate'. During a two-finger
+// gesture it also moves the map's pixel origin each frame, so that redraw sets the paths,
+// still projected as at the gesture's start, against the new origin: they drift as the map
+// turns and snap back when it ends. Skip it while a gesture runs (the per-frame 'zoom'
+// transform keeps them in place; moveend redraws them after), and draw a margin wide
+// enough that turning doesn't bring undrawn corners into view meanwhile.
+L.Renderer.prototype.options.padding = 0.75;
+const rotateRendererEvents = L.Renderer.prototype.getEvents;
+L.Renderer.include({
+  getEvents() {
+    const ev = rotateRendererEvents.call(this);
+    if (ev.rotate) ev.rotate = function () {
+      const g = this._map && this._map.touchGestures;
+      if (!(g && (g._zooming || g._rotating))) this._update();
+    };
+    return ev;
+  },
+});
 // Rotatable map (leaflet-rotate): two-finger twist on phones, shift + wheel on desktop.
 const map = L.map("map", { zoomControl: false, attributionControl: true, rotate: true, bearing: 0,
   touchRotate: true, shiftKeyRotate: true, rotateControl: false }).setView([45.65, 13.775], 14);
