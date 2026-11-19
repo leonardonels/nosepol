@@ -7,6 +7,7 @@ RUN useradd -u 1000 -m nosepol
 COPY --chown=nosepol:nosepol server/ server/
 COPY --chown=nosepol:nosepol web/ web/
 COPY --chown=nosepol:nosepol data/ data/
+COPY --chown=nosepol:nosepol data/ seed/
 USER nosepol
 
 EXPOSE 8080

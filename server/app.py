@@ -10,6 +10,7 @@
 Stdlib only:  python3 server/app.py  [--port 8080] [--lines T06,T08,T09]
 """
 import argparse
+import shutil
 import hashlib
 import json
 import logging
@@ -28,6 +29,7 @@ from geo import Frame, Polyline
 API = "https://realtime.tplfvg.it/API/v1.0/polemonitor"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
+SEED = ROOT / "seed"     # bundled copy of data/ (Docker image only)
 WEB = ROOT / "web"
 FRAME = Frame(45.65, 13.78)  # Trieste
 HEARTBEAT_EVERY = 5     # s
@@ -335,12 +337,26 @@ def make_handler(tracker):
     return H
 
 
+def seed_data():
+    """Fill missing data files from the bundled seed, e.g. when an empty host folder is
+    bind-mounted over data/. Existing files are never overwritten."""
+    if not SEED.is_dir():
+        return
+    DATA.mkdir(exist_ok=True)
+    for src in sorted(SEED.glob("*.json")):
+        dst = DATA / src.name
+        if not dst.exists():
+            shutil.copyfile(src, dst)
+            log.info("seeded %s from the image", src.name)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8080)
     ap.add_argument("--lines", default="T06,T08,T09")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
+    seed_data()
     tracker = Tracker(args.lines.split(","))
     threading.Thread(target=tracker.run, daemon=True).start()
     srv = ThreadingHTTPServer(("0.0.0.0", args.port), make_handler(tracker))

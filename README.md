@@ -85,6 +85,10 @@ The map is then at `http://<host>:8080`. Options via environment / `.env`:
   crash or a host reboot it stays stopped until you run `docker compose up -d` again.
 - `data/` lives in the `nosepol-data` volume, seeded from the image on first run, so the
   learned routes cache survives rebuilds and the git checkout stays clean.
+- A bind mount works too (`/srv/nosepol:/app/data`) and may start empty: at startup any
+  missing `stops.json` / `routes.json` is copied from the copy bundled in the image
+  (`/app/seed`). Existing files are never overwritten; delete one and restart to reset it.
+  The folder must be writable by UID 1000.
 - Update code: `git pull && docker compose up -d --build`.
 - After a stop-DB resync (new `data/stops.json` in git) the volume must be reseeded:
   `docker compose down -v && docker compose up -d --build`.
