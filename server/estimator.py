@@ -17,6 +17,7 @@ class Track:
         self.last_report = None  # last time the API reported this trip, moved or not
         self.layover = False     # set by the tracker: trip over at the terminus, bus waiting there
         self.next_run = None     # set by the tracker: the departure it probably takes next
+        self.blind = False       # set by the tracker: on a stretch no stop reports on, so dead-reckon on
         self.meta = {}
 
     def add_fix(self, t, lat, lon):
@@ -63,7 +64,9 @@ class Track:
         a, v, res, t_ref, n = self.fit()
         if self.layover or self.stopped_for(now) is not None:
             return self.fixes[-1][1], 0.0, res, n  # hold it where it stands, no dead reckoning
-        dt = min(max(0.0, now - t_ref), MAX_EXTRAP_S)
+        dt = max(0.0, now - t_ref)
+        if not self.blind:  # no report expected there: keep moving it (to the end at most)
+            dt = min(dt, MAX_EXTRAP_S)
         s = a + (v or 0.0) * dt
         return min(max(s, 0.0), self.variant.shape.length), v, res, n
 
@@ -90,6 +93,7 @@ class Track:
             "age": round(now - last[0]),
             "stopped_s": round(now - last[0]) if self.layover else (None if stopped is None else round(stopped)),
             "next_run": self.next_run,
+            "blind": self.blind,
             "gps": {"lat": last[3], "lon": last[4], "offroute": round(last[2], 1)},
             "next_stop": nxt and {"code": nxt["code"], "name": nxt["name"],
                                   "dist": round(nxt["s"] - s), "eta_s": eta},

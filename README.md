@@ -25,8 +25,11 @@ realtime.tplfvg.it, the official stop-monitor page):
 
 Findings that shape the design:
 - GPS is refreshed for all buses in one batch about every 20–25 s.
-- A stop lists only the next bus per line and direction, so to see every bus
-  we poll every 4th stop of each route plus the terminus (`STOP_STRIDE`).
+- A stop lists only the next bus per line and direction. Between two polled stops
+  only the bus nearest the second one is seen: any bus behind it on the same stretch
+  is hidden from every polled stop. So the server polls every 4th stop of each route
+  (`STOP_STRIDE`), more where that leaves over 1 km unpolled (`POLL_GAP_M`), the
+  terminus, and the stop each tracked bus last passed, which lists the bus behind it.
 - There's no list-stops endpoint, so `tools/scan_stops.py` walks the codes
   (`<zone><4 digits>`) once.
 - Short-turn trips show up as e.g. `T06/` and are grouped under `T06`.
@@ -40,11 +43,21 @@ Findings that shape the design:
 2. **Batch-synced polling**: one heartbeat stop is polled every 5 s. When its
    GPS values change, a new batch has landed, so the server sweeps the poll set once
    (4 threads). That's about one sweep per GPS refresh, timestamped within ~5 s.
-3. **Estimator** (`server/estimator.py`): each fix is projected onto the trip's
+   The poll set is the fixed stops plus the stop behind each tracked bus, so a
+   bunched bus is found one sweep after the bus in front of it (~65 stops a sweep
+   for lines 6, 8, 9 instead of 35).
+3. **Stop codes**: a route stop with no code in `data/stops.json` can't be polled. At
+   start (then daily while some are missing) the server probes the codes just past
+   the last known one of nearby districts and saves what it finds. A bus on an end
+   stretch with no coded stop can't be reported at all: once its speed puts it past
+   the last coded stop it is kept as `blind`, moved on at its speed (dashed on the
+   map), until its vehicle starts a newer trip or it would have reached the end and
+   waited a layover (`blind_timeout`, at most 45 min).
+4. **Estimator** (`server/estimator.py`): each fix is projected onto the trip's
    shape to get `s`, the metres along the route. Projection prefers forward motion,
    so loops and out-and-back routes don't jump. Over a 150 s window it fits
    `s(t) = s0 + v·t` by least squares (v ≥ 0). It extrapolates at most 60 s past
-   the last fix and reports the RMS residual.
+   the last fix (no limit for a `blind` bus) and reports the RMS residual.
 
 ## API
 
@@ -52,7 +65,7 @@ Findings that shape the design:
   variants and vehicle counts. Colours follow the order of `--lines`, so adding a line
   needs no page change.
 - `GET /api/vehicles` or `/api/lines/T06/vehicles`: one entry per trip, with
-  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, stop_kind, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`.
+  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, stop_kind, blind, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`.
   A bus whose GPS stops changing is `stopped_s` seconds still, with `stop_kind`
   `terminus` (waiting, kept up to 15 min) or `midroute` (may have a problem, kept up to 1 h).
   "Terminus" means within 150 m of the first stop, or at/past the second-to-last stop
@@ -80,7 +93,7 @@ Findings that shape the design:
 - `GET /api/status`: last GPS batch, batch interval, stale/stopped counts, stops with
   no code (a hint that a resync is due), and removed buses: `drops_by_reason` since
   start and `drops_recent` (trip, reason, how long it stood still, where). Reasons:
-  `next_run` (its vehicle started a newer trip), `layover_timeout`, `terminus_timeout`, `midroute_timeout`, `not_reported` (no stop lists it for 3 min),
+  `next_run` (its vehicle started a newer trip), `layover_timeout`, `terminus_timeout`, `midroute_timeout`, `not_reported` (no stop lists it for 3 min), `blind_timeout` (see Stop codes),
   `vehicle_reused` (its vehicle runs a newer trip). Each removal is also logged.
 - `GET /api/debug`: poll set, batch intervals, raw fix history
 
@@ -97,7 +110,12 @@ show as "code unknown", buses go missing, or after a timetable change:
 python3 tools/scan_stops.py    # full rescan (~35 min)
 python3 tools/fill_stops.py    # probe gaps until every route stop has a code
 rm data/routes.json            # refetch route shapes on next start
+python3 tools/check_coverage.py  # poll every route stop: are buses missing?
 ```
+
+The server's own search only looks just past nearby districts' known codes; when its log
+says route stops are still without a code, run `fill_stops.py`, which searches wider.
+As of this writing line 6's 9 stops from Barcola to Grignano (both directions) have none.
 
 Automating this (e.g. a weekly job) is worth doing once this outgrows the POC.
 
@@ -128,6 +146,6 @@ The map is then at `http://<host>:8080`. Options via environment / `.env`:
   or a Cloudflare Tunnel.
 
 ## Next steps
-- Validate `STOP_STRIDE` coverage against the timetable (are buses missing?).
+- Run `tools/check_coverage.py` against the live feed to confirm no buses are missed.
 - Better ETA: per-segment historical speeds instead of the instantaneous `v`.
 - Android thin client: widget, Wear OS tile, "leave now" notification.

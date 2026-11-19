@@ -41,6 +41,7 @@ FRAME = Frame(45.65, 13.78)  # Trieste
 HEARTBEAT_EVERY = 5     # s
 FORCE_SWEEP_EVERY = 60  # s, sweep even if heartbeat sees no change
 STOP_STRIDE = 4         # poll every Nth stop of each variant (+ terminus)
+POLL_GAP_M = 1000       # ...and more where that leaves more than this between polled stops
 TRIP_TTL = 180          # s not listed anywhere (or its vehicle runs a newer trip) -> drop trip
 TERMINUS_TTL = 15 * 60  # s standing still at a terminus (normal layover) -> drop trip
 STOPPED_TTL = 60 * 60   # s standing still mid-route (may have a problem) -> drop trip
@@ -52,6 +53,11 @@ STALE_S = 90            # GPS older than this (and not "stopped") is stale
 LAYOVER_TTL = 15 * 60  # s a bus waiting at the terminus after its trip stays, unless its next run starts
 LATE_OK = 5 * 60        # s an incoming bus may reach the terminus after a departure and still run it
 PENDING_AHEAD = 20 * 60  # s ahead to show a departure no known bus will take
+BLIND_SPEED = 3.0       # m/s, slowest speed assumed to cover a stretch no stop reports on
+BLIND_MAX_S = 45 * 60   # s, longest a bus is kept on such a stretch without a report
+FILL_NEAR_M = 2000      # look for missing stop codes in districts with a stop this close
+FILL_GAP = 60           # codes probed past a district's last known code
+FILL_EVERY = 24 * 3600  # s between searches while some route stops still have no code
 LOCAL_TZ = ZoneInfo("Europe/Rome")  # the operator's timetable times are local
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
@@ -121,9 +127,42 @@ class Variant:
         return next((st for st in self.stops if st["s"] > s + 5), None)
 
     def poll_stops(self):
-        codes = [st["code"] for st in self.stops if st["code"]]
-        picked = codes[STOP_STRIDE::STOP_STRIDE] + codes[-1:]
+        """Every STOP_STRIDE-th coded stop and the last one, plus a stop wherever
+        skipping it would leave more than POLL_GAP_M of route unpolled. A stop lists
+        only the next bus per line and direction, so between two polled stops only
+        the bus nearest the second one is seen (stop_behind finds the others)."""
+        coded = [st for st in self.stops if st["code"]]
+        picked, last = [], coded[0]["s"] if coded else 0.0
+        for i, st in enumerate(coded):
+            nxt = coded[i + 1]["s"] if i + 1 < len(coded) else None
+            if (i and i % STOP_STRIDE == 0) or nxt is None or nxt - last > POLL_GAP_M:
+                picked.append(st["code"])
+                last = st["s"]
         return list(dict.fromkeys(picked))
+
+    def stop_behind(self, s):
+        """The nearest coded stop a bus at s has passed. It lists the next bus coming
+        after this one, which no other polled stop may show (it is hidden behind this one)."""
+        return next((st["code"] for st in reversed(self.stops) if st["code"] and st["s"] < s - AT_STOP_M), None)
+
+    @property
+    def blind_from(self):
+        """Where an end stretch with no coded stop starts (no stop can report a bus
+        there), or None when the last stop has a code."""
+        if self.stops[-1]["code"]:
+            return None
+        return max((st["s"] for st in self.stops if st["code"]), default=0.0)
+
+    def refresh_codes(self, stopdb):
+        """Match stops that had no code again, after the stop db learned new ones."""
+        n = 0
+        for st in self.stops:
+            if not st["code"]:
+                code, name = stopdb.nearest(st["lat"], st["lon"])
+                if code:
+                    st["code"], st["name"] = code, name
+                    n += 1
+        return n
 
     def summary(self):
         return {"key": self.key, "line": self.line, "direction": self.direction,
@@ -140,10 +179,19 @@ class Variant:
 
 class StopDB:
     def __init__(self, path):
+        self.path = path
         self.stops = list(json.loads(path.read_text()).values()) if path.exists() else []
         for st in self.stops:
             st["xy"] = FRAME.xy(st["lat"], st["lon"])
         log.info("stop db: %d stops", len(self.stops))
+
+    def add(self, code, name, lat, lon, urban):
+        self.stops.append({"code": code, "name": name, "lat": lat, "lon": lon, "urban": urban,
+                           "xy": FRAME.xy(lat, lon)})
+
+    def save(self):
+        out = {st["code"]: {k: v for k, v in st.items() if k != "xy"} for st in self.stops}
+        self.path.write_text(json.dumps(out, indent=0, ensure_ascii=False))
 
     def nearest(self, lat, lon):
         p = FRAME.xy(lat, lon)
@@ -222,9 +270,15 @@ class Tracker:
             self._save_cache()
         return self.variants[var.key]
 
-    def poll_set(self):
+    def poll_set(self, behind=True):
+        """The fixed stops of every variant and, with behind, the stop each tracked bus
+        last passed: that one lists the bus following it, which may be hidden from
+        the fixed stops (two buses between the same pair of them)."""
         with self.lock:
             codes = [c for v in self.variants.values() for c in v.poll_stops()]
+            if behind:
+                codes += [c for tr in self.tracks.values()
+                          if not tr.layover and (c := tr.variant.stop_behind(tr.fixes[-1][1]))]
         return list(dict.fromkeys(codes))
 
     # ---- discovery ---------------------------------------------------
@@ -301,6 +355,7 @@ class Tracker:
             # the line's next run back (watched on lines 6, 8, 9), so keep it as "layover".
             for k, tr in self.tracks.items():
                 tr.layover = self.at_end(tr) and self.seen.get(k, 0) < t
+                tr.blind = self.blind(tr, t)
             self._assign_next_runs(t, fetched)
             reasons = {}
             for k, ts in self.seen.items():
@@ -308,6 +363,9 @@ class Tracker:
                 if tr is not None and tr.layover:
                     if t - ts > LAYOVER_TTL:
                         reasons[k] = "layover_timeout"
+                elif tr is not None and tr.blind:
+                    if t - ts > self.blind_ttl(tr):
+                        reasons[k] = "blind_timeout"
                 elif t - ts > TRIP_TTL:
                     reasons[k] = "not_reported"
             for k, tr in self.tracks.items():
@@ -339,6 +397,25 @@ class Tracker:
         return rs[0]
 
     @staticmethod
+    def blind(tr, t):
+        """By its speed, past the last coded stop, on an end stretch where no stop has a
+        code. Its last fix is always before that stop (the last one that can list it), so
+        this goes by where it should be now: no report there says nothing about it."""
+        b = tr.variant.blind_from
+        if b is None or tr.layover:
+            return False
+        a, v, _, t_ref, _ = tr.fit()
+        return bool(v) and a + v * (t - t_ref) > b + AT_STOP_M
+
+    @staticmethod
+    def blind_ttl(tr):
+        """How long to keep a bus on such a stretch unreported: time to drive the rest
+        (at its speed, at least BLIND_SPEED) plus a layover at the end."""
+        v = tr.fit()[1] or 0.0
+        left = tr.variant.shape.length - tr.fixes[-1][1]
+        return min(BLIND_MAX_S, left / max(v, BLIND_SPEED) + LAYOVER_TTL)
+
+    @staticmethod
     def at_end(tr):
         """At or past the second-to-last stop (buses often wait at the stop before the
         terminus), or within TERMINUS_M of the end of the route."""
@@ -366,7 +443,8 @@ class Tracker:
         return "terminus" if self.at_terminus(tr) else "midroute"
 
     def is_stale(self, tr, now):
-        return now - tr.fixes[-1][0] > STALE_S and not tr.layover and tr.stopped_for(now) is None
+        return (now - tr.fixes[-1][0] > STALE_S and not tr.layover and not tr.blind
+                and tr.stopped_for(now) is None)
 
     def _drop_reason(self, tr, t):
         """Why a bus that stopped moving should go now, or None to keep it. It stays
@@ -468,12 +546,68 @@ class Tracker:
         log.info("drop %s (%s -> %s) %s: still %ds at %dm/%dm near %s", trip, d["line"], d["destination"],
                  reason, d["still_s"], d["s"], d["length"], d["near"])
 
+    def fill_codes(self):
+        """Look for the codes of route stops that have none, so they can be polled: probe
+        the codes just past the last known one of each district near them (the first
+        step of tools/fill_stops.py, which can search wider). New stops are saved to
+        data/stops.json and matched to the routes. Returns the route stops matched."""
+        with self.lock:
+            targets = [FRAME.xy(st["lat"], st["lon"]) for v in self.variants.values()
+                       for st in v.stops if not st["code"]]
+        if not targets:
+            return 0
+        by = collections.defaultdict(list)
+        for st in self.stopdb.stops:
+            by[st["code"][:2]].append(st)
+        near = {z: min(math.dist(st["xy"], p) for st in sts for p in targets) for z, sts in by.items()}
+        zones = sorted((z for z in by if near[z] <= FILL_NEAR_M), key=near.get)
+        known = {st["code"] for st in self.stopdb.stops}
+        jobs = [code for z in zones for n in range(1, FILL_GAP + 1)
+                if (code := f"{z}{max(int(st['code'][2:]) for st in by[z]) + n:03d}") not in known]
+        log.info("%d route stops without a code: probing %d codes in districts %s",
+                 len(targets), len(jobs), ",".join(zones))
+        found = 0
+        for code in jobs:
+            try:
+                self.stats["requests"] += 1
+                d = get("info", StopCode=code)
+            except Exception as e:
+                log.warning("probe %s: %s", code, e)
+                continue
+            finally:
+                time.sleep(0.2)
+            if d and d.get("Latitude"):
+                self.stopdb.add(code, d.get("Address"), d["Latitude"], d["Longitude"], d.get("IsUrban"))
+                found += 1
+        matched = 0
+        if found:
+            with self.lock:
+                matched = sum(v.refresh_codes(self.stopdb) for v in self.variants.values())
+                self._stop_index = (None, {})
+            try:
+                self.stopdb.save()
+            except OSError as e:
+                log.warning("saving stops: %s", e)
+        left = len(targets) - matched
+        log.info("stop codes: %d new stops, %d route stops matched, %d still without a code%s",
+                 found, matched, left, " (run tools/fill_stops.py)" if left else "")
+        return matched
+
+    def _fill_loop(self):
+        while True:
+            try:
+                self.fill_codes()
+            except Exception:
+                log.exception("stop code search failed")
+            time.sleep(FILL_EVERY)
+
     def run(self):
         self.discover()
+        threading.Thread(target=self._fill_loop, daemon=True).start()
         last_sig, last_sweep = None, 0
         while True:
             t = time.time()
-            codes = self.poll_set()
+            codes = self.poll_set(behind=False)
             sig = None
             if codes:
                 _, rs = self._fetch(codes[len(codes) // 2])
