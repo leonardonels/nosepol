@@ -127,15 +127,17 @@ class Variant:
         return next((st for st in self.stops if st["s"] > s + 5), None)
 
     def poll_stops(self):
-        """Every STOP_STRIDE-th coded stop and the last one, plus a stop wherever
+        """Every STOP_STRIDE-th coded stop and the last two, plus a stop wherever
         skipping it would leave more than POLL_GAP_M of route unpolled. A stop lists
         only the next bus per line and direction, so between two polled stops only
-        the bus nearest the second one is seen (stop_behind finds the others)."""
+        the bus nearest the second one is seen (stop_behind finds the others). The
+        terminus lists its next departure rather than buses arriving (seen on line 8
+        at Valmaura), so the stop before it covers the last stretch."""
         coded = [st for st in self.stops if st["code"]]
         picked, last = [], coded[0]["s"] if coded else 0.0
         for i, st in enumerate(coded):
             nxt = coded[i + 1]["s"] if i + 1 < len(coded) else None
-            if (i and i % STOP_STRIDE == 0) or nxt is None or nxt - last > POLL_GAP_M:
+            if (i and i % STOP_STRIDE == 0) or i >= len(coded) - 2 or nxt - last > POLL_GAP_M:
                 picked.append(st["code"])
                 last = st["s"]
         return list(dict.fromkeys(picked))

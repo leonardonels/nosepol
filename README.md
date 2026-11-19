@@ -25,11 +25,13 @@ realtime.tplfvg.it, the official stop-monitor page):
 
 Findings that shape the design:
 - GPS is refreshed for all buses in one batch about every 20–25 s.
-- A stop lists only the next bus per line and direction. Between two polled stops
+- A stop lists only the next bus per line and direction (a few central stops sometimes
+  list two of line 9). Between two polled stops
   only the bus nearest the second one is seen: any bus behind it on the same stretch
   is hidden from every polled stop. So the server polls every 4th stop of each route
   (`STOP_STRIDE`), more where that leaves over 1 km unpolled (`POLL_GAP_M`), the
-  terminus, and the stop each tracked bus last passed, which lists the bus behind it.
+  terminus and the stop before it (a terminus lists its next departure, not buses
+  arriving), and the stop each tracked bus last passed, which lists the bus behind it.
 - There's no list-stops endpoint, so `tools/scan_stops.py` walks the codes
   (`<zone><4 digits>`) once.
 - Short-turn trips show up as e.g. `T06/` and are grouped under `T06`.
