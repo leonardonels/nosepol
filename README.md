@@ -52,7 +52,9 @@ Findings that shape the design:
   variants and vehicle counts. Colours follow the order of `--lines`, so adding a line
   needs no page change.
 - `GET /api/vehicles` or `/api/lines/T06/vehicles`: one entry per trip, with
-  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`
+  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, stop_kind, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`.
+  A bus whose GPS stops changing is `stopped_s` seconds still, with `stop_kind`
+  `terminus` (waiting, kept up to 15 min) or `midroute` (may have a problem, kept up to 1 h).
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
 - `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
   words of the name or code (accents and case ignored) and/or sorted by distance

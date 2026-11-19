@@ -38,8 +38,9 @@ FRAME = Frame(45.65, 13.78)  # Trieste
 HEARTBEAT_EVERY = 5     # s
 FORCE_SWEEP_EVERY = 60  # s, sweep even if heartbeat sees no change
 STOP_STRIDE = 4         # poll every Nth stop of each variant (+ terminus)
-TRIP_TTL = 180          # s not listed, or standing still at a terminus -> drop trip
-STOPPED_TTL = 600       # s standing still mid-route -> drop trip
+TRIP_TTL = 180          # s not listed anywhere (or its vehicle runs a newer trip) -> drop trip
+TERMINUS_TTL = 15 * 60  # s standing still at a terminus (normal layover) -> drop trip
+STOPPED_TTL = 60 * 60   # s standing still mid-route (may have a problem) -> drop trip
 TERMINUS_M = 150        # within this of either end of the route counts as "at the terminus"
 STOP_MATCH_M = 40
 OPERATOR_CACHE_S = 20   # s to reuse a stop's live operator answer
@@ -306,18 +307,26 @@ class Tracker:
                 return moved[0]
         return rs[0]
 
+    @staticmethod
+    def at_terminus(tr):
+        s = tr.fixes[-1][1]
+        return s < TERMINUS_M or s > tr.variant.shape.length - TERMINUS_M
+
+    def stop_kind(self, tr, now):
+        """'terminus' (waiting, normal), 'midroute' (may have a problem) or None if moving."""
+        if tr.stopped_for(now) is None:
+            return None
+        return "terminus" if self.at_terminus(tr) else "midroute"
+
     def _drop_still(self, tr, t):
-        """A bus that stopped moving: drop it at a terminus (layover, or a finished trip
-        still listed) or when its vehicle runs a newer trip; mid-route, keep it as
-        "stopped" for up to STOPPED_TTL."""
+        """A bus that stopped moving stays visible, marked: up to TERMINUS_TTL waiting at
+        a terminus, up to STOPPED_TTL mid-route. Dropped sooner (TRIP_TTL) once its
+        vehicle runs a newer trip, since then this one is a leftover."""
         still = t - tr.fixes[-1][0]
-        if still > STOPPED_TTL:
+        if still > (TERMINUS_TTL if self.at_terminus(tr) else STOPPED_TTL):
             return True
         if still <= TRIP_TTL:
             return False
-        s = tr.fixes[-1][1]
-        if s < TERMINUS_M or s > tr.variant.shape.length - TERMINUS_M:
-            return True
         veh = tr.meta.get("vehicle")
         return bool(veh) and any(o is not tr and o.meta.get("vehicle") == veh
                                  and o.fixes[-1][0] > tr.fixes[-1][0]
@@ -352,7 +361,8 @@ class Tracker:
     def vehicles(self, line=None):
         now = time.time()
         with self.lock:
-            out = [tr.state(now) for tr in self.tracks.values() if line in (None, tr.variant.line.rstrip("/"))]
+            out = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now)}
+                   for tr in self.tracks.values() if line in (None, tr.variant.line.rstrip("/"))]
         for v in out:
             v["destination"] = pretty(v.get("destination"))
         return {"t": now, "vehicles": sorted(out, key=lambda v: (v["line"], v["variant"], v["s"]))}
@@ -460,6 +470,7 @@ class Tracker:
                               "direction": tr.variant.direction, "live": True, "eta_s": eta,
                               "dist": round(dist), "v": None if v is None else round(v, 2),
                               "stopped_s": None if stopped is None else round(stopped),
+                              "stop_kind": self.stop_kind(tr, now),
                               "stale": age > STALE_S and stopped is None, "age": age,
                               "operator": None, "operator_eta_s": None}
         later = []
@@ -473,7 +484,7 @@ class Tracker:
                 deps[trip] = {"trip": trip, "line": r["Line"].rstrip("/"),
                               "destination": pretty(r.get("Destination")),
                               "direction": r.get("Direction"), "live": False, "eta_s": None,
-                              "dist": None, "v": None, "stopped_s": None, "stale": False,
+                              "dist": None, "v": None, "stopped_s": None, "stop_kind": None, "stale": False,
                               "age": None, **op}
             if r.get("NextPasses"):
                 later.append({"line": r["Line"].rstrip("/"), "destination": pretty(r.get("Destination")),
@@ -504,6 +515,7 @@ class Tracker:
                               "eta_s": round(dist / v) if v and v > 0.5 and stopped is None else None})
             fixes = [[round(t - now), round(fs)] for t, fs, *_ in tr.fixes]
         return {"t": now, **st, "destination": pretty(st.get("destination")),
+                "stop_kind": self.stop_kind(tr, now),
                 "line": tr.variant.line.rstrip("/"), "stale": st["age"] > STALE_S and stopped is None,
                 "from": pretty(tr.variant.stops[0]["name"]), "to": pretty(tr.variant.stops[-1]["name"]),
                 "stops_ahead": ahead, "fixes": fixes}
@@ -512,7 +524,7 @@ class Tracker:
     def status(self):
         now = time.time()
         with self.lock:
-            states = [tr.state(now) for tr in self.tracks.values()]
+            states = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now)} for tr in self.tracks.values()]
             ints = self.stats["batch_intervals"]
             lb = self.stats["last_batch"]
             unknown = sum(1 for v in self.variants.values() for st in v.stops if not st["code"])
@@ -521,6 +533,8 @@ class Tracker:
                     "batch_interval": round(statistics.median(ints)) if ints else None,
                     "buses": len(states),
                     "stopped": sum(1 for x in states if x["stopped_s"]),
+                    "stopped_midroute": sum(1 for x in states if x["stop_kind"] == "midroute"),
+                    "at_terminus": sum(1 for x in states if x["stop_kind"] == "terminus"),
                     "stale": sum(1 for x in states if x["age"] > STALE_S and not x["stopped_s"]),
                     "variants": len(self.variants), "stops_unknown_code": unknown,
                     "resync_suggested": unknown > 0}
