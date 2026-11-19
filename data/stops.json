@@ -7642,5 +7642,236 @@
 "lat": 46.25390298,
 "lon": 13.17467898,
 "urban": false
+},
+"70201": {
+"code": "70201",
+"name": "UDINE via del Cotonificio 175",
+"lat": 46.08473098,
+"lon": 13.21623998,
+"urban": false
+},
+"70203": {
+"code": "70203",
+"name": "UDINE via Forni di Sotto 13 (piazzale Chiavris)",
+"lat": 46.07784298,
+"lon": 13.23378498,
+"urban": false
+},
+"70202": {
+"code": "70202",
+"name": "UDINE via del Cotonificio (fronte civico 175)",
+"lat": 46.08470398,
+"lon": 13.21610298,
+"urban": false
+},
+"70204": {
+"code": "70204",
+"name": "UDINE viale Cadore (lato Malignani)",
+"lat": 46.06848498,
+"lon": 13.21853698,
+"urban": false
+},
+"70206": {
+"code": "70206",
+"name": "UDINE piazzale Gabriele D'Annunzio 37",
+"lat": 46.05720798,
+"lon": 13.24445198,
+"urban": false
+},
+"70207": {
+"code": "70207",
+"name": "",
+"lat": 46.07004998,
+"lon": 13.21418798,
+"urban": true
+},
+"70212": {
+"code": "70212",
+"name": "UDINE via Tricesimo 204 (Terminal Nord)",
+"lat": 46.09305598,
+"lon": 13.23154098,
+"urban": false
+},
+"70211": {
+"code": "70211",
+"name": "UDINE via Tricesimo 149 (Terminal Nord, direzione Gemona)",
+"lat": 46.09339198,
+"lon": 13.23161698,
+"urban": false
+},
+"70214": {
+"code": "70214",
+"name": "",
+"lat": 46.07010498,
+"lon": 13.22843298,
+"urban": true
+},
+"70215": {
+"code": "70215",
+"name": "UDINE via Renati 20 (Area 1)",
+"lat": 46.07055698,
+"lon": 13.24347498,
+"urban": false
+},
+"70216": {
+"code": "70216",
+"name": "UDINE via Renati 28 (Area 2)",
+"lat": 46.07011898,
+"lon": 13.24370098,
+"urban": false
+},
+"70218": {
+"code": "70218",
+"name": "UDINE via Caccia 20 (Area 1, piazzale Osoppo)",
+"lat": 46.07128998,
+"lon": 13.23640198,
+"urban": false
+},
+"70219": {
+"code": "70219",
+"name": "UDINE via Caccia 44 (Area 2)",
+"lat": 46.07135598,
+"lon": 13.23766298,
+"urban": false
+},
+"70221": {
+"code": "70221",
+"name": "UDINE viale Ledra 98 (Area 1)",
+"lat": 46.06550498,
+"lon": 13.22634298,
+"urban": false
+},
+"70223": {
+"code": "70223",
+"name": "UDINE viale Ledra 120 (Area 3, piazzale Cavedalis)",
+"lat": 46.06666298,
+"lon": 13.22590898,
+"urban": false
+},
+"70225": {
+"code": "70225",
+"name": "",
+"lat": 46.07524098,
+"lon": 13.24118098,
+"urban": true
+},
+"70228": {
+"code": "70228",
+"name": "UDINE Z.I.U. via Manzano (rotonda Enel, direzione Pavia)",
+"lat": 46.01160998,
+"lon": 13.26529298,
+"urban": false
+},
+"70229": {
+"code": "70229",
+"name": "UDINE piazzale Rita Levi Montalcini (Terminal Studenti)",
+"lat": 46.06598498,
+"lon": 13.21730898,
+"urban": false
+},
+"70231": {
+"code": "70231",
+"name": "",
+"lat": 46.06554698,
+"lon": 13.21830098,
+"urban": true
+},
+"70230": {
+"code": "70230",
+"name": "",
+"lat": 46.07212098,
+"lon": 13.22595398,
+"urban": true
+},
+"70232": {
+"code": "70232",
+"name": "UDINE Z.I.U. via Manzano 189 (rotonda Enel, dir. Cargnacco)",
+"lat": 46.01170398,
+"lon": 13.26539898,
+"urban": false
+},
+"60202": {
+"code": "60202",
+"name": "RIZZOLO via Battiferro 92 (Fornaci)",
+"lat": 46.14403398,
+"lon": 13.24684298,
+"urban": false
+},
+"60201": {
+"code": "60201",
+"name": "REANA via Vittorio Veneto 3 (poste, direzione Udine)",
+"lat": 46.14526898,
+"lon": 13.23339698,
+"urban": false
+},
+"60206": {
+"code": "60206",
+"name": "RIBIS via del Santuario (fronte 67, chiesa direzione Udine)",
+"lat": 46.13623998,
+"lon": 13.24120998,
+"urban": false
+},
+"60205": {
+"code": "60205",
+"name": "RIBIS via del Santuario 51",
+"lat": 46.13707798,
+"lon": 13.24203698,
+"urban": false
+},
+"60204": {
+"code": "60204",
+"name": "REMUGNANO via del Municipio 11 (municipio)",
+"lat": 46.14946698,
+"lon": 13.24377498,
+"urban": false
+},
+"60211": {
+"code": "60211",
+"name": "QUALSO via del Cornappo 96",
+"lat": 46.18221698,
+"lon": 13.24451498,
+"urban": false
+},
+"60210": {
+"code": "60210",
+"name": "QUALSO via Gastone Valente (fronte civico 14, chiesa)",
+"lat": 46.17445998,
+"lon": 13.24387998,
+"urban": false
+},
+"60215": {
+"code": "60215",
+"name": "CORTALE via Monsignore Cattarossi (fronte civico 13)",
+"lat": 46.15933998,
+"lon": 13.25279998,
+"urban": false
+},
+"60220": {
+"code": "60220",
+"name": "REANA via San Giorgio (lato ex caserma Patussi)",
+"lat": 46.15215998,
+"lon": 13.22500598,
+"urban": false
+},
+"60225": {
+"code": "60225",
+"name": "REMUGNANO via de Municipio (fronte civico 4, scuole)",
+"lat": 46.15114998,
+"lon": 13.24392998,
+"urban": false
+},
+"60230": {
+"code": "60230",
+"name": "RIBIS via del Santuario 65 (chiesa)",
+"lat": 46.13651098,
+"lon": 13.24160398,
+"urban": false
+},
+"60235": {
+"code": "60235",
+"name": "RIZZOLO via Battiferro 4 (chiesa)",
+"lat": 46.13661898,
+"lon": 13.24896098,
+"urban": false
 }
 }
