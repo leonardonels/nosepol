@@ -10,6 +10,7 @@
 Stdlib only:  python3 server/app.py  [--port 8080] [--lines T06,T08,T09]
 """
 import argparse
+import collections
 import shutil
 import hashlib
 import json
@@ -41,15 +42,16 @@ STOP_STRIDE = 4         # poll every Nth stop of each variant (+ terminus)
 TRIP_TTL = 180          # s not listed anywhere (or its vehicle runs a newer trip) -> drop trip
 TERMINUS_TTL = 15 * 60  # s standing still at a terminus (normal layover) -> drop trip
 STOPPED_TTL = 60 * 60   # s standing still mid-route (may have a problem) -> drop trip
-TERMINUS_M = 150        # within this of either end of the route counts as "at the terminus"
+TERMINUS_M = 150        # near either end of the route (also: at/past the second-to-last stop) = terminus
 STOP_MATCH_M = 40
 OPERATOR_CACHE_S = 20   # s to reuse a stop's live operator answer
 AT_STOP_M = 20          # a bus this close past a stop still counts as arriving there
 STALE_S = 90            # GPS older than this (and not "stopped") is stale
+ARRIVED_TTL = 60        # s a bus that reached the end of its route stays after the stops stop listing it
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
-PALETTE = [("#FF5A1F", "#0E0F10"), ("#2D63F0", "#FFFFFF"), ("#C6FF3D", "#0E0F10"),
-           ("#E0249A", "#FFFFFF"), ("#00B8C8", "#0E0F10"), ("#FFB000", "#0E0F10"),
-           ("#7C4DFF", "#FFFFFF"), ("#16A34A", "#FFFFFF")]
+PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
+           ("#D35DA2", "#FFFFFF"), ("#26A6B5", "#1B1B1F"), ("#F2B33D", "#1B1B1F"),
+           ("#8E6CE0", "#FFFFFF"), ("#3E9E5E", "#FFFFFF")]
 
 log = logging.getLogger("nosepol")
 
@@ -160,6 +162,9 @@ class Tracker:
         self.tracks = {}        # trip -> Track
         self.seen = {}          # trip -> last time seen at any stop
         self.frozen = {}        # dropped trip -> its last (lat, lon), ignored until it moves
+        self.drops = collections.deque(maxlen=50)  # recent removals, with the reason
+        self.drop_counts = {}   # reason -> removals since start
+        self.started = time.time()
         self.stats = {"sweeps": 0, "requests": 0, "last_sweep": None, "last_batch": None,
                       "batch_intervals": []}
         self.pool = ThreadPoolExecutor(4)
@@ -284,13 +289,22 @@ class Tracker:
                 updated += tr.add_fix(t, r["Latitude"], r["Longitude"])
                 self.seen[trip] = t
         with self.lock:
-            stale = {k for k, ts in self.seen.items() if t - ts > TRIP_TTL}
-            stale |= {k for k, tr in self.tracks.items() if self._drop_still(tr, t)}
-            for trip in stale:
+            # A bus at the end of its route that this sweep didn't list has finished its
+            # trip: the operator drops it right away (its next run shows up unstarted, no GPS).
+            for k, tr in self.tracks.items():
+                tr.arrived = self.at_end(tr) and self.seen.get(k, 0) < t
+            reasons = {k: "not_reported" for k, ts in self.seen.items() if t - ts > TRIP_TTL}
+            reasons |= {k: "arrived" for k, tr in self.tracks.items()
+                        if tr.arrived and t - self.seen.get(k, 0) > ARRIVED_TTL}
+            for k, tr in self.tracks.items():
+                if (why := self._drop_reason(tr, t)):
+                    reasons[k] = why
+            for trip, why in reasons.items():
                 self.seen.pop(trip, None)
                 tr = self.tracks.pop(trip, None)
                 if tr:
                     self.frozen[trip] = tr.fixes[-1][3:5]
+                    self._record_drop(trip, tr, why, t)
             self.stats["sweeps"] += 1
             self.stats["last_sweep"] = {"t": t, "stops": len(codes), "trips": len(runs),
                                         "new_fixes": updated}
@@ -308,29 +322,63 @@ class Tracker:
         return rs[0]
 
     @staticmethod
-    def at_terminus(tr):
-        s = tr.fixes[-1][1]
-        return s < TERMINUS_M or s > tr.variant.shape.length - TERMINUS_M
+    def at_end(tr):
+        """At or past the second-to-last stop (buses often wait at the stop before the
+        terminus), or within TERMINUS_M of the end of the route."""
+        s, stops = tr.fixes[-1][1], tr.variant.stops
+        if s > tr.variant.shape.length - TERMINUS_M:
+            return True
+        return len(stops) >= 3 and s >= stops[-2]["s"] - AT_STOP_M
+
+    @classmethod
+    def at_terminus(cls, tr):
+        """At the end (see at_end) or within TERMINUS_M of the first stop."""
+        return cls.at_end(tr) or tr.fixes[-1][1] < tr.variant.stops[0]["s"] + TERMINUS_M
 
     def stop_kind(self, tr, now):
-        """'terminus' (waiting, normal), 'midroute' (may have a problem) or None if moving."""
+        """'arrived' (reached the end, no longer listed: its trip is over), 'terminus'
+        (waiting, normal), 'midroute' (may have a problem), or None if moving."""
+        if tr.arrived:
+            return "arrived"
         if tr.stopped_for(now) is None:
             return None
         return "terminus" if self.at_terminus(tr) else "midroute"
 
-    def _drop_still(self, tr, t):
-        """A bus that stopped moving stays visible, marked: up to TERMINUS_TTL waiting at
-        a terminus, up to STOPPED_TTL mid-route. Dropped sooner (TRIP_TTL) once its
-        vehicle runs a newer trip, since then this one is a leftover."""
+    def is_stale(self, tr, now):
+        return now - tr.fixes[-1][0] > STALE_S and not tr.arrived and tr.stopped_for(now) is None
+
+    def _drop_reason(self, tr, t):
+        """Why a bus that stopped moving should go now, or None to keep it. It stays
+        visible, marked, up to TERMINUS_TTL waiting at a terminus and up to STOPPED_TTL
+        mid-route; sooner (TRIP_TTL) once its vehicle runs a newer trip, since then
+        this one is a leftover."""
         still = t - tr.fixes[-1][0]
-        if still > (TERMINUS_TTL if self.at_terminus(tr) else STOPPED_TTL):
-            return True
+        if self.at_terminus(tr):
+            if still > TERMINUS_TTL:
+                return "terminus_timeout"
+        elif still > STOPPED_TTL:
+            return "midroute_timeout"
         if still <= TRIP_TTL:
-            return False
+            return None
         veh = tr.meta.get("vehicle")
-        return bool(veh) and any(o is not tr and o.meta.get("vehicle") == veh
-                                 and o.fixes[-1][0] > tr.fixes[-1][0]
-                                 for o in self.tracks.values())
+        if veh and any(o is not tr and o.meta.get("vehicle") == veh and o.fixes[-1][0] > tr.fixes[-1][0]
+                       for o in self.tracks.values()):
+            return "vehicle_reused"
+        return None
+
+    def _record_drop(self, trip, tr, reason, t):
+        s = tr.fixes[-1][1]
+        last = max((st for st in tr.variant.stops if st["s"] <= s + AT_STOP_M), key=lambda st: st["s"],
+                   default=tr.variant.stops[0])
+        d = {"t": round(t), "trip": trip, "line": tr.variant.line.rstrip("/"),
+             "destination": pretty(tr.meta.get("destination") or tr.variant.destination),
+             "vehicle": tr.meta.get("vehicle"), "reason": reason,
+             "still_s": round(t - tr.fixes[-1][0]), "s": round(s), "length": round(tr.variant.shape.length),
+             "near": pretty(last["name"])}
+        self.drops.append(d)
+        self.drop_counts[reason] = self.drop_counts.get(reason, 0) + 1
+        log.info("drop %s (%s -> %s) %s: still %ds at %dm/%dm near %s", trip, d["line"], d["destination"],
+                 reason, d["still_s"], d["s"], d["length"], d["near"])
 
     def run(self):
         self.discover()
@@ -361,7 +409,7 @@ class Tracker:
     def vehicles(self, line=None):
         now = time.time()
         with self.lock:
-            out = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now)}
+            out = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now), "stale": self.is_stale(tr, now)}
                    for tr in self.tracks.values() if line in (None, tr.variant.line.rstrip("/"))]
         for v in out:
             v["destination"] = pretty(v.get("destination"))
@@ -471,7 +519,7 @@ class Tracker:
                               "dist": round(dist), "v": None if v is None else round(v, 2),
                               "stopped_s": None if stopped is None else round(stopped),
                               "stop_kind": self.stop_kind(tr, now),
-                              "stale": age > STALE_S and stopped is None, "age": age,
+                              "stale": self.is_stale(tr, now), "age": age,
                               "operator": None, "operator_eta_s": None}
         later = []
         for r in runs or []:
@@ -516,7 +564,7 @@ class Tracker:
             fixes = [[round(t - now), round(fs)] for t, fs, *_ in tr.fixes]
         return {"t": now, **st, "destination": pretty(st.get("destination")),
                 "stop_kind": self.stop_kind(tr, now),
-                "line": tr.variant.line.rstrip("/"), "stale": st["age"] > STALE_S and stopped is None,
+                "line": tr.variant.line.rstrip("/"), "stale": self.is_stale(tr, now),
                 "from": pretty(tr.variant.stops[0]["name"]), "to": pretty(tr.variant.stops[-1]["name"]),
                 "stops_ahead": ahead, "fixes": fixes}
 
@@ -524,7 +572,8 @@ class Tracker:
     def status(self):
         now = time.time()
         with self.lock:
-            states = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now)} for tr in self.tracks.values()]
+            states = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now), "stale": self.is_stale(tr, now)}
+                      for tr in self.tracks.values()]
             ints = self.stats["batch_intervals"]
             lb = self.stats["last_batch"]
             unknown = sum(1 for v in self.variants.values() for st in v.stops if not st["code"])
@@ -535,8 +584,12 @@ class Tracker:
                     "stopped": sum(1 for x in states if x["stopped_s"]),
                     "stopped_midroute": sum(1 for x in states if x["stop_kind"] == "midroute"),
                     "at_terminus": sum(1 for x in states if x["stop_kind"] == "terminus"),
-                    "stale": sum(1 for x in states if x["age"] > STALE_S and not x["stopped_s"]),
+                    "arrived": sum(1 for x in states if x["stop_kind"] == "arrived"),
+                    "stale": sum(1 for x in states if x["stale"]),
                     "variants": len(self.variants), "stops_unknown_code": unknown,
+                    "uptime_s": round(now - self.started),
+                    "drops_by_reason": dict(self.drop_counts),
+                    "drops_recent": [{**d, "ago_s": round(now - d["t"])} for d in reversed(self.drops)][:20],
                     "resync_suggested": unknown > 0}
 
     def shapes(self, line):

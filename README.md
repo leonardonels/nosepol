@@ -55,6 +55,10 @@ Findings that shape the design:
   `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, stop_kind, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`.
   A bus whose GPS stops changing is `stopped_s` seconds still, with `stop_kind`
   `terminus` (waiting, kept up to 15 min) or `midroute` (may have a problem, kept up to 1 h).
+  "Terminus" means within 150 m of the first stop, or at/past the second-to-last stop
+  (buses often wait at the stop before the end). A bus in that last stretch that the
+  stops stop listing has finished its trip (the operator drops it at once): `stop_kind`
+  `arrived`, held at its last position, removed 60 s after its last listing.
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
 - `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
   words of the name or code (accents and case ignored) and/or sorted by distance
@@ -63,7 +67,10 @@ Findings that shape the design:
   timetable passes. Untracked runs the operator lists appear with `live: false`.
 - `GET /api/trips/{trip}`: one bus, the stops ahead with ETAs, and its recent fixes
 - `GET /api/status`: last GPS batch, batch interval, stale/stopped counts, stops with
-  no code (a hint that a resync is due)
+  no code (a hint that a resync is due), and removed buses: `drops_by_reason` since
+  start and `drops_recent` (trip, reason, how long it stood still, where). Reasons:
+  `arrived`, `terminus_timeout`, `midroute_timeout`, `not_reported` (no stop lists it for 3 min),
+  `vehicle_reused` (its vehicle runs a newer trip). Each removal is also logged.
 - `GET /api/debug`: poll set, batch intervals, raw fix history
 
 The page uses hash links that can be shared: `/#/stop/09001`, `/#/bus/T06:1086`.

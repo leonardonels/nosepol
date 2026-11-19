@@ -15,6 +15,7 @@ class Track:
         self.variant = variant
         self.fixes = []        # (t, s, perp, lat, lon)
         self.last_report = None  # last time the API reported this trip, moved or not
+        self.arrived = False     # set by the tracker: reached the end and no longer listed
         self.meta = {}
 
     def add_fix(self, t, lat, lon):
@@ -59,8 +60,8 @@ class Track:
 
     def predict(self, now):
         a, v, res, t_ref, n = self.fit()
-        if self.stopped_for(now) is not None:
-            return self.fixes[-1][1], 0.0, res, n  # hold it where it stands
+        if self.arrived or self.stopped_for(now) is not None:
+            return self.fixes[-1][1], 0.0, res, n  # hold it where it stands, no dead reckoning
         dt = min(max(0.0, now - t_ref), MAX_EXTRAP_S)
         s = a + (v or 0.0) * dt
         return min(max(s, 0.0), self.variant.shape.length), v, res, n
