@@ -406,8 +406,8 @@ class Tracker:
         b = tr.variant.blind_from
         if b is None or tr.layover:
             return False
-        a, v, _, t_ref, _ = tr.fit()
-        return bool(v) and a + v * (t - t_ref) > b + AT_STOP_M
+        a, v, _, t_ref, _ = tr.cruise()
+        return bool(v) and tr.advance(a, t - t_ref, v) > b + AT_STOP_M
 
     @staticmethod
     def blind_ttl(tr):
@@ -496,7 +496,8 @@ class Tracker:
             else:
                 s_, v, *_ = tr.predict(t)
                 left = tr.variant.shape.length - s_
-                eta = left / v if v and v > 0.5 else (0 if left < 500 else None)
+                eta = tr.time_to(s_, tr.variant.shape.length, v)
+                eta = eta if eta is not None else (0 if left < 500 else None)
                 if eta is not None:
                     cands.setdefault(key, []).append((1, left, tr, t + eta))
         termini = {}
@@ -739,7 +740,8 @@ class Tracker:
                     continue
                 stopped = tr.stopped_for(now)
                 dist = max(0.0, st["s"] - s)
-                eta = round(dist / v) if v and v > 0.5 and stopped is None else None
+                eta = tr.time_to(s, st["s"], v) if stopped is None else None
+                eta = None if eta is None else round(eta)
                 age = round(now - tr.fixes[-1][0])
                 deps[trip] = {"trip": trip, "line": tr.variant.line.rstrip("/"),
                               "destination": pretty(tr.meta.get("destination") or tr.variant.destination),
@@ -795,8 +797,9 @@ class Tracker:
                 if x["s"] <= s + 5:
                     continue
                 dist = x["s"] - s
+                eta = tr.time_to(s, x["s"], v) if stopped is None else None
                 ahead.append({"code": x["code"], "name": pretty(x["name"]), "dist": round(dist),
-                              "eta_s": round(dist / v) if v and v > 0.5 and stopped is None else None})
+                              "eta_s": None if eta is None else round(eta)})
             fixes = [[round(t - now), round(fs)] for t, fs, *_ in tr.fixes]
         return {"t": now, **st, "destination": pretty(st.get("destination")),
                 "stop_kind": self.stop_kind(tr, now),
