@@ -25,8 +25,8 @@ realtime.tplfvg.it, the official stop-monitor page):
 
 Findings that shape the design:
 - GPS is refreshed for all buses in one batch about every 20–25 s.
-- A stop lists only the next bus per line and direction (a few central stops sometimes
-  list two of line 9). Between two polled stops
+- A stop lists the next bus per line and direction; when two run close together
+  (bunched) it often lists both (seen on lines 8 and 9). Otherwise, between two polled stops
   only the bus nearest the second one is seen: any bus behind it on the same stretch
   is hidden from every polled stop. So the server polls every 4th stop of each route
   (`STOP_STRIDE`), more where that leaves over 1 km unpolled (`POLL_GAP_M`), the
