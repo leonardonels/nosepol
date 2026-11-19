@@ -194,6 +194,39 @@
   .stat > div { background:var(--md-surface-container-high); border-radius:12px; padding:12px; }
   .stat .v { font:400 22px/28px Roboto, sans-serif; }
   a { color:var(--md-primary); }
+  /* line page: both directions as two strips, buses placed along them */
+  .ltabs { flex:1; min-width:0; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:4px 2px; }
+  .ltab { flex:none; min-width:56px; height:40px; padding:0 16px; border-radius:20px; border:2px solid var(--c); background:none;
+    font:500 16px/20px Roboto, sans-serif; color:var(--md-on-surface); }
+  .ltab[aria-selected=true] { background:var(--c); color:var(--k); }
+  #lineBody { width:100%; max-width:560px; margin:0 auto; }
+  .thead { display:flex; justify-content:space-between; gap:8px; margin-top:20px; font:500 12px/16px Roboto, sans-serif; color:var(--md-on-surface-variant); }
+  .thead span:last-child { text-align:right; }
+  .track { position:relative; margin-top:4px; }
+  .track .strip { position:absolute; width:6px; border-radius:3px; background:var(--c); }
+  .track .tick { position:absolute; width:12px; height:3px; margin-top:-1.5px; border-radius:2px; background:var(--md-on-surface); }
+  .trow { position:absolute; left:100px; right:100px; height:36px; margin-top:-18px; display:flex; align-items:center; justify-content:center;
+    padding:0 4px; border:0; border-radius:8px; background:none; color:var(--md-on-surface); font:400 13px/16px Roboto, sans-serif; }
+  .trow span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .trow.end { font-weight:700; }
+  .trow:not(:disabled):hover { background:color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+  .trow:disabled { color:var(--md-on-surface-variant); cursor:default; }
+  .lbus { position:absolute; z-index:2; height:24px; margin-top:-12px; padding:0 8px; display:flex; align-items:center; gap:4px; border:0; border-radius:12px;
+    background:var(--c); color:var(--k); font:500 12px/24px Roboto, sans-serif; white-space:nowrap; box-shadow:0 0 0 2px var(--halo), var(--md-elev-1); }
+  .lbus.short { outline:2px dashed var(--c); outline-offset:2px; }
+  .lbus.blind { outline:2px dashed var(--md-on-surface-variant); outline-offset:2px; }
+  .lbus.stale { opacity:.45; }
+  .lbus.wait { opacity:.8; }
+  .lbus.pending { background:var(--md-surface-container-high); color:var(--md-on-surface); box-shadow:inset 0 0 0 2px var(--c), 0 0 0 2px var(--halo); }
+  .lbus .fl { padding:0 4px; border-radius:8px; font-size:11px; line-height:16px; background:#44474E; color:#fff; }
+  .lbus .fl.bad { background:#BA1A1A; }
+  .lgap { position:absolute; width:26px; font:500 11px/14px Roboto, sans-serif; text-align:center; color:var(--md-on-surface-variant);
+    display:flex; align-items:center; justify-content:center; }
+  .lgap::before { content:""; position:absolute; top:0; bottom:0; width:4px; border:1.5px solid currentColor; opacity:.5; }
+  .lgap.l::before { right:-2px; border-left:0; } .lgap.r::before { left:-2px; border-right:0; }
+  .lgap.bunch { color:var(--md-error); font-weight:700; }
+  .lgap.hole { color:var(--md-on-surface); font-weight:700; }
+  .lgap b { position:relative; background:var(--md-surface); padding:1px 0; font-weight:inherit; }
   :focus-visible { outline:2px solid var(--md-primary); outline-offset:2px; }
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
   /* compass: needle points north on screen; tap to turn the map back to north */
@@ -261,6 +294,13 @@
   </div>
   <div class="obody" id="menuBody"></div>
 </div>
+<div class="overlay hide" id="linePage" role="dialog" aria-modal="true" data-t-aria="linesTitle">
+  <div class="ohead">
+    <div class="ltabs" id="lineTabs" role="tablist" data-t-aria="lines"></div>
+    <button class="sq" id="closeLine" data-t-aria="close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="obody" id="lineBody"></div>
+</div>
 <div id="toast" class="hide" role="status"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -297,6 +337,11 @@ const T = {
     offline: "Server non raggiungibile", unknownTrip: "Questo autobus non è più tracciato.", unknownStop: "Fermata sconosciuta.",
     min: "min",
     blind: "posizione stimata: nessuna fermata di questo tratto segnala gli autobus",
+    lineN: "Linea {n}", running: "In servizio", avgGap: "Intervallo", lineStatus: "Stato", showOnMap: "Mostra sulla mappa",
+    bunched: "Accoppiati", hole: "Buco", regular: "Regolare", atTermN: "{n} al capolinea", startsN: "{n} in partenza",
+    shortTrip: "corsa limitata: termina a {dest}", shortLegend: "Tratteggiati: corse limitate ({ends})",
+    gapTitle: "{m} fino all'autobus davanti", noLive: "Nessun autobus in servizio su questa linea adesso.",
+    lineHint: "Distanze in minuti tra autobus consecutivi. Sotto i 2′ sono accoppiati.",
   },
   en: {
     searchPh: "Stop, street or line", liveTitle: "Seconds since the last GPS update", menu: "Menu", lines: "Lines",
@@ -327,6 +372,11 @@ const T = {
     installTitle: "On your home screen", install: "In the browser menu choose “Add to Home screen” to open it like an app.",
     offline: "Server unreachable", unknownTrip: "This bus is no longer tracked.", unknownStop: "Unknown stop.",
     min: "min",
+    lineN: "Line {n}", running: "Running", avgGap: "Avg gap", lineStatus: "Status", showOnMap: "Show on map",
+    bunched: "Bunched", hole: "Gap", regular: "Regular", atTermN: "{n} at the terminus", startsN: "{n} about to start",
+    shortTrip: "short trip: ends at {dest}", shortLegend: "Dashed: short trips ({ends})",
+    gapTitle: "{m} to the bus ahead", noLive: "No buses running on this line right now.",
+    lineHint: "Minutes between consecutive buses. Under 2′ they are bunched.",
   },
 };
 const store = {
@@ -794,7 +844,7 @@ async function openStop(code, { pan = true } = {}) {
     setSheet(`<div class="kicker mono"><span>${esc(t("stop"))}${walk != null ? ` · ${fmtDist(walk)} · ${walkMin(walk)}′ ${esc(t("walk"))}` : ""}</span>
         <button class="sq" id="closeSheet" aria-label="${esc(t("close"))}" style="width:44px;height:44px;border:0;background:none;margin-right:-10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <h2>${esc(d.name)}</h2>
-      <div style="display:flex;gap:6px;margin-top:8px">${d.lines.map(badge).join("")}</div>
+      <div style="display:flex;gap:6px;margin-top:8px">${d.lines.map(l => `<button class="lineLink" data-line="${esc(base(l))}" aria-label="${esc(t("lineN", { n: style(l).name }))}" style="border:0;padding:0;background:none;border-radius:50%">${badge(l)}</button>`).join("")}</div>
       <div class="kicker mono" style="margin-top:14px"><span></span><span style="display:flex;gap:10px"><span style="min-width:48px;text-align:right">${esc(t("ours"))}</span><span style="min-width:58px;text-align:right">${esc(t("operator"))}</span></span></div>
       <div style="margin-top:4px">${rows || `<p class="empty">${esc(t("noBuses"))}</p>`}</div>
       ${later ? `<div class="later"><div class="mono" style="color:var(--muted);margin-bottom:4px">${esc(t("later"))}</div>${later}</div>` : ""}
@@ -803,6 +853,7 @@ async function openStop(code, { pan = true } = {}) {
     $("shareBtn").onclick = share;
     $("expandBtn").onclick = () => setHeight("full");
     for (const r of body.querySelectorAll("[data-trip]")) r.onclick = () => openBus(r.dataset.trip, { from: code });
+    for (const b of body.querySelectorAll(".lineLink")) b.onclick = () => openLine(b.dataset.line);
   };
   await render(true);
   stopTimer = setInterval(render, 10000);
@@ -845,11 +896,12 @@ async function openBus(trip, { pan = true, from = null } = {}) {
         <div><div class="mono" style="color:var(--muted)">${esc(t("confidence"))}</div><div class="v" style="color:${confColor}">${esc(t(conf))}</div></div>
         <div><div class="mono" style="color:var(--muted)">KM</div><div class="v">${(d.s / 1000).toFixed(1)}/${(d.length / 1000).toFixed(1)}</div></div>
       </div>
-      <div class="actions"><button class="btn ${follow ? "on" : ""}" id="followBtn">${esc(t(follow ? "following" : "follow"))}</button><button class="btn" id="shareBtn">${esc(t("share"))}</button></div>
+      <div class="actions"><button class="btn ${follow ? "on" : ""}" id="followBtn">${esc(t(follow ? "following" : "follow"))}</button><button class="btn" id="shareBtn">${esc(t("share"))}</button><button class="btn" id="lineBtn">${esc(t("lineN", { n: s.name }))}</button></div>
       <div class="mono" style="color:var(--muted);margin-top:16px">${esc(t("stopsAhead"))}</div>
       <div style="margin-top:4px">${ahead}</div>`, s.color);
     $("closeSheet").onclick = peek;
     $("shareBtn").onclick = share;
+    $("lineBtn").onclick = () => openLine(d.line);
     $("followBtn").onclick = () => { follow = !follow; render(); if (follow) focusOn([d.lat, d.lon], 15); };
     for (const r of body.querySelectorAll("[data-stop]")) if (r.dataset.stop) r.onclick = () => openStop(r.dataset.stop);
   };
@@ -888,7 +940,7 @@ async function runSearch() {
       <span style="display:flex;gap:4px">${r.lines.map(l => { const s = style(l); return `<span style="background:${s.color};color:${s.ink};font:500 12px/24px Roboto,sans-serif;min-width:24px;height:24px;border-radius:12px;text-align:center;padding:0 6px">${esc(s.name)}</span>`; }).join("")}</span></button>`).join("")
       || (lineHits.length ? "" : `<p class="empty">${esc(t("noResults"))}</p>`));
   for (const b of $("results").querySelectorAll("[data-code]")) b.onclick = () => { closeSearch(); openStop(b.dataset.code); };
-  for (const b of $("results").querySelectorAll("[data-line]")) b.onclick = () => { closeSearch(); showOnly(b.dataset.line); };
+  for (const b of $("results").querySelectorAll("[data-line]")) b.onclick = () => openLine(b.dataset.line);
 }
 $("openSearch").onclick = openSearch;
 $("closeSearch").onclick = closeSearch;
@@ -905,7 +957,7 @@ async function openMenu() {
   let st = null; try { st = await api("status"); } catch {}
   const lines = Object.entries(LINES).map(([l, s]) => `<button class="row" data-line="${l}">${badge(l)}
       <div class="grow"><b>${esc([...new Set(s.variants.map(v => v.headsign))].join(" ⇄ ") || l)}</b>
-      <span class="note">${esc(t("busesRunning", { n: s.vehicles }))}${s.pending ? " · " + esc(t("pendingN", { n: s.pending })) : ""} · ${esc(t("showOnly"))}</span></div></button>`).join("");
+      <span class="note">${esc(t("busesRunning", { n: s.vehicles }))}${s.pending ? " · " + esc(t("pendingN", { n: s.pending })) : ""}</span></div></button>`).join("");
   $("menuBody").innerHTML = `<h3>${esc(t("linesTitle"))}</h3>${lines}
     <h3>${esc(t("language"))}</h3>
     <div class="seg" role="group" aria-label="${esc(t("language"))}"><button data-lang="it" aria-pressed="${lang === "it"}">Italiano</button><button data-lang="en" aria-pressed="${lang === "en"}">English</button></div>
@@ -921,7 +973,7 @@ async function openMenu() {
     <h3>${esc(t("howTitle"))}</h3><p>${esc(t("how"))}</p>
     <h3>${esc(t("privacyTitle"))}</h3><p>${esc(t("privacy"))}</p>
     <h3>${esc(t("installTitle"))}</h3><p>${esc(t("install"))}</p>`;
-  for (const b of $("menuBody").querySelectorAll("[data-line]")) b.onclick = () => { closeMenu(); showOnly(b.dataset.line); };
+  for (const b of $("menuBody").querySelectorAll("[data-line]")) b.onclick = () => openLine(b.dataset.line);
   for (const b of $("menuBody").querySelectorAll("[data-lang]")) b.onclick = () => { lang = b.dataset.lang; store.set("lang", lang); applyLang(); openMenu(); rerender(); };
   for (const b of $("menuBody").querySelectorAll("[data-theme-pick]")) b.onclick = () => {
     theme = b.dataset.themePick; store.set("theme", theme); applyTheme();
@@ -931,7 +983,150 @@ async function openMenu() {
 function closeMenu() { $("menu").classList.add("hide"); }
 $("openMenu").onclick = openMenu;
 $("closeMenu").onclick = closeMenu;
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeSearch(); closeMenu(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeSearch(); closeMenu(); closeLine(); } });
+
+// ---------- line page: both directions as two strips ----------
+// Rows are the first direction's stops, top to bottom; its buses run down the left strip.
+// The other direction runs up the right strip, its stops matched to the nearest rows.
+const ROW = 40, TOP = 18, BUNCH_S = 120, BUS_H = 26;
+let lineOpen = null, lineTimer = null, lineBack = "";
+// stops[i].s -> fractional stop index for a position s
+function fracIndex(stops, s) {
+  if (!stops.length) return 0;
+  if (s <= stops[0].s) return 0;
+  for (let i = 0; i < stops.length - 1; i++)
+    if (s < stops[i + 1].s) return i + (s - stops[i].s) / Math.max(1, stops[i + 1].s - stops[i].s);
+  return stops.length - 1;
+}
+// least-squares non-decreasing fit (pool adjacent violators), to keep the row mapping in order
+function isotonic(y) {
+  const b = [];
+  for (const v of y) {
+    b.push([v, 1]);
+    while (b.length > 1 && b.at(-2)[0] / b.at(-2)[1] > b.at(-1)[0] / b.at(-1)[1]) { const [s, n] = b.pop(); b.at(-1)[0] += s; b.at(-1)[1] += n; }
+  }
+  return b.flatMap(([s, n]) => Array(n).fill(s / n));
+}
+// for each stop of the second direction, the (fractional) row it sits beside
+function rowMap(a, r) {
+  const near = r.map(x => {
+    let best = 0, bd = Infinity;
+    a.forEach((y, i) => { const d = haversine([x.lat, x.lon], [y.lat, y.lon]); if (d < bd) { bd = d; best = i; } });
+    return best;
+  });
+  return isotonic(near.map(i => -i)).map(i => -i);  // it runs the other way: rows go up
+}
+const median = a => { const b = [...a].sort((x, y) => x - y); return b.length ? (b.length % 2 ? b[(b.length - 1) / 2] : (b[b.length / 2 - 1] + b[b.length / 2]) / 2) : null; };
+const isHole = (g, med, n) => n >= 2 ? g >= Math.max(2 * med, 900) : g >= 1800;
+const running = b => b.stop_kind !== "layover" && b.stop_kind !== "terminus" && !b.stale;
+
+async function openLine(line) {
+  closeSearch(); closeMenu();
+  if (!lineOpen) lineBack = location.hash.startsWith("#/line/") ? "" : location.hash;
+  lineOpen = line;
+  history.replaceState(null, "", "#/line/" + encodeURIComponent(line));
+  $("linePage").classList.remove("hide");
+  $("lineTabs").innerHTML = Object.entries(LINES).map(([l, s]) =>
+    `<button class="ltab" role="tab" data-line="${l}" aria-selected="${l === line}" style="--c:${s.color};--k:${s.ink}">${esc(s.name)}</button>`).join("");
+  for (const b of $("lineTabs").querySelectorAll(".ltab")) b.onclick = () => openLine(b.dataset.line);
+  clearInterval(lineTimer);
+  $("lineBody").innerHTML = "";
+  await renderLine(true);
+  lineTimer = setInterval(renderLine, 5000);
+}
+function closeLine() {
+  if (!lineOpen) return;
+  lineOpen = null; clearInterval(lineTimer); lineTimer = null;
+  $("linePage").classList.add("hide");
+  history.replaceState(null, "", lineBack || location.pathname + location.search);
+}
+async function renderLine(first) {
+  const line = lineOpen;
+  let d;
+  try { d = await api(`lines/${encodeURIComponent(line)}/track`); }
+  catch { if (first) $("lineBody").innerHTML = `<p class="empty">${esc(t("offline"))}</p>`; return; }
+  if (line !== lineOpen) return;
+  const [A, R] = d.directions;
+  const all = d.directions.flatMap(x => x.buses);
+  const run = all.filter(running), gaps = all.map(b => b.gap_s).filter(g => g != null);
+  const med = median(gaps);
+  const status = !gaps.length ? ["–", ""] : gaps.some(g => g < BUNCH_S) ? [t("bunched"), "var(--md-error)"]
+    : gaps.some(g => isHole(g, med, gaps.length)) ? [t("hole"), "var(--md-on-surface)"] : [t("regular"), "var(--md-good)"];
+  const waiting = all.length - all.filter(b => running(b) || b.stale).length;
+  const starts = d.directions.reduce((n, x) => n + x.pending.length, 0);
+  const sub = [waiting ? t("atTermN", { n: waiting }) : "", starts ? t("startsN", { n: starts }) : ""].filter(Boolean).join(" · ");
+  const c = `--c:${d.color};--k:${d.ink}`;
+  const H = TOP * 2 + (A.stops.length - 1) * ROW;
+  const y = row => TOP + row * ROW;
+  const rmap = R ? rowMap(A.stops, R.stops) : [];
+  const rowOf = (dir, s) => {
+    const f = fracIndex(dir.stops, s);
+    if (dir === A) return f;
+    const i = Math.floor(f), k = f - i;
+    return rmap[i] + (rmap[Math.min(i + 1, rmap.length - 1)] - rmap[i]) * k;
+  };
+  let html = "";
+  // stop names, and ticks for each direction's own stops
+  A.stops.forEach((st, i) => {
+    html += `<button class="trow ${i === 0 || i === A.stops.length - 1 ? "end" : ""}" style="top:${y(i)}px" ${st.code ? `data-stop="${esc(st.code)}"` : "disabled"} title="${esc(st.name)}"><span>${esc(st.name)}</span></button>`;
+    html += `<span class="tick" style="left:27px;top:${y(i)}px"></span>`;
+  });
+  if (R) R.stops.forEach((st, j) => { html += `<span class="tick" style="right:27px;top:${y(rmap[j])}px"></span>`; });
+  html += `<span class="strip" style="left:30px;top:${TOP}px;height:${H - 2 * TOP}px"></span>`;
+  if (R) html += `<span class="strip" style="right:30px;top:${TOP}px;height:${H - 2 * TOP}px"></span>`;
+  // buses: front first; down on the left, up on the right; nudge apart when they'd overlap
+  for (const dir of d.directions.slice(0, 2)) {
+    const left = dir === A, side = left ? "left" : "right", sign = left ? 1 : -1;
+    let prev = null, prevRun = null;
+    const place = yy => { if (prev != null && (prev - yy) * sign < BUS_H) yy = prev - sign * BUS_H; return (prev = yy); };
+    for (const b of dir.buses) {
+      const yy = place(y(rowOf(dir, b.s)));
+      const wait = b.stop_kind === "layover" || b.stop_kind === "terminus";
+      const mid = b.stop_kind === "midroute" && b.stopped_s >= ALARM_S;
+      const fl = wait && b.next_run ? `<span class="fl">${esc(b.next_run.scheduled)}</span>`
+        : b.stopped_s && !wait ? `<span class="fl ${mid ? "bad" : ""}">${mid ? "!" : ""}${fmtMin(b.stopped_s)}</span>` : "";
+      const title = [`${d.name} ${t("to")} ${b.to}`, b.short ? t("shortTrip", { dest: b.to }) : "", b.stopped_s ? stopText(b) : "", b.blind ? t("blind") : ""].filter(Boolean).join(" · ");
+      html += `<button class="lbus ${b.short ? "short" : ""} ${b.blind ? "blind" : ""} ${b.stale ? "stale" : ""} ${wait ? "wait" : ""}" data-trip="${esc(b.trip)}"
+        style="${side}:44px;top:${yy}px" title="${esc(title)}" aria-label="${esc(title)}">${left ? "▼" : "▲"} ${esc(String(b.trip).split(":")[1] ?? b.trip)}${fl}</button>`;
+      // gap to the running bus ahead, as a bracket beside the strip
+      if (running(b)) {
+        if (prevRun && prevRun.gap_s != null) {
+          const [y0, y1] = [prevRun.y, yy].sort((p, q) => p - q);
+          const g = prevRun.gap_s, cls = g < BUNCH_S ? "bunch" : isHole(g, med, gaps.length) ? "hole" : "";
+          html += `<span class="lgap ${left ? "l" : "r"} ${cls}" style="${side}:0;top:${y0}px;height:${Math.max(y1 - y0, 14)}px;${y1 - y0 < 14 ? "margin-top:-7px" : ""}"
+            title="${esc(t("gapTitle", { m: fmtMin(g) }))}"><b>${esc(fmtMin(g))}</b></span>`;
+        }
+        prevRun = { ...b, y: yy };
+      }
+    }
+    // departures due from this direction's first stop that no known bus will take
+    const y0 = y(rowOf(dir, 0));
+    dir.pending.forEach((p, k) => {
+      html += `<span class="lbus pending" style="${side}:${44 + k * 66}px;top:${y0 - sign * BUS_H}px" title="${esc(t("pendingTitle", { time: p.scheduled, dest: p.destination }))}">${esc(p.scheduled)}</span>`;
+    });
+  }
+  const shortEnds = [...new Set(all.filter(b => b.short).map(b => b.to))];
+  const busy = d.directions.some(x => x.pending.length);
+  $("lineBody").innerHTML = `
+    <div class="kicker mono"><span>${esc(t("lineN", { n: d.name }))}</span></div>
+    <h2>${d.directions.map(x => esc(x.headsign)).join(" ⇄ ")}</h2>
+    ${sub ? `<div class="sub">${esc(sub)}</div>` : ""}
+    <div class="stat">
+      <div><div class="mono" style="color:var(--muted)">${esc(t("running"))}</div><div class="v">${run.length}</div></div>
+      <div><div class="mono" style="color:var(--muted)">${esc(t("avgGap"))}</div><div class="v">${med == null ? "–" : fmtMin(med)}</div></div>
+      <div><div class="mono" style="color:var(--muted)">${esc(t("lineStatus"))}</div><div class="v" style="color:${status[1]}">${esc(status[0])}</div></div>
+    </div>
+    <div class="actions"><button class="btn" id="lineMap">${esc(t("showOnMap"))}</button><button class="btn" id="lineShare">${esc(t("share"))}</button></div>
+    ${all.length ? "" : `<p class="empty">${esc(t("noLive"))}</p>`}
+    <div class="thead"><span>▼ ${esc(A.headsign)}</span>${R ? `<span>▲ ${esc(R.headsign)}</span>` : ""}</div>
+    <div class="track" style="${c};height:${H + (busy ? BUS_H : 0)}px;${busy ? `margin-top:${BUS_H + 4}px` : ""}">${html}</div>
+    <p class="note" style="margin-top:12px">${esc(t("lineHint"))}${shortEnds.length ? " " + esc(t("shortLegend", { ends: shortEnds.join(", ") })) : ""}</p>`;
+  $("lineMap").onclick = () => { closeLine(); showOnly(line); };
+  $("lineShare").onclick = share;
+  for (const b of $("lineBody").querySelectorAll("[data-stop]")) b.onclick = () => { closeLine(); openStop(b.dataset.stop); };
+  for (const b of $("lineBody").querySelectorAll(".lbus[data-trip]")) b.onclick = () => { closeLine(); openBus(b.dataset.trip); };
+}
+$("closeLine").onclick = closeLine;
 
 // ---------- location ----------
 function locate() {
@@ -948,13 +1143,15 @@ $("locate").onclick = locate;
 
 // ---------- routing & polling ----------
 function route() {
-  const m = location.hash.match(/^#\/(stop|bus)\/(.+)$/);
-  if (!m) return peek();
+  const m = location.hash.match(/^#\/(stop|bus|line)\/(.+)$/);
+  if (!m) { closeLine(); return peek(); }
   const id = decodeURIComponent(m[2]);
+  if (m[1] === "line") return openLine(id);
+  closeLine();
   m[1] === "stop" ? openStop(id) : openBus(id);
 }
-function rerender() { if (sel?.type === "stop") openStop(sel.id, { pan: false }); else if (sel?.type === "bus") openBus(sel.id, { pan: false }); else peek(); drawBuses(); }
-window.addEventListener("hashchange", () => { if (!location.hash.startsWith(`#/${sel?.type}/`)) route(); });
+function rerender() { if (lineOpen) openLine(lineOpen); if (sel?.type === "stop") openStop(sel.id, { pan: false }); else if (sel?.type === "bus") openBus(sel.id, { pan: false }); else peek(); drawBuses(); }
+window.addEventListener("hashchange", () => { if (!location.hash.startsWith(lineOpen ? "#/line/" : `#/${sel?.type}/`)) route(); });
 
 let knownVariants = -1;
 async function tick() {

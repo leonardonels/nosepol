@@ -29,7 +29,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-from estimator import Track
+from estimator import DWELL_S, Track
 from geo import Frame, Polyline
 
 API = "https://realtime.tplfvg.it/API/v1.0/polemonitor"
@@ -657,6 +657,64 @@ class Tracker:
                      "pending": sum(d["line"] == l for d in self.pending)}
                     for l in self.lines]
 
+    def line_track(self, line):
+        """One line as two strips: per direction, its full route's stops and every bus
+        on it placed by s along that route (short-turn trips mapped onto it), front
+        first, each with the time the bus behind needs to reach where it is now."""
+        now = time.time()
+        with self.lock:
+            vs = [v for v in self.variants.values() if v.line.rstrip("/") == line]
+            if not vs:
+                return None
+            dirs = []
+            for d in sorted({v.direction for v in vs}):
+                mine = [v for v in vs if v.direction == d]
+                main = max(mine, key=lambda v: (not v.line.endswith("/"), v.shape.length))
+                buses = []
+                for tr in self.tracks.values():
+                    if tr.variant not in mine:
+                        continue
+                    st = tr.state(now)
+                    kind = self.stop_kind(tr, now)
+                    buses.append({k: st.get(k) for k in ("trip", "vehicle", "v", "age", "stopped_s", "next_run", "blind")}
+                                 | {"s": round(self._on_main(tr.variant, main, st), 1), "short": tr.variant is not main,
+                                    "to": pretty(tr.variant.stops[-1]["name"]), "stop_kind": kind,
+                                    "stale": self.is_stale(tr, now)})
+                buses.sort(key=lambda b: -b["s"])
+                self._gaps(main, buses)
+                starts = {v.stops[0]["code"] for v in mine}
+                dirs.append({"direction": d, "key": main.key, "headsign": pretty(main.destination),
+                             "from": pretty(main.stops[0]["name"]), "length": round(main.shape.length),
+                             "stops": [{"code": s["code"], "name": pretty(s["name"]), "s": s["s"],
+                                        "lat": s["lat"], "lon": s["lon"]} for s in main.stops],
+                             "short_ends": sorted({pretty(v.stops[-1]["name"]) for v in mine if v is not main}),
+                             "buses": buses,
+                             "pending": [{"trip": p["trip"], "scheduled": p["scheduled"], "destination": p["destination"],
+                                          "in_s": round(p["when"] - now)}
+                                         for p in self.pending if p["line"] == line and p["stop"] in starts]})
+        return {"t": now, "line": line, **self.line_style(line), "directions": dirs}
+
+    @staticmethod
+    def _on_main(var, main, st):
+        """A bus's s on its variant, as s along the direction's full route."""
+        if var is main:
+            return st["s"]
+        # anchor on the last stop it passed, found on the full route, so loops don't confuse it
+        prev = next((x for x in reversed(var.stops) if x["s"] <= st["s"] + 1), var.stops[0])
+        hint = next((x["s"] for x in main.stops if x["code"] and x["code"] == prev["code"]), None)
+        return main.shape.project(st["lat"], st["lon"], hint)[1]
+
+    GAP_V = 6.0  # m/s between stops, for a gap when the bus behind has no usable speed
+
+    def _gaps(self, main, buses):
+        """gap_s on each bus: seconds the next running bus behind it needs to get there.
+        Buses waiting at a terminus or stale don't count as running."""
+        run = [b for b in buses if b["stop_kind"] not in ("layover", "terminus") and not b["stale"]]
+        for front, back in zip(run, run[1:]):
+            v = back["v"] if back["v"] and back["v"] > 1 else self.GAP_V
+            k = sum(1 for x in main.stops if back["s"] + 1 < x["s"] < front["s"] - 1)
+            front["gap_s"] = round((front["s"] - back["s"]) / v + k * DWELL_S)
+
     # ---- stops ---------------------------------------------------------
     def stop_index(self):
         """Every coded stop on a tracked route, with the lines and directions serving it."""
@@ -895,6 +953,9 @@ def make_handler(tracker):
                     return self._json(tracker.vehicles(line))
                 case ["lines", line, "shapes"]:
                     return self._json(tracker.shapes(line))
+                case ["lines", line, "track"]:
+                    d = tracker.line_track(line)
+                    return self._json(d) if d else self._json({"error": "unknown line"}, 404)
                 case ["debug"]:
                     with tracker.lock:
                         return self._json({**tracker.stats, "poll_set": tracker.poll_set(),

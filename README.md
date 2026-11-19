@@ -92,6 +92,11 @@ Findings that shape the design:
   with the terminus stop's position. One stays until its bus appears with GPS, a known
   bus takes it, or 10 min after its time. `/api/lines` counts them per line.
 - `GET /api/shapes` or `/api/lines/T06/shapes`: polylines and stops with `s`
+- `GET /api/lines/T06/track`: the line page's data. Per direction, the full route's
+  stops and every bus on it placed by `s` along that route (short-turn trips mapped
+  onto it, marked `short`), front first. `gap_s` on a bus is the time the next running
+  bus behind it needs to reach where it is now (buses waiting at a terminus or stale
+  don't count). `pending` lists departures due from that direction's first stop.
 - `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
   words of the name or code (accents and case ignored) and/or sorted by distance
 - `GET /api/stops/{code}`: every tracked bus still heading to the stop, with our ETA
