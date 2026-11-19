@@ -4,9 +4,12 @@ import math
 
 WINDOW_S = 150      # fit window
 MAX_FIXES = 8
-MAX_EXTRAP_S = 60   # don't dead-reckon further than this past the last fix
+MAX_EXTRAP_S = 150  # don't dead-reckon further than this past the last fix (GPS can
+                    # skip a few batches between Trieste's buildings)
 OFFROUTE_M = 80     # fixes further than this from the shape are not used in the fit
-STOP_AFTER_S = 60   # still listed, same position this long (~3 GPS batches) -> stopped
+STOP_AFTER_S = 90   # still listed, same position this long (~4 GPS batches) -> stopped
+DWELL_S = 20        # assumed stand at every stop the bus passes while dead-reckoning
+MAX_V = 13.9        # m/s, cap on the stop-corrected speed (50 km/h), never below the fitted one
 
 
 class Track:
@@ -60,23 +63,65 @@ class Track:
         res = math.sqrt(sum((s - (a + v * t)) ** 2 for t, s in zip(ts, ss)) / n)
         return a, v, res, t_ref, n
 
-    def predict(self, now):
+    def cruise(self):
+        """fit() with v as the speed between stops: the fitted speed is an average over
+        the window, stands at the stops passed in it included. Returns like fit()."""
         a, v, res, t_ref, n = self.fit()
+        if not v:
+            return a, v, res, t_ref, n
+        t0 = min(t for t, _, perp, *_ in self.fixes if perp <= OFFROUTE_M) \
+            if any(f[2] <= OFFROUTE_M for f in self.fixes) else t_ref
+        span = t_ref - t0
+        if span > 0:
+            s0 = a - v * span
+            k = sum(1 for st in self.variant.stops[1:-1] if s0 < st["s"] < a)
+            v = min(v * span / max(span - k * DWELL_S, 0.5 * span), max(MAX_V, v))
+        return a, v, res, t_ref, n
+
+    def advance(self, s, dt, v):
+        """Where a bus at s is dt seconds later, driving at v between stops and standing
+        DWELL_S at each one: buses stop at nearly every stop, so with no fresh GPS it
+        is likelier there than past it."""
+        end = self.variant.shape.length
+        if not v or dt <= 0:
+            return min(max(s, 0.0), end)
+        for st in self.variant.stops[1:]:
+            if st["s"] <= s + 1:
+                continue
+            need = (st["s"] - s) / v
+            if need >= dt:
+                break
+            dt -= need
+            s = st["s"]
+            if dt <= DWELL_S:
+                return s
+            dt -= DWELL_S
+        return min(max(s + v * dt, 0.0), end)
+
+    def time_to(self, s_from, s_to, v):
+        """Seconds to drive from s_from to s_to at v, standing at each stop in between."""
+        if not v or v <= 0.5:
+            return None
+        k = sum(1 for st in self.variant.stops if s_from + 1 < st["s"] < s_to - 1)
+        return max(0.0, s_to - s_from) / v + k * DWELL_S
+
+    def predict(self, now):
+        """(s, v, residual, n): v is the speed between stops (see cruise)."""
+        a, v, res, t_ref, n = self.cruise()
         if self.layover or self.stopped_for(now) is not None:
             return self.fixes[-1][1], 0.0, res, n  # hold it where it stands, no dead reckoning
         dt = max(0.0, now - t_ref)
         if not self.blind:  # no report expected there: keep moving it (to the end at most)
             dt = min(dt, MAX_EXTRAP_S)
-        s = a + (v or 0.0) * dt
-        return min(max(s, 0.0), self.variant.shape.length), v, res, n
+        return self.advance(a, dt, v), v, res, n
 
     def state(self, now):
         s, v, res, n = self.predict(now)
         lat, lon = self.variant.shape.at(s)
         nxt = self.variant.next_stop(s)
         eta = None
-        if nxt and v and v > 0.5:
-            eta = round((nxt["s"] - s) / v)
+        if nxt and (e := self.time_to(s, nxt["s"], v)) is not None:
+            eta = round(e)
         last = self.fixes[-1]
         stopped = self.stopped_for(now)
         return {

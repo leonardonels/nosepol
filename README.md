@@ -56,8 +56,14 @@ Findings that shape the design:
 4. **Estimator** (`server/estimator.py`): each fix is projected onto the trip's
    shape to get `s`, the metres along the route. Projection prefers forward motion,
    so loops and out-and-back routes don't jump. Over a 150 s window it fits
-   `s(t) = s0 + v·t` by least squares (v ≥ 0). It extrapolates at most 60 s past
-   the last fix (no limit for a `blind` bus) and reports the RMS residual.
+   `s(t) = s0 + v·t` by least squares (v ≥ 0). That `v` averages in the stands at
+   stops passed in the window, so it is scaled up to a speed between stops (20 s per
+   stop, capped at 50 km/h unless the fit is already faster). Between fixes the bus
+   moves at that speed and stands 20 s at every stop it reaches: buses stop at nearly
+   every stop, so with no fresh GPS it is likelier there than past it. ETAs count
+   the same stands. It extrapolates at most 150 s past the last fix (GPS can skip a
+   few batches between buildings; no limit for a `blind` bus) and reports the RMS
+   residual. A bus listed with the same position for 90 s counts as stopped.
 
 ## API
 
@@ -65,7 +71,7 @@ Findings that shape the design:
   variants and vehicle counts. Colours follow the order of `--lines`, so adding a line
   needs no page change.
 - `GET /api/vehicles` or `/api/lines/T06/vehicles`: one entry per trip, with
-  `trip, vehicle, s, length, lat, lon, v (m/s), residual (m), n_fixes, age (s), stopped_s, stop_kind, blind, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`.
+  `trip, vehicle, s, length, lat, lon, v (m/s, between stops), residual (m), n_fixes, age (s), stopped_s, stop_kind, blind, gps{lat,lon,offroute}, next_stop{name,dist,eta_s}, api_arrival`.
   A bus whose GPS stops changing is `stopped_s` seconds still, with `stop_kind`
   `terminus` (waiting, kept up to 15 min) or `midroute` (may have a problem, kept up to 1 h).
   "Terminus" means within 150 m of the first stop, or at/past the second-to-last stop

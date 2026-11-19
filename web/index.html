@@ -132,7 +132,11 @@
   #sheet { position:fixed; z-index:1000; left:0; right:0; bottom:0; max-height:52vh; display:flex; flex-direction:column;
     background:var(--md-surface-container-low); border-radius:28px 28px 0 0; box-shadow:var(--md-elev-1); transition:max-height .25s ease; }
   #sheet.full { max-height:88vh; }
-  #grab { flex:none; height:36px; width:100%; border:0; background:none; display:flex; align-items:center; justify-content:center; }
+  #sheet.min { max-height:calc(36px + 28px + var(--safe-b)); }
+  #sheet.min #sheetBody { overflow:hidden; }
+  #sheet.drag { transition:none; }
+  #grab { flex:none; height:36px; width:100%; border:0; background:none; display:flex; align-items:center; justify-content:center;
+    touch-action:none; cursor:grab; }
   #grab span { width:32px; height:4px; border-radius:2px; background:var(--md-on-surface-variant); opacity:.4; }
   #sheetBody { overflow:auto; padding:0 16px calc(16px + var(--safe-b)); }
   .kicker { color:var(--md-on-surface-variant); display:flex; justify-content:space-between; gap:8px; align-items:center; }
@@ -187,6 +191,11 @@
   a { color:var(--md-primary); }
   :focus-visible { outline:2px solid var(--md-primary); outline-offset:2px; }
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  /* compass: needle points north on screen; tap to turn the map back to north */
+  #compass { position:fixed; z-index:1000; right:16px; top:calc(max(12px, env(safe-area-inset-top)) + 116px);
+    width:40px; height:40px; border:0; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;
+    background:var(--md-surface-container-high); color:var(--md-on-surface-variant); box-shadow:var(--md-elev-2); transition:opacity .2s; }
+  #compass.north { opacity:.7; }
   #locate { position:fixed; z-index:1000; right:16px; width:56px; height:56px; border:0; border-radius:16px;
     background:var(--md-primary-container); color:var(--md-on-primary-container); box-shadow:var(--md-elev-3);
     display:flex; align-items:center; justify-content:center; }
@@ -196,6 +205,7 @@
   @media (min-width: 720px) {
     #sheet { left:16px; right:auto; width:400px; bottom:16px; max-height:70vh; border-radius:28px; }
     #sheet.full { max-height:calc(100vh - 150px); }
+    #compass { top:16px; }
     #top { right:auto; width:432px; }
     #toast { bottom:24px; left:auto; right:24px; }
   }
@@ -218,6 +228,9 @@
   <div id="chips" role="group" data-t-aria="lines"></div>
 </div>
 
+<button id="compass" class="north" data-t-aria="north" data-t-title="north">
+  <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 L16 12 L8 12 Z" fill="#D93025"/><path d="M12 21.5 L16 12 L8 12 Z" fill="currentColor"/></svg>
+</button>
 <button id="locate" data-t-aria="locate">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
 </button>
@@ -246,12 +259,13 @@
 <div id="toast" class="hide" role="status"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 // ---------- i18n ----------
 const T = {
   it: {
     searchPh: "Fermata, via o linea", liveTitle: "Secondi dall'ultimo aggiornamento GPS", menu: "Menu", lines: "Linee",
-    locate: "Centra su di me", expand: "Espandi", close: "Chiudi", search: "Cerca",
+    locate: "Centra su di me", north: "Ruota la mappa verso nord", expand: "Espandi", close: "Chiudi", search: "Cerca",
     nearest: "Fermata più vicina", walk: "a piedi", tapHint: "Tocca un autobus o una fermata sulla mappa.",
     locHint: "Attiva la posizione per vedere la fermata più vicina.", locBtn: "Usa la mia posizione",
     stop: "Fermata", bus: "Autobus", now: "ora", stopped: "fermo", gpsOld: "GPS di {s} s fa",
@@ -281,7 +295,7 @@ const T = {
   },
   en: {
     searchPh: "Stop, street or line", liveTitle: "Seconds since the last GPS update", menu: "Menu", lines: "Lines",
-    locate: "Centre on me", expand: "Expand", close: "Close", search: "Search",
+    locate: "Centre on me", north: "Turn the map to north", expand: "Expand", close: "Close", search: "Search",
     nearest: "Nearest stop", walk: "walk", tapHint: "Tap a bus or a stop on the map.",
     locHint: "Turn on location to see your nearest stop.", locBtn: "Use my location",
     stop: "Stop", bus: "Bus", now: "now", stopped: "stopped", gpsOld: "GPS {s} s old",
@@ -371,7 +385,29 @@ function haversine(a, b) {
 }
 
 // ---------- map ----------
-const map = L.map("map", { zoomControl: false, attributionControl: true }).setView([45.65, 13.775], 14);
+// Rotatable map (leaflet-rotate): two-finger twist on phones, shift + wheel on desktop.
+const map = L.map("map", { zoomControl: false, attributionControl: true, rotate: true, bearing: 0,
+  touchRotate: true, shiftKeyRotate: true, rotateControl: false }).setView([45.65, 13.775], 14);
+// Markers stay upright on screen, so bus arrows (route headings) turn with the map: --rot.
+function onRotate() {
+  const b = map.getBearing ? map.getBearing() : 0;
+  // leaflet-rotate's bearing b turns the map clockwise by b: north is at b on screen
+  $("map").style.setProperty("--rot", `${b}deg`);
+  $("compass").querySelector("svg").style.transform = `rotate(${b}deg)`;
+  $("compass").classList.toggle("north", Math.abs(((b + 180) % 360) - 180) < 0.5);
+}
+map.on("rotate", onRotate);
+$("compass").onclick = () => {
+  // a short turn back to north rather than a jump
+  const from = ((map.getBearing() + 180) % 360) - 180, t0 = performance.now();
+  if (Math.abs(from) < 0.5) return map.setBearing(0);
+  const step = now => {
+    const k = Math.min(1, (now - t0) / 300), e = 1 - (1 - k) ** 3;
+    map.setBearing(from * (1 - e));
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+};
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19, attribution: "&copy; OpenStreetMap · TPL FVG",
 }).addTo(map);
@@ -527,7 +563,24 @@ function busHtml(v) {
   const flag = (kind === "layover" || kind === "terminus") && v.next_run ? `<span class="flag">${esc(v.next_run.scheduled)}</span>`
     : kind ? `<span class="flag">${kind === "midroute" ? "!" : ""}${fmtMin(v.stopped_s)}</span>` : "";
   return `<div class="${cls}" style="--c:${s.color};background:${s.color};color:${s.ink}">${esc(s.name)}${flag}${h == null || kind ? "" :
-    `<svg class="arrow" viewBox="0 0 20 18" aria-hidden="true" style="transform:rotate(${h.toFixed(0)}deg) translateY(-27px)"><path d="M10 1.5 L18.5 16.5 L10 12.5 L1.5 16.5 Z"/></svg>`}</div>`;
+    `<svg class="arrow" viewBox="0 0 20 18" aria-hidden="true" style="transform:rotate(calc(${h.toFixed(0)}deg + var(--rot, 0deg))) translateY(-27px)"><path d="M10 1.5 L18.5 16.5 L10 12.5 L1.5 16.5 Z"/></svg>`}</div>`;
+}
+// Slide a marker to its new position over about one poll interval instead of jumping,
+// so buses move continuously. Big jumps (a new fix far from the estimate) snap.
+const GLIDE_MS = 3000, GLIDE_MAX_M = 400;
+function glide(m, to) {
+  if (m.to && m.to[0] === to[0] && m.to[1] === to[1]) return;  // already heading there
+  m.to = to;
+  const from = m.getLatLng();
+  if (m.glide) cancelAnimationFrame(m.glide);
+  if (haversine([from.lat, from.lng], to) > GLIDE_MAX_M || document.hidden) { m.setLatLng(to); return; }
+  const t0 = performance.now();
+  const step = now => {
+    const k = Math.min(1, (now - t0) / GLIDE_MS);
+    m.setLatLng([from.lat + (to[0] - from.lat) * k, from.lng + (to[1] - from.lng) * k]);
+    m.glide = k < 1 ? requestAnimationFrame(step) : null;
+  };
+  m.glide = requestAnimationFrame(step);
 }
 const isStale = v => v.stale ?? (v.age > 90 && !v.stopped_s);  // the server decides; fallback for old servers
 function drawBuses() {
@@ -542,7 +595,7 @@ function drawBuses() {
       m = busMarkers[v.trip] = L.marker([v.lat, v.lon], { icon: icon(), zIndexOffset: 1000, keyboard: true,
         title: `${style(v.line).name} ${t("to")} ${v.destination}` }).on("click", () => openBus(v.trip)).addTo(map);
     } else {
-      m.setLatLng([v.lat, v.lon]);
+      glide(m, [v.lat, v.lon]);
       if (m.html !== html) m.setIcon(icon());  // rebuilding the icon every tick can swallow taps
     }
     m.html = html;
@@ -568,7 +621,62 @@ function drawBuses() {
 
 // ---------- sheet ----------
 const sheet = $("sheet"), body = $("sheetBody");
-$("grab").onclick = () => sheet.classList.toggle("full");
+// Three heights: min (handle only), normal, full. Tap the handle to step up; drag the
+// handle, or the sheet when its content is scrolled to the top, to move it.
+function setHeight(h) {
+  sheet.classList.toggle("full", h === "full"); sheet.classList.toggle("min", h === "min");
+  requestAnimationFrame(placeLocate);
+}
+const sheetHeight = () => sheet.classList.contains("full") ? "full" : sheet.classList.contains("min") ? "min" : "normal";
+let dragged = false;
+$("grab").onclick = () => { if (dragged) return; setHeight(sheetHeight() === "full" ? "normal" : sheetHeight() === "min" ? "normal" : "full"); };
+(() => {
+  let y0 = null, h0 = 0, active = false, fromBody = false, lastY = 0, lastT = 0, vy = 0;
+  const start = (y, target) => {
+    fromBody = !$("grab").contains(target);
+    y0 = y; h0 = sheet.offsetHeight; active = false; dragged = false; lastY = y; lastT = performance.now(); vy = 0;
+  };
+  const move = (y, e) => {
+    if (y0 == null) return;
+    const dy = y - y0;
+    if (!active) {
+      if (Math.abs(dy) < 8) return;
+      // from the content: only a pull down at the top, or a push up while not full, moves the sheet
+      if (fromBody && (dy > 0 ? body.scrollTop > 0 : sheetHeight() === "full")) { y0 = null; return; }
+      active = dragged = true; sheet.classList.add("drag");
+    }
+    if (e.cancelable) e.preventDefault();
+    const now = performance.now();
+    vy = (y - lastY) / Math.max(1, now - lastT); lastY = y; lastT = now;
+    sheet.style.maxHeight = Math.max(40, Math.min(innerHeight * .92, h0 - dy)) + "px";
+    placeLocate();
+  };
+  const end = () => {
+    if (y0 == null) return;
+    y0 = null;
+    if (!active) return;
+    sheet.classList.remove("drag");
+    const h = sheet.offsetHeight; sheet.style.maxHeight = "";
+    const cur = sheetHeight(), order = ["min", "normal", "full"];
+    let i = order.indexOf(cur);
+    // a flick, or a drag past 60 px: one step that way (two for a long drag from full/min)
+    if (Math.abs(vy) > 0.4) i += vy < 0 ? 1 : -1;
+    else if (Math.abs(h - h0) > 60) i += (h > h0 ? 1 : -1) * (Math.abs(h - h0) > innerHeight * .45 ? 2 : 1);
+    setHeight(order[Math.max(0, Math.min(2, i))]);
+    setTimeout(() => { dragged = false; }, 0);
+  };
+  sheet.addEventListener("touchstart", e => start(e.touches[0].clientY, e.target), { passive: true });
+  sheet.addEventListener("touchmove", e => move(e.touches[0].clientY, e), { passive: false });
+  sheet.addEventListener("touchend", end); sheet.addEventListener("touchcancel", end);
+  // mouse: from the handle only
+  $("grab").addEventListener("mousedown", e => {
+    start(e.clientY, e.target);
+    const mm = ev => move(ev.clientY, ev), mu = () => { end(); removeEventListener("mousemove", mm); removeEventListener("mouseup", mu); };
+    addEventListener("mousemove", mm); addEventListener("mouseup", mu);
+  });
+  // a tap that ended a drag is not a tap on a row
+  sheet.addEventListener("click", e => { if (dragged) { e.stopPropagation(); e.preventDefault(); } }, true);
+})();
 function setSheet(html, accent) {
   body.innerHTML = html;
   sheet.style.setProperty("--accent", accent || "var(--edge)");
@@ -579,14 +687,17 @@ function placeLocate() { $("locate").style.bottom = (sheet.offsetHeight + 12) + 
 function focusOn(latlng, zoom) {
   const z = Math.max(map.getZoom(), zoom);
   const covered = innerWidth >= 720 ? 0 : sheet.offsetHeight;
-  const p = map.project(latlng, z).add([0, covered / 2]);
+  // the offset is "down on screen": turn it into the (unrotated) map's pixel frame
+  const b = (map.getBearing ? map.getBearing() : 0) * Math.PI / 180;
+  const off = L.point(Math.sin(b) * covered / 2, Math.cos(b) * covered / 2);
+  const p = map.project(latlng, z).add(off);
   map.setView(map.unproject(p, z), z);
 }
 new ResizeObserver(placeLocate).observe(sheet);
 
 function peek() {
   clearTimers();
-  sel = null; follow = false; sheet.classList.remove("full");
+  sel = null; follow = false; setHeight("normal");
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   drawBuses();
   if (!me) {
@@ -620,6 +731,7 @@ function clearTimers() {
 
 async function openStop(code, { pan = true } = {}) {
   clearTimers(); follow = false;
+  if (pan && sheetHeight() === "min") setHeight("normal");
   sel = { type: "stop", id: code };
   history.replaceState(null, "", "#/stop/" + encodeURIComponent(code));
   drawBuses();
@@ -657,7 +769,7 @@ async function openStop(code, { pan = true } = {}) {
       <div class="actions"><button class="btn" id="shareBtn">${esc(t("share"))}</button><button class="btn primary" id="expandBtn">${esc(t("allDeps"))}</button></div>`, "#ECEAE3");
     $("closeSheet").onclick = peek;
     $("shareBtn").onclick = share;
-    $("expandBtn").onclick = () => sheet.classList.add("full");
+    $("expandBtn").onclick = () => setHeight("full");
     for (const r of body.querySelectorAll("[data-trip]")) r.onclick = () => openBus(r.dataset.trip, { from: code });
   };
   await render(true);
@@ -666,6 +778,7 @@ async function openStop(code, { pan = true } = {}) {
 
 async function openBus(trip, { pan = true, from = null } = {}) {
   clearTimers();
+  if (pan && sheetHeight() === "min") setHeight("normal");
   if (!(sel?.type === "bus" && sel.id === trip)) follow = false;
   sel = { type: "bus", id: trip, from: from ?? (sel?.type === "bus" && sel.id === trip ? sel.from : null) };
   history.replaceState(null, "", "#/bus/" + encodeURIComponent(trip));
