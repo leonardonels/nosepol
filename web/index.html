@@ -194,6 +194,12 @@
   .stat > div { background:var(--md-surface-container-high); border-radius:12px; padding:12px; }
   .stat .v { font:400 22px/28px Roboto, sans-serif; }
   a { color:var(--md-primary); }
+  /* thin, theme-coloured scrollbars with no arrow buttons (the default looks out of place on the sheet) */
+  #sheetBody, .obody { scrollbar-width:thin; scrollbar-color:color-mix(in srgb, var(--md-on-surface) 28%, transparent) transparent; }
+  #sheetBody::-webkit-scrollbar, .obody::-webkit-scrollbar { width:6px; }
+  #sheetBody::-webkit-scrollbar-thumb, .obody::-webkit-scrollbar-thumb { border-radius:3px; background:color-mix(in srgb, var(--md-on-surface) 28%, transparent); }
+  #sheetBody::-webkit-scrollbar-track, .obody::-webkit-scrollbar-track { background:transparent; }
+  #sheetBody::-webkit-scrollbar-button, .obody::-webkit-scrollbar-button { display:none; }
   /* line page: both directions as two strips, buses placed along them */
   .ltabs { flex:1; min-width:0; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:4px 2px; }
   .ltab { flex:none; min-width:56px; height:40px; padding:0 16px; border-radius:20px; border:2px solid var(--c); background:none;
