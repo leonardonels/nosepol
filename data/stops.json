@@ -7873,5 +7873,1265 @@
 "lat": 46.13661898,
 "lon": 13.24896098,
 "urban": false
+},
+"E1001": {
+"code": "E1001",
+"name": "TRIESTE piazzale Wartsila (Dolina)",
+"lat": 45.6090468,
+"lon": 13.84577711,
+"urban": true
+},
+"D4032": {
+"code": "D4032",
+"name": "TRIESTE località Prosecco 162 (farmacia)",
+"lat": 45.7082387,
+"lon": 13.73155612,
+"urban": true
+},
+"D3006": {
+"code": "D3006",
+"name": "TRIESTE via dei Papaveri 11 (angolo via dei Fiordalisi)",
+"lat": 45.69169585,
+"lon": 13.77534017,
+"urban": true
+},
+"D1011": {
+"code": "D1011",
+"name": "TRIESTE strada provinciale 1 del Carso 239",
+"lat": 45.66671906,
+"lon": 13.83081356,
+"urban": true
+},
+"D2003": {
+"code": "D2003",
+"name": "TRIESTE località Banne 104 (Banne paese, ex caserme)",
+"lat": 45.67663593,
+"lon": 13.80365952,
+"urban": true
+},
+"D4034": {
+"code": "D4034",
+"name": "TRIESTE DEVINCINA",
+"lat": 45.70810047,
+"lon": 13.7341062,
+"urban": true
+},
+"D3072": {
+"code": "D3072",
+"name": "TRIESTE strada nuova per Opicina (obelisco)",
+"lat": 45.67990914,
+"lon": 13.78102571,
+"urban": true
+},
+"D3013": {
+"code": "D3013",
+"name": "TRIESTE via Nazionale 4 (sottopasso Napoleonica)",
+"lat": 45.68181425,
+"lon": 13.78234632,
+"urban": true
+},
+"D3902": {
+"code": "D3902",
+"name": "TRIESTE via Nazionale 15",
+"lat": 45.68459568,
+"lon": 13.78475367,
+"urban": true
+},
+"D4001": {
+"code": "D4001",
+"name": "TRIESTE strada del Friuli 83 (località Contovello)",
+"lat": 45.70072733,
+"lon": 13.73560173,
+"urban": true
+},
+"D3042": {
+"code": "D3042",
+"name": "TRIESTE Opicina (stazione ferroviaria)",
+"lat": 45.69389722,
+"lon": 13.7906085,
+"urban": true
+},
+"D5014": {
+"code": "D5014",
+"name": "TRIESTE viale Miramare (palo elettrico 20)",
+"lat": 45.69749667,
+"lon": 13.73038572,
+"urban": true
+},
+"D5015": {
+"code": "D5015",
+"name": "TRIESTE viale Miramare 323",
+"lat": 45.69646652,
+"lon": 13.73326373,
+"urban": true
+},
+"D5019": {
+"code": "D5019",
+"name": "TRIESTE viale Miramare 285 (gelateria)",
+"lat": 45.6913249,
+"lon": 13.74039832,
+"urban": true
+},
+"TR01R": {
+"code": "TR01R",
+"name": "TRIESTE quadrivio Opicina - tramvia",
+"lat": 45.683651,
+"lon": 13.783792,
+"urban": true
+},
+"TR01A": {
+"code": "TR01A",
+"name": "TRIESTE quadrivio Opicina - tramvia",
+"lat": 45.683662,
+"lon": 13.783743,
+"urban": true
+},
+"D3020": {
+"code": "D3020",
+"name": "TRIESTE via di Basovizza 28/1",
+"lat": 45.684187,
+"lon": 13.79844856,
+"urban": true
+},
+"D5011": {
+"code": "D5011",
+"name": "GRIGNANO/MIRAMARE SS 14 (strada costiera)",
+"lat": 45.70693276,
+"lon": 13.71587916,
+"urban": true
+},
+"D3022": {
+"code": "D3022",
+"name": "TRIESTE STRADA PER VIENNA 14",
+"lat": 45.6881061,
+"lon": 13.78942338,
+"urban": true
+},
+"TR02A": {
+"code": "TR02A",
+"name": "TRIESTE Campo Romano - tramvia",
+"lat": 45.68179,
+"lon": 13.78215799,
+"urban": true
+},
+"TR02R": {
+"code": "TR02R",
+"name": "TRIESTE Campo Romano - tramvia",
+"lat": 45.68175999,
+"lon": 13.78224699,
+"urban": true
+},
+"D5008": {
+"code": "D5008",
+"name": "GRIGNANO/MIRAMARE SS 14 (strada costiera 17)",
+"lat": 45.70685239,
+"lon": 13.71609706,
+"urban": true
+},
+"D3036": {
+"code": "D3036",
+"name": "TRIESTE via di Prosecco 233 (angolo strada provinciale 1 del Carso)",
+"lat": 45.69052177,
+"lon": 13.78720077,
+"urban": true
+},
+"D3038": {
+"code": "D3038",
+"name": "TRIESTE via dei Fiordalisi 21",
+"lat": 45.69184916,
+"lon": 13.77704821,
+"urban": true
+},
+"D3041": {
+"code": "D3041",
+"name": "TRIESTE strada provinciale 1 del Carso (caserme)",
+"lat": 45.69326778,
+"lon": 13.78261718,
+"urban": true
+},
+"D3043": {
+"code": "D3043",
+"name": "TRIESTE via di Basovizza 29",
+"lat": 45.68508671,
+"lon": 13.79584847,
+"urban": true
+},
+"D3058": {
+"code": "D3058",
+"name": "TRIESTE via di Prosecco 37 (chiesa)",
+"lat": 45.68962045,
+"lon": 13.78793303,
+"urban": true
+},
+"TR03R": {
+"code": "TR03R",
+"name": "TRIESTE obelisco - tramvia",
+"lat": 45.680126,
+"lon": 13.78115799,
+"urban": true
+},
+"59901": {
+"code": "59901",
+"name": "TRIESTE VIA KETTE 10 (BASOVIZZA)",
+"lat": 45.64101913,
+"lon": 13.86273053,
+"urban": true
+},
+"D3052": {
+"code": "D3052",
+"name": "TRIESTE via dei Papaveri 33",
+"lat": 45.68989103,
+"lon": 13.77364897,
+"urban": true
+},
+"TR04A": {
+"code": "TR04A",
+"name": "TRIESTE Banne - tramvia",
+"lat": 45.67563799,
+"lon": 13.788134,
+"urban": true
+},
+"TR04R": {
+"code": "TR04R",
+"name": "TRIESTE Banne - tramvia",
+"lat": 45.675668,
+"lon": 13.78817399,
+"urban": true
+},
+"TR05A": {
+"code": "TR05A",
+"name": "TRIESTE Conconello - tramvia",
+"lat": 45.670077,
+"lon": 13.790079,
+"urban": true
+},
+"TR05R": {
+"code": "TR05R",
+"name": "TRIESTE Conconello - tramvia",
+"lat": 45.67013899,
+"lon": 13.79008399,
+"urban": true
+},
+"D3047": {
+"code": "D3047",
+"name": "TRIESTE strada provinciale 1 del Carso (Opicina 1249)",
+"lat": 45.69522473,
+"lon": 13.7791742,
+"urban": true
+},
+"D3054": {
+"code": "D3054",
+"name": "TRIESTE via Carsia 30",
+"lat": 45.68832861,
+"lon": 13.7781973,
+"urban": true
+},
+"TR03A": {
+"code": "TR03A",
+"name": "TRIESTE obelisco - tramvia",
+"lat": 45.680139,
+"lon": 13.781107,
+"urban": true
+},
+"D0003": {
+"code": "D0003",
+"name": "TRIESTE strada provinciale 1 del Carso 59 (chiesa di Padriciano)",
+"lat": 45.65713749,
+"lon": 13.83963164,
+"urban": true
+},
+"D0005": {
+"code": "D0005",
+"name": "TRIESTE strada provinciale 19 di Gropada 130",
+"lat": 45.66053871,
+"lon": 13.84173754,
+"urban": true
+},
+"D0011": {
+"code": "D0011",
+"name": "TRIESTE strada provinciale 1 del Carso 204",
+"lat": 45.66059332,
+"lon": 13.83648316,
+"urban": true
+},
+"D4021": {
+"code": "D4021",
+"name": "TRIESTE località Prosecco 316 (farmacia)",
+"lat": 45.70843271,
+"lon": 13.73119522,
+"urban": true
+},
+"D4044": {
+"code": "D4044",
+"name": "TRIESTE DEVINCINA",
+"lat": 45.70800252,
+"lon": 13.73420155,
+"urban": true
+},
+"D5003": {
+"code": "D5003",
+"name": "TRIESTE viale Miramare 293 (porticciolo)",
+"lat": 45.69369076,
+"lon": 13.73754155,
+"urban": true
+},
+"D5004": {
+"code": "D5004",
+"name": "TRIESTE viale Miramare 303 (California Inn)",
+"lat": 45.69511325,
+"lon": 13.73564733,
+"urban": true
+},
+"D5013": {
+"code": "D5013",
+"name": "TRIESTE CASTELLO DI MIRAMARE (BIVIO)",
+"lat": 45.69865603,
+"lon": 13.72780092,
+"urban": true
+},
+"D5022": {
+"code": "D5022",
+"name": "TRIESTE strada statale 14 della Venezia Giulia 9",
+"lat": 45.70232098,
+"lon": 13.71908729,
+"urban": true
+},
+"D4017": {
+"code": "D4017",
+"name": "TRIESTE località Contovello 201",
+"lat": 45.70328779,
+"lon": 13.73313857,
+"urban": true
+},
+"D4018": {
+"code": "D4018",
+"name": "TRIESTE strada del Friuli 453 (località Contovello)",
+"lat": 45.70059048,
+"lon": 13.73340503,
+"urban": true
+},
+"D4019": {
+"code": "D4019",
+"name": "TRIESTE strada del Friuli 81 (località Contovello)",
+"lat": 45.70057078,
+"lon": 13.73568875,
+"urban": true
+},
+"D4020": {
+"code": "D4020",
+"name": "TRIESTE PROSECCO",
+"lat": 45.70748298,
+"lon": 13.73361589,
+"urban": true
+},
+"D4022": {
+"code": "D4022",
+"name": "TRIESTE strada provinciale 1 del Carso (mobilificio)",
+"lat": 45.71271569,
+"lon": 13.72863785,
+"urban": true
+},
+"D5010": {
+"code": "D5010",
+"name": "TRIESTE GRIGNANO",
+"lat": 45.70779827,
+"lon": 13.7140452,
+"urban": true
+},
+"D6037": {
+"code": "D6037",
+"name": "VISOGLIANO (STAZIONE)",
+"lat": 45.77532311,
+"lon": 13.64505645,
+"urban": true
+},
+"D0004": {
+"code": "D0004",
+"name": "TRIESTE strada provinciale 19 di Gropada 6",
+"lat": 45.65873427,
+"lon": 13.83910127,
+"urban": true
+},
+"D0006": {
+"code": "D0006",
+"name": "TRIESTE strada provinciale 19 di Gropada 92 (scuola dell'infanzia)",
+"lat": 45.66236601,
+"lon": 13.84441482,
+"urban": true
+},
+"D0007": {
+"code": "D0007",
+"name": "TRIESTE strada provinciale 19 di Gropada 138 (Gropada paese)",
+"lat": 45.6640858,
+"lon": 13.84893339,
+"urban": true
+},
+"D0018": {
+"code": "D0018",
+"name": "TRIESTE AREA DI RICERCA",
+"lat": 45.65677916,
+"lon": 13.82965308,
+"urban": true
+},
+"D1004": {
+"code": "D1004",
+"name": "TRIESTE strada provinciale 1 del Carso (cimitero di Trebiciano)",
+"lat": 45.67618533,
+"lon": 13.81917648,
+"urban": true
+},
+"D3027": {
+"code": "D3027",
+"name": "TRIESTE Opicina",
+"lat": 45.68651643,
+"lon": 13.78720706,
+"urban": true
+},
+"D3029": {
+"code": "D3029",
+"name": "TRIESTE via dei Fiordalisi 9/b",
+"lat": 45.69248959,
+"lon": 13.77843742,
+"urban": true
+},
+"D3031": {
+"code": "D3031",
+"name": "TRIESTE strada provinciale 9 del Vipacco 916",
+"lat": 45.69953249,
+"lon": 13.7992093,
+"urban": true
+},
+"D3033": {
+"code": "D3033",
+"name": "TRIESTE strada provinciale 9 del Vipacco 916 (campagna)",
+"lat": 45.69935678,
+"lon": 13.79919058,
+"urban": true
+},
+"D3070": {
+"code": "D3070",
+"name": "TRIESTE via Nazionale (ristorante Diana)",
+"lat": 45.68365147,
+"lon": 13.78369843,
+"urban": true
+},
+"D4024": {
+"code": "D4024",
+"name": "TRIESTE località Santa Croce 10",
+"lat": 45.73683182,
+"lon": 13.69182445,
+"urban": true
+},
+"D5005": {
+"code": "D5005",
+"name": "TRIESTE viale Miramare 323 (Marinella)",
+"lat": 45.69668495,
+"lon": 13.73307577,
+"urban": true
+},
+"D0016": {
+"code": "D0016",
+"name": "TRIESTE strada statale 14 per Basovizza 20 (trattoria Dodich)",
+"lat": 45.65500112,
+"lon": 13.81564539,
+"urban": true
+},
+"D0017": {
+"code": "D0017",
+"name": "TRIESTE strada provinciale 19 di Gropada 6 (Padriciano)",
+"lat": 45.65858154,
+"lon": 13.83913009,
+"urban": true
+},
+"D1006": {
+"code": "D1006",
+"name": "TRIESTE strada provinciale 1 del Carso 2 (Trebiciano)",
+"lat": 45.67385696,
+"lon": 13.82294245,
+"urban": true
+},
+"D3016": {
+"code": "D3016",
+"name": "TRIESTE via Campo Romano 22 (largo Bertolini)",
+"lat": 45.68354946,
+"lon": 13.77780656,
+"urban": true
+},
+"D3017": {
+"code": "D3017",
+"name": "TRIESTE via dei Volpi (Campo Romano)",
+"lat": 45.68563713,
+"lon": 13.7739759,
+"urban": true
+},
+"D3018": {
+"code": "D3018",
+"name": "TRIESTE via della Pineta 50 (scuola dell'infanzia)",
+"lat": 45.6863223,
+"lon": 13.77365954,
+"urban": true
+},
+"D4003": {
+"code": "D4003",
+"name": "TRIESTE strada del Friuli 531 (località Contovello, scuola)",
+"lat": 45.70369666,
+"lon": 13.73307795,
+"urban": true
+},
+"D4014": {
+"code": "D4014",
+"name": "TRIESTE borgo San Nazario 50 (scuola dell'infanzia)",
+"lat": 45.70340558,
+"lon": 13.73711021,
+"urban": true
+},
+"D4016": {
+"code": "D4016",
+"name": "TRIESTE località Prosecco 186 (scuola media)",
+"lat": 45.70558107,
+"lon": 13.73215217,
+"urban": true
+},
+"D4009": {
+"code": "D4009",
+"name": "TRIESTE strada Vicentina per Monte Grisa (direzione Opicina)",
+"lat": 45.69972161,
+"lon": 13.74193143,
+"urban": true
+},
+"D4015": {
+"code": "D4015",
+"name": "TRIESTE PROSECCO",
+"lat": 45.70772404,
+"lon": 13.73380362,
+"urban": true
+},
+"D5007": {
+"code": "D5007",
+"name": "TRIESTE strada statale 14 della Venezia Giulia (castello Miramare)",
+"lat": 45.69804605,
+"lon": 13.72960581,
+"urban": true
+},
+"D5020": {
+"code": "D5020",
+"name": "TRIESTE strada del Friuli (direzione Prosecco)",
+"lat": 45.69624991,
+"lon": 13.74176203,
+"urban": true
+},
+"TR06A": {
+"code": "TR06A",
+"name": "TRIESTE Cologna (chiesetta) - tramvia",
+"lat": 45.66729199,
+"lon": 13.786723,
+"urban": true
+},
+"TR06R": {
+"code": "TR06R",
+"name": "TRIESTE Cologna (chiesetta) - tramvia",
+"lat": 45.66724699,
+"lon": 13.78672099,
+"urban": true
+},
+"TR07A": {
+"code": "TR07A",
+"name": "TRIESTE Cologna (campo sportivo) - tramvia",
+"lat": 45.66519599,
+"lon": 13.7869,
+"urban": true
+},
+"TR07R": {
+"code": "TR07R",
+"name": "TRIESTE Cologna (campo sportivo) - tramvia",
+"lat": 45.665205,
+"lon": 13.786981,
+"urban": true
+},
+"D3071": {
+"code": "D3071",
+"name": "TRIESTE via Nazionale",
+"lat": 45.68185055,
+"lon": 13.78221728,
+"urban": true
+},
+"D4006": {
+"code": "D4006",
+"name": "TRIESTE borgo San Nazario 73 (scuola dell'infanzia)",
+"lat": 45.70390239,
+"lon": 13.73661886,
+"urban": true
+},
+"D4007": {
+"code": "D4007",
+"name": "TRIESTE borgo San Nazario 70 (centro per anziani)",
+"lat": 45.70203375,
+"lon": 13.7381607,
+"urban": true
+},
+"D4008": {
+"code": "D4008",
+"name": "TRIESTE BORGO SAN NAZARIO",
+"lat": 45.70023197,
+"lon": 13.73964634,
+"urban": true
+},
+"D4013": {
+"code": "D4013",
+"name": "TRIESTE borgo San Nazario 100/1",
+"lat": 45.70122377,
+"lon": 13.73898499,
+"urban": true
+},
+"TR08A": {
+"code": "TR08A",
+"name": "TRIESTE vetta Scorcola - tramvia",
+"lat": 45.66290173,
+"lon": 13.78136974,
+"urban": true
+},
+"TR08R": {
+"code": "TR08R",
+"name": "TRIESTE vetta Scorcola - tramvia",
+"lat": 45.66287267,
+"lon": 13.78137988,
+"urban": true
+},
+"TR09A": {
+"code": "TR09A",
+"name": "TRIESTE Romagna - tramvia",
+"lat": 45.66135499,
+"lon": 13.77841099,
+"urban": true
+},
+"TR09R": {
+"code": "TR09R",
+"name": "TRIESTE Romagna - tramvia",
+"lat": 45.661303,
+"lon": 13.77843299,
+"urban": true
+},
+"TR10A": {
+"code": "TR10A",
+"name": "TRIESTE sant'Anastasio - tramvia",
+"lat": 45.659537,
+"lon": 13.77664099,
+"urban": true
+},
+"D3044": {
+"code": "D3044",
+"name": "TRIESTE via di Basovizza 24",
+"lat": 45.68503633,
+"lon": 13.79619307,
+"urban": true
+},
+"D4004": {
+"code": "D4004",
+"name": "TRIESTE strada del Friuli 185 (località Prosecco)",
+"lat": 45.70492866,
+"lon": 13.73257158,
+"urban": true
+},
+"D4005": {
+"code": "D4005",
+"name": "TRIESTE PROSECCO",
+"lat": 45.70713666,
+"lon": 13.73404124,
+"urban": true
+},
+"TR10R": {
+"code": "TR10R",
+"name": "TRIESTE sant'Anastasio - tramvia",
+"lat": 45.659537,
+"lon": 13.77669199,
+"urban": true
+},
+"TR11A": {
+"code": "TR11A",
+"name": "TRIESTE piazza Casali - tramvia",
+"lat": 45.65721425,
+"lon": 13.77698685,
+"urban": true
+},
+"TR11R": {
+"code": "TR11R",
+"name": "TRIESTE piazza Casali - tramvia",
+"lat": 45.65724475,
+"lon": 13.77703373,
+"urban": true
+},
+"TROPI": {
+"code": "TROPI",
+"name": "TRIESTE Opicina - tramvia",
+"lat": 45.686462,
+"lon": 13.78710999,
+"urban": true
+},
+"TROBE": {
+"code": "TROBE",
+"name": "TRIESTE piazza Oberdan - tramvia",
+"lat": 45.65417543,
+"lon": 13.77565007,
+"urban": true
+},
+"D3034": {
+"code": "D3034",
+"name": "TRIESTE via di Monrupino 22",
+"lat": 45.68982575,
+"lon": 13.79500188,
+"urban": true
+},
+"D3035": {
+"code": "D3035",
+"name": "TRIESTE strada per Vienna 85 (poligono)",
+"lat": 45.68956042,
+"lon": 13.7963015,
+"urban": true
+},
+"D3019": {
+"code": "D3019",
+"name": "TRIESTE via di Basovizza 40",
+"lat": 45.68230228,
+"lon": 13.8019689,
+"urban": true
+},
+"D3061": {
+"code": "D3061",
+"name": "TRIESTE via Sigmund Freud (piazzale)",
+"lat": 45.68951675,
+"lon": 13.79735436,
+"urban": true
+},
+"D9023": {
+"code": "D9023",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 174 (scuola)",
+"lat": 45.61509646,
+"lon": 13.82884678,
+"urban": true
+},
+"D0001": {
+"code": "D0001",
+"name": "TRIESTE strada statale 14 per Basovizza 20",
+"lat": 45.65478128,
+"lon": 13.81571099,
+"urban": true
+},
+"D1003": {
+"code": "D1003",
+"name": "TRIESTE strada provinciale 1 del Carso 29 (monumento di Trebiciano)",
+"lat": 45.67260331,
+"lon": 13.82491828,
+"urban": true
+},
+"D3015": {
+"code": "D3015",
+"name": "TRIESTE via Campo Romano 50",
+"lat": 45.68336759,
+"lon": 13.77931619,
+"urban": true
+},
+"D3045": {
+"code": "D3045",
+"name": "TRIESTE OPICINA",
+"lat": 45.68641356,
+"lon": 13.78769088,
+"urban": true
+},
+"D4026": {
+"code": "D4026",
+"name": "TRIESTE strada provinciale 1 del Carso 354 (scuola di Santa Croce)",
+"lat": 45.74225066,
+"lon": 13.68284759,
+"urban": true
+},
+"D5001": {
+"code": "D5001",
+"name": "TRIESTE viale Miramare 279 (gelateria)",
+"lat": 45.69213089,
+"lon": 13.73961924,
+"urban": true
+},
+"D4012": {
+"code": "D4012",
+"name": "TRIESTE BORGO SAN NAZARIO",
+"lat": 45.70007336,
+"lon": 13.73995499,
+"urban": true
+},
+"D2004": {
+"code": "D2004",
+"name": "TRIESTE località Banne 25 (Banne paese, albergo)",
+"lat": 45.67784784,
+"lon": 13.80249412,
+"urban": true
+},
+"D2005": {
+"code": "D2005",
+"name": "TRIESTE via di Basovizza 60 (scuola)",
+"lat": 45.68092223,
+"lon": 13.804268,
+"urban": true
+},
+"D3030": {
+"code": "D3030",
+"name": "TRIESTE via di Monrupino 27",
+"lat": 45.69032146,
+"lon": 13.79506508,
+"urban": true
+},
+"D3903": {
+"code": "D3903",
+"name": "TRIESTE via Nazionale 14",
+"lat": 45.6846479,
+"lon": 13.78473445,
+"urban": true
+},
+"D5021": {
+"code": "D5021",
+"name": "strada del Friuli (direzione Trieste)",
+"lat": 45.69604351,
+"lon": 13.74181804,
+"urban": true
+},
+"D1005": {
+"code": "D1005",
+"name": "TRIESTE strada provinciale 1 del Carso (cimitero di Trebiciano)",
+"lat": 45.67661008,
+"lon": 13.81803682,
+"urban": true
+},
+"D3040": {
+"code": "D3040",
+"name": "TRIESTE via di Monrupino 85",
+"lat": 45.6939369,
+"lon": 13.79564247,
+"urban": true
+},
+"D4029": {
+"code": "D4029",
+"name": "TRIESTE SANTA CROCE",
+"lat": 45.73653895,
+"lon": 13.69218798,
+"urban": true
+},
+"D9025": {
+"code": "D9025",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 157 (Domio)",
+"lat": 45.61361776,
+"lon": 13.82596936,
+"urban": true
+},
+"56901": {
+"code": "56901",
+"name": "TRIESTE via Alessandro Malaspina 20",
+"lat": 45.61311026,
+"lon": 13.81474164,
+"urban": true
+},
+"D3039": {
+"code": "D3039",
+"name": "TRIESTE via di Monrupino 85",
+"lat": 45.69340871,
+"lon": 13.79548684,
+"urban": true
+},
+"D4025": {
+"code": "D4025",
+"name": "TRIESTE località Santa Croce 4 (strada provinciale 1)",
+"lat": 45.73897308,
+"lon": 13.68821099,
+"urban": true
+},
+"D4027": {
+"code": "D4027",
+"name": "TRIESTE strada provinciale 1 del Carso 354 (scuola di Santa Croce)",
+"lat": 45.74205392,
+"lon": 13.68295827,
+"urban": true
+},
+"D0008": {
+"code": "D0008",
+"name": "TRIESTE strada provinciale 19 di Gropada 92 (scuola dell'infanzia)",
+"lat": 45.66234862,
+"lon": 13.84403008,
+"urban": true
+},
+"D1008": {
+"code": "D1008",
+"name": "TRIESTE strada provinciale 1 del Carso 178 (Trebiciano)",
+"lat": 45.67025259,
+"lon": 13.82736666,
+"urban": true
+},
+"D3007": {
+"code": "D3007",
+"name": "TRIESTE via dei Papaveri 6",
+"lat": 45.69299499,
+"lon": 13.77646132,
+"urban": true
+},
+"D4028": {
+"code": "D4028",
+"name": "TRIESTE località Santa Croce 4",
+"lat": 45.73840138,
+"lon": 13.68898278,
+"urban": true
+},
+"D4031": {
+"code": "D4031",
+"name": "TRIESTE strada provinciale 1 del Carso (mobilificio)",
+"lat": 45.71201516,
+"lon": 13.72877579,
+"urban": true
+},
+"D9022": {
+"code": "D9022",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 174 (Domio, scuola)",
+"lat": 45.6148233,
+"lon": 13.82854144,
+"urban": true
+},
+"D1009": {
+"code": "D1009",
+"name": "TRIESTE strada provinciale 1 del Carso 2 (Trebiciano)",
+"lat": 45.67397805,
+"lon": 13.82290139,
+"urban": true
+},
+"D1010": {
+"code": "D1010",
+"name": "TRIESTE strada provinciale 1 del Carso 239",
+"lat": 45.66667118,
+"lon": 13.83097182,
+"urban": true
+},
+"D1002": {
+"code": "D1002",
+"name": "TRIESTE strada provinciale 1 del Carso 226 (Trebiciano)",
+"lat": 45.67061474,
+"lon": 13.82713442,
+"urban": true
+},
+"D1007": {
+"code": "D1007",
+"name": "TRIESTE strada provinciale 1 del Carso (monumento di Trebiciano)",
+"lat": 45.67227179,
+"lon": 13.82502992,
+"urban": true
+},
+"D3023": {
+"code": "D3023",
+"name": "TRIESTE strada per Vienna 9 (bar)",
+"lat": 45.68806062,
+"lon": 13.78980322,
+"urban": true
+},
+"D3046": {
+"code": "D3046",
+"name": "TRIESTE strada provinciale 1 del Carso 1249 (Opicina)",
+"lat": 45.6953636,
+"lon": 13.77869273,
+"urban": true
+},
+"D4002": {
+"code": "D4002",
+"name": "TRIESTE strada del Friuli 453 (località Contovello)",
+"lat": 45.70069704,
+"lon": 13.73327416,
+"urban": true
+},
+"D4011": {
+"code": "D4011",
+"name": "TRIESTE strada Vicentina (per Monte Grisa, direzione Prosecco)",
+"lat": 45.69964077,
+"lon": 13.74153825,
+"urban": true
+},
+"D2001": {
+"code": "D2001",
+"name": "TRIESTE via di Basovizza 60 (scuola di Banne)",
+"lat": 45.68121533,
+"lon": 13.80389257,
+"urban": true
+},
+"D1012": {
+"code": "D1012",
+"name": "TRIESTE strada provinciale 1 del Carso 274 (Banne)",
+"lat": 45.67866193,
+"lon": 13.80976691,
+"urban": true
+},
+"D3002": {
+"code": "D3002",
+"name": "TRIESTE via Nazionale 4 (sottopasso Napoleonica)",
+"lat": 45.68179055,
+"lon": 13.78235771,
+"urban": true
+},
+"22902": {
+"code": "22902",
+"name": "TRIESTE salita a Conconello 5",
+"lat": 45.6670097,
+"lon": 13.78841592,
+"urban": true
+},
+"D3001": {
+"code": "D3001",
+"name": "TRIESTE strada nuova per Opicina 37 (campeggio obelisco)",
+"lat": 45.6791431,
+"lon": 13.78324739,
+"urban": true
+},
+"D2002": {
+"code": "D2002",
+"name": "TRIESTE località Banne 205 (Banne paese, piazza)",
+"lat": 45.67863265,
+"lon": 13.80437776,
+"urban": true
+},
+"D3008": {
+"code": "D3008",
+"name": "TRIESTE VILLA CARSIA",
+"lat": 45.69295571,
+"lon": 13.77825709,
+"urban": true
+},
+"D3009": {
+"code": "D3009",
+"name": "TRIESTE strada provinciale 1 del Carso (caserma)",
+"lat": 45.69333124,
+"lon": 13.78223691,
+"urban": true
+},
+"D3011": {
+"code": "D3011",
+"name": "TRIESTE via di Prosecco 10 (angolo via Doberdò)",
+"lat": 45.68886697,
+"lon": 13.78817727,
+"urban": true
+},
+"D3012": {
+"code": "D3012",
+"name": "TRIESTE OPICINA TRENOVIA",
+"lat": 45.68591074,
+"lon": 13.78643308,
+"urban": true
+},
+"D3010": {
+"code": "D3010",
+"name": "TRIESTE via di Prosecco 44 (angolo strada provinciale 1 del Carso)",
+"lat": 45.69083277,
+"lon": 13.78682159,
+"urban": true
+},
+"D4033": {
+"code": "D4033",
+"name": "TRIESTE VIA SAN NAZARIO",
+"lat": 45.70749089,
+"lon": 13.7338343,
+"urban": true
+},
+"D5017": {
+"code": "D5017",
+"name": "TRIESTE viale Miramare 293 (porticciolo)",
+"lat": 45.69343589,
+"lon": 13.73757023,
+"urban": true
+},
+"D5016": {
+"code": "D5016",
+"name": "TRIESTE viale Miramare 303 (California Inn)",
+"lat": 45.69462892,
+"lon": 13.73597962,
+"urban": true
+},
+"D3003": {
+"code": "D3003",
+"name": "TRIESTE via della Pineta (bivio strada provinciale 35 di Opicina)",
+"lat": 45.68550701,
+"lon": 13.77695167,
+"urban": true
+},
+"D3004": {
+"code": "D3004",
+"name": "TRIESTE VIA CARSIA 44 (VIGILI DEL FUOCO)",
+"lat": 45.68822602,
+"lon": 13.77366288,
+"urban": true
+},
+"D3005": {
+"code": "D3005",
+"name": "TRIESTE via Santa Fosca 11",
+"lat": 45.6890035,
+"lon": 13.7752384,
+"urban": true
+},
+"D1001": {
+"code": "D1001",
+"name": "TRIESTE strada provinciale 1 del Carso 124 (Trebiciano, tennis)",
+"lat": 45.6633708,
+"lon": 13.83390316,
+"urban": true
+},
+"D1013": {
+"code": "D1013",
+"name": "TRIESTE strada provinciale 1 del Carso 274 (Banne)",
+"lat": 45.67851069,
+"lon": 13.80993705,
+"urban": true
+},
+"D3032": {
+"code": "D3032",
+"name": "TRIESTE strada per Vienna 84",
+"lat": 45.68964668,
+"lon": 13.79722755,
+"urban": true
+},
+"D5006": {
+"code": "D5006",
+"name": "TRIESTE strada statale 14 della Venezia Giulia 2 (hotel)",
+"lat": 45.69982991,
+"lon": 13.72531361,
+"urban": true
+},
+"D3060": {
+"code": "D3060",
+"name": "TRIESTE strada provinciale 35 di Opicina 52 (Villaggio)",
+"lat": 45.68110093,
+"lon": 13.79698942,
+"urban": true
+},
+"D4030": {
+"code": "D4030",
+"name": "TRIESTE strada provinciale 1 del Carso 16 (Campo Sacro)",
+"lat": 45.71572621,
+"lon": 13.72659405,
+"urban": true
+},
+"D4035": {
+"code": "D4035",
+"name": "TRIESTE località Prosecco 430 (monumento ai Caduti)",
+"lat": 45.70812495,
+"lon": 13.73022901,
+"urban": true
+},
+"D3024": {
+"code": "D3024",
+"name": "TRIESTE via di Basovizza 7 (scuola di Opicina)",
+"lat": 45.68796842,
+"lon": 13.79172196,
+"urban": true
+},
+"D3026": {
+"code": "D3026",
+"name": "TRIESTE via di Basovizza 37",
+"lat": 45.68229143,
+"lon": 13.80179256,
+"urban": true
+},
+"D0009": {
+"code": "D0009",
+"name": "TRIESTE strada provinciale 19 di Gropada 414",
+"lat": 45.65967975,
+"lon": 13.84046843,
+"urban": true
+},
+"D0012": {
+"code": "D0012",
+"name": "TRIESTE strada provinciale 1 del Carso 125 (campi tennis)",
+"lat": 45.66310648,
+"lon": 13.83402097,
+"urban": true
+},
+"D3025": {
+"code": "D3025",
+"name": "TRIESTE via di Basovizza 29/13",
+"lat": 45.68400431,
+"lon": 13.79862263,
+"urban": true
+},
+"D0013": {
+"code": "D0013",
+"name": "TRIESTE strada provinciale 1 del Carso 18",
+"lat": 45.66032909,
+"lon": 13.83661057,
+"urban": true
+},
+"23903": {
+"code": "23903",
+"name": "TRIESTE via Commerciale (angolo via dei Giaggioli)",
+"lat": 45.66607469,
+"lon": 13.78629348,
+"urban": true
+},
+"D0002": {
+"code": "D0002",
+"name": "TRIESTE strada provinciale 1 del Carso 262 (ex campo profughi)",
+"lat": 45.65435502,
+"lon": 13.8439535,
+"urban": true
+},
+"D3057": {
+"code": "D3057",
+"name": "TRIESTE via Nazionale 43/a (ristorante)",
+"lat": 45.6869345,
+"lon": 13.78801031,
+"urban": true
+},
+"D4010": {
+"code": "D4010",
+"name": "TRIESTE MONTE GRISA",
+"lat": 45.69379818,
+"lon": 13.75046379,
+"urban": true
+},
+"D5023": {
+"code": "D5023",
+"name": "TRIESTE strada statale 14 (via Beirut, castello di Miramare, ICTP)",
+"lat": 45.70164219,
+"lon": 13.72076036,
+"urban": true
+},
+"TRDAL": {
+"code": "TRDAL",
+"name": "TRIESTE piazza Dalmazia - tramvia",
+"lat": 45.654996,
+"lon": 13.775152,
+"urban": true
+},
+"D0010": {
+"code": "D0010",
+"name": "TRIESTE strada provinciale 19 di Gropada 10 (Padriciano)",
+"lat": 45.65896159,
+"lon": 13.83888478,
+"urban": true
+},
+"D0014": {
+"code": "D0014",
+"name": "TRIESTE strada provinciale 1 del Carso 62 (chiesa di Padriciano)",
+"lat": 45.65711536,
+"lon": 13.8394379,
+"urban": true
+},
+"D0015": {
+"code": "D0015",
+"name": "TRIESTE strada provinciale 1 del Carso 262 (ex campo profughi)",
+"lat": 45.6544717,
+"lon": 13.84347621,
+"urban": true
+},
+"23902": {
+"code": "23902",
+"name": "TRIESTE via Commerciale (palo elettrico 822)",
+"lat": 45.66653752,
+"lon": 13.78622571,
+"urban": true
+},
+"32206": {
+"code": "32206",
+"name": "",
+"lat": 45.65662898,
+"lon": 13.77310298,
+"urban": true
 }
 }
