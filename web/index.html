@@ -130,6 +130,7 @@
   .bus.pending { background:var(--md-surface-container-high) !important; color:var(--md-on-surface) !important;
     box-shadow:inset 0 0 0 3px var(--c), 0 0 0 2px var(--halo), var(--md-elev-1); }
   .bus.pending .flag { background:var(--md-surface-container-highest); color:var(--md-on-surface); }
+  .bus.pending.late .flag, .lbus.pending.late { color:var(--md-error); }
   .selstop { width:22px; height:22px; border-radius:50%; background:var(--md-primary); border:4px solid var(--halo); box-shadow:var(--md-elev-2); }
   .me { width:18px; height:18px; border-radius:50%; background:#1A73E8; border:3px solid var(--halo); box-shadow:0 0 0 8px rgba(26,115,232,.2); }
 
@@ -332,6 +333,7 @@ const T = {
     nearby: "Fermate vicine", noResults: "Nessuna fermata trovata.", typeHint: "Scrivi il nome di una fermata o di una via.",
     linesTitle: "Linee", busesRunning: "{n} in servizio", pendingN: "{n} in partenza", showOnly: "Mostra solo questa",
     pendingTitle: "Partenza programmata alle {time} → {dest}, autobus non ancora visibile",
+    pendingLate: "Partenza programmata alle {time} → {dest}, in ritardo: autobus non ancora visibile", late: "in ritardo",
     thenLeaves: "poi riparte alle {time} → {dest}",
     language: "Lingua", theme: "Tema", themeSystem: "Sistema", themeLight: "Chiaro", themeDark: "Scuro", feed: "Stato dei dati", lastBatch: "Ultimo GPS", every: "Ogni", staleN: "Vecchi",
     resync: "Alcune fermate non hanno codice: i dati delle fermate andrebbero aggiornati.",
@@ -372,6 +374,7 @@ const T = {
     nearby: "Nearby stops", noResults: "No stops found.", typeHint: "Type a stop or street name.",
     linesTitle: "Lines", busesRunning: "{n} running", pendingN: "{n} about to start", showOnly: "Show only this",
     pendingTitle: "Scheduled departure at {time} → {dest}, bus not visible yet",
+    pendingLate: "Scheduled departure at {time} → {dest}, running late: bus not visible yet", late: "late",
     thenLeaves: "then leaves again at {time} → {dest}",
     language: "Language", theme: "Theme", themeSystem: "System", themeLight: "Light", themeDark: "Dark", feed: "Data status", lastBatch: "Last GPS", every: "Every", staleN: "Stale",
     resync: "Some stops have no code: the stop data should be refreshed.",
@@ -518,6 +521,9 @@ const sharedLayer = L.layerGroup().addTo(map);
 let SHAPES = [];
 const busMarkers = {};    // trip -> marker
 let pendingDeps = [];
+// a departure whose time passed over a minute ago with no bus seen taking it
+const isLate = d => d.in_s != null && d.in_s < -60;
+const pendingText = d => t(isLate(d) ? "pendingLate" : "pendingTitle", { time: d.scheduled, dest: d.destination });
 const pendingMarkers = {};  // departure trip -> marker
 let vehicles = [], me = null, meMarker = null, sel = null, follow = false, fitted = false;
 
@@ -705,14 +711,16 @@ function drawBuses() {
     if (!isOn(d.line)) continue;
     const key = d.trip; want.add(key);
     const s = style(d.line);
-    const html = `<div class="bus pending" style="--c:${s.color}">${esc(s.name)}<span class="flag">${esc(d.scheduled)}</span>${runTag(d.trip)}</div>`;
+    const late = isLate(d);
+    const html = `<div class="bus pending${late ? " late" : ""}" style="--c:${s.color}">${esc(s.name)}<span class="flag">${esc(d.scheduled)}${late ? " · " + esc(t("late")) : ""}</span>${runTag(d.trip)}</div>`;
+    const icon = () => L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [15, 15], html });
     let m = pendingMarkers[key];
     if (!m) {
-      m = pendingMarkers[key] = L.marker([d.lat, d.lon], { zIndexOffset: 900, keyboard: true,
-        title: t("pendingTitle", { time: d.scheduled, dest: d.destination }),
-        icon: L.divIcon({ className: "", iconSize: [30, 30], iconAnchor: [15, 15], html }) })
+      m = pendingMarkers[key] = L.marker([d.lat, d.lon], { zIndexOffset: 900, keyboard: true, icon: icon() })
         .on("click", () => openStop(d.stop)).addTo(map);
-    }
+    } else if (m._html !== html) m.setIcon(icon());
+    m._html = html;
+    m.getElement()?.setAttribute("title", pendingText(d));
   }
   for (const [k, m] of Object.entries(pendingMarkers)) if (!want.has(k)) { m.remove(); delete pendingMarkers[k]; }
 }
@@ -1216,7 +1224,7 @@ async function renderLine(first) {
     // departures due from this direction's first stop that no known bus will take
     const y0 = y(rowOf(dir, 0));
     dir.pending.forEach((p, k) => {
-      html += `<span class="lbus pending" style="${side}:${44 + k * 66}px;top:${y0 - sign * BUS_H}px" title="${esc(t("pendingTitle", { time: p.scheduled, dest: p.destination }))}">${esc(p.scheduled)}</span>`;
+      html += `<span class="lbus pending${isLate(p) ? " late" : ""}" style="${side}:${44 + k * 66}px;top:${y0 - sign * BUS_H}px" title="${esc(pendingText(p))}">${esc(p.scheduled)}</span>`;
     });
   }
   const shortEnds = [...new Set(all.filter(b => b.short).map(b => b.to))];

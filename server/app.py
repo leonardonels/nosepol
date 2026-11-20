@@ -53,6 +53,7 @@ STALE_S = 90            # GPS older than this (and not "stopped") is stale
 LAYOVER_TTL = 15 * 60  # s a bus waiting at the terminus after its trip stays, unless its next run starts
 LATE_OK = 5 * 60        # s an incoming bus may reach the terminus after a departure and still run it
 PENDING_AHEAD = 20 * 60  # s ahead to show a departure no known bus will take
+PENDING_LATE = 10 * 60   # s after its time to keep showing it (late, or gone unseen)
 BLIND_SPEED = 3.0       # m/s, slowest speed assumed to cover a stretch no stop reports on
 BLIND_MAX_S = 45 * 60   # s, longest a bus is kept on such a stretch without a report
 FILL_NEAR_M = 2000      # look for missing stop codes in districts with a stop this close
@@ -514,16 +515,28 @@ class Tracker:
                 eta = eta if eta is not None else (0 if left < 500 else None)
                 if eta is not None:
                     cands.setdefault(key, []).append((1, left, tr, t + eta))
-        termini = {}
+        # Trips start only where a variant starts. A short trip's end (Via Battisti,
+        # Via Svevo, Barcola) is mid-route for the full trips: it lists the next one not
+        # yet started upstream, at its time there, which is not a departure from there.
+        starts = {}
         for var in self.variants.values():
-            st = var.stops[-1]
+            st = var.stops[0]
             if st["code"]:
-                termini.setdefault((st["code"], var.line.rstrip("/")), st)
+                starts.setdefault((st["code"], var.line.rstrip("/")), st)
+        first = {}  # trip -> (code, line, run) at its earliest listed start: one place per trip
+        for (code, line), st in starts.items():
+            for r in fetched.get(code) or []:
+                if (r["Line"].rstrip("/") == line and not r.get("IsDestination")
+                        and not r.get("IsStarted") and r.get("Time")):
+                    trip = f"{r['Line']}:{r['Race']}"
+                    if trip not in first or r["Time"] < first[trip][2]["Time"]:
+                        first[trip] = (code, line, r)
+        deps_at = {}
+        for code, line, r in first.values():
+            deps_at.setdefault((code, line), []).append(r)
         pending = []
-        for (code, line), st in termini.items():
-            deps = sorted((r for r in fetched.get(code) or [] if r["Line"].rstrip("/") == line
-                           and not r.get("IsDestination") and not r.get("IsStarted") and r.get("Time")),
-                          key=lambda r: r["Time"])
+        for (code, line), st in starts.items():
+            deps = sorted(deps_at.get((code, line), []), key=lambda r: r["Time"])
             cs = sorted(cands.get((code, line), []), key=lambda c: (c[0], c[1]))
             for r in deps:
                 when = self._sched_ts(r["Time"])
@@ -535,17 +548,17 @@ class Tracker:
                 if pick:
                     cs.remove(pick)
                     pick[2].next_run = run
-                elif when is not None and when - t <= PENDING_AHEAD:
+                elif when is not None and when - t <= PENDING_AHEAD and t < when + PENDING_LATE:
                     pending.append({**run, "line": line, "when": when, "stop_name": pretty(st["name"]),
                                     "lat": st["lat"], "lon": st["lon"], "seen": t})
         # Keep a pending departure that dropped out of the listing (it started, or one
         # answer missed it) until its bus shows up with GPS, a known bus takes it, or
-        # 10 min after its time: no gap between "about to start" and the real bus.
+        # PENDING_LATE after its time: no gap between "about to start" and the real bus.
         now_ids = {d["trip"] for d in pending}
         paired = {tr.next_run["trip"] for tr in self.tracks.values() if tr.next_run}
         for d in self.pending:
             if (d["trip"] not in now_ids and d["trip"] not in self.tracks and d["trip"] not in paired
-                    and t < d["when"] + 10 * 60):
+                    and t < d["when"] + PENDING_LATE):
                 pending.append(d)
         self.pending = pending
 
