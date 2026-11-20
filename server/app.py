@@ -390,6 +390,16 @@ class Tracker:
             self.stats["last_sweep"] = {"t": t, "stops": len(codes), "trips": len(runs),
                                         "new_fixes": updated}
         log.info("sweep: %d stops, %d trips, %d new fixes", len(codes), len(runs), updated)
+        return updated
+
+    def _batch_seen(self, t, interval=False):
+        """Record new GPS positions at t. Only the heartbeat times batches closely
+        enough to count towards batch_interval; a forced sweep just keeps last_batch
+        from going stale while the heartbeat looks for a stop that shows a bus."""
+        lb = self.stats["last_batch"]
+        if interval and lb:
+            self.stats["batch_intervals"] = (self.stats["batch_intervals"] + [round(t - lb)])[-20:]
+        self.stats["last_batch"] = t
 
     def _freshest(self, trip, rs):
         """A stop the bus already passed can keep listing it with a frozen position,
@@ -611,27 +621,35 @@ class Tracker:
     def run(self):
         self.discover()
         threading.Thread(target=self._fill_loop, daemon=True).start()
-        last_sig, last_sweep = None, 0
+        last, last_sweep, hb = None, 0, None  # last: (stop, signature) the heartbeat saw
         while True:
             t = time.time()
             codes = self.poll_set(behind=False)
-            sig = None
+            sig = None  # (stop, positions it lists), if it lists a running bus
             if codes:
-                _, rs = self._fetch(codes[len(codes) // 2])
-                sig = tuple(sorted((r["Race"], r["Latitude"], r["Longitude"]) for r in rs if r.get("IsStarted")))
-            changed = sig and last_sig is not None and sig != last_sig
+                # Watch one stop. A stop whose listed buses haven't started yet shows no
+                # positions, so it can't reveal a batch: move on to the next stop then.
+                if hb not in codes:
+                    hb = codes[len(codes) // 2]
+                code = hb
+                _, rs = self._fetch(code)
+                pos = tuple(sorted((r["Race"], r["Latitude"], r["Longitude"]) for r in rs
+                                   if r.get("IsStarted") and r.get("Latitude")))
+                if pos:
+                    sig = (code, pos)
+                else:
+                    hb = codes[(codes.index(code) + 1) % len(codes)]
+            changed = bool(sig and last and last[0] == sig[0] and last[1] != sig[1])
             if changed:
-                lb = self.stats["last_batch"]
-                if lb:
-                    self.stats["batch_intervals"] = (self.stats["batch_intervals"] + [round(t - lb)])[-20:]
-                self.stats["last_batch"] = t
-            if changed or t - last_sweep > FORCE_SWEEP_EVERY or last_sig is None:
+                self._batch_seen(t, interval=True)
+            if changed or t - last_sweep > FORCE_SWEEP_EVERY:
                 try:
-                    self.sweep(t)
+                    if self.sweep(t) and not changed:
+                        self._batch_seen(t)  # forced sweep found newer fixes
                 except Exception:
                     log.exception("sweep failed")
                 last_sweep = t
-            last_sig = sig
+            last = sig
             time.sleep(max(0.0, HEARTBEAT_EVERY - (time.time() - t)))
 
     # ---- views -------------------------------------------------------
