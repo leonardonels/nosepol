@@ -4,3 +4,5 @@
 *.pyc
 .venv
 tools
+data/refresh.json
+data/speeds.json

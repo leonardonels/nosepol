@@ -48,9 +48,12 @@ Findings that shape the design:
    The poll set is the fixed stops plus the stop behind each tracked bus, so a
    bunched bus is found one sweep after the bus in front of it (~65 stops a sweep
    for lines 6, 8, 9 instead of 35).
-3. **Stop codes**: a route stop with no code in `data/stops.json` can't be polled. At
-   start (then daily while some are missing) the server probes the codes just past
-   the last known one of nearby districts and saves what it finds. A bus on an end
+3. **Stop codes**: a route stop with no code in `data/stops.json` can't be polled. The
+   server downloads the operator's public stop list (`tplfvg.it/services/geojson/points`,
+   one request to the website, not the realtime API) at start and then weekly, or every
+   6 h while a route stop has no code. It adds new urban stops within 20 km, moves ones
+   that moved, and only counts ones no longer listed. Only while that download fails
+   does it probe codes just past nearby districts' known ones (daily). A bus on an end
    stretch with no coded stop can't be reported at all: once its speed puts it past
    the last coded stop it is kept as `blind`, moved on at its speed (dashed on the
    map), until its vehicle starts a newer trip or it would have reached the end and
@@ -66,6 +69,25 @@ Findings that shape the design:
    the same stands. It extrapolates at most 150 s past the last fix (GPS can skip a
    few batches between buildings; no limit for a `blind` bus) and reports the RMS
    residual. A bus listed with the same position for 90 s counts as stopped.
+5. **Learned stretch times** (`History` in `server/estimator.py`): when a bus passes
+   two stops in a row, the time between arriving at one and arriving at the next
+   (interpolated between fixes, stand included) is learned for that pair of stop
+   codes, shared by every line and variant that drives it. It keeps a moving average
+   per weekday/Saturday/Sunday and hour, per hour, and overall, and saves to
+   `data/speeds.json` (per host, not in git). An ETA drives the rest of the current
+   stretch at `v`, then takes each whole stretch's learned time once it has 3 runs,
+   scaled by how this bus did on its last stretches against theirs (0.75–1.5×).
+   Stretches with no history fall back to `v` plus 20 s per stop. `eta_src` on an
+   ETA says which was used. `/api/status` `eta_errors` scores both against real
+   arrivals: the mean absolute error of the speed-only ETA and of ours, by how far
+   ahead it was made.
+6. **Route checks**: shapes are cached per trip in `data/routes.json`. Once a day per
+   variant, one running trip's shape is fetched again; a trip whose GPS is off its
+   shape for 3 fixes in a row is fetched again too (at most once a day per trip, 20
+   such requests an hour). A new path with the same stops replaces the variant; a trip
+   now on other stops moves to a new variant, and the old one's other trips are
+   fetched again as each next runs. A variant no bus ran on for 21 days is dropped.
+   When and where it checked is kept in `data/refresh.json` (not in git).
 
 ## API
 
@@ -93,7 +115,8 @@ Findings that shape the design:
   bus takes it, or 10 min after its time. `/api/lines` counts them per line.
 - `GET /api/stream`: server-sent events, one every 3 s: the `/api/vehicles` payload
   plus `last_batch` (time of the last GPS batch), `batch_interval` and `variants` (a
-  route count; the page reloads routes when it changes). The page uses this instead of
+  routes version that goes up whenever a route is added, changed or dropped; the page
+  reloads routes when it changes). The page uses this instead of
   polling and closes it while hidden. A stream closes after 10 min (the browser
   reconnects); past 200 open streams the server answers 503 and the page polls
   `GET /api/live`, the same payload once.
@@ -106,24 +129,26 @@ Findings that shape the design:
 - `GET /api/stops?q=…&near=lat,lon&limit=20`: stops on tracked routes, matched by any
   words of the name or code (accents and case ignored) and/or sorted by distance
 - `GET /api/stops/{code}`: every tracked bus still heading to the stop, with our ETA
-  (`eta_s`), the operator's (`operator`, fetched live and cached 20 s) and later
+  (`eta_s`, with `eta_src` `history` or `speed`), the operator's (`operator`, fetched
+  live and cached 20 s) and later
   timetable passes. Untracked runs the operator lists appear with `live: false`.
 - `GET /api/trips/{trip}`: one bus, the stops ahead with ETAs, and its recent fixes
 - `GET /api/status`: last GPS batch, batch interval, stale/stopped counts, stops with
   no code (a hint that a resync is due), and removed buses: `drops_by_reason` since
   start and `drops_recent` (trip, reason, how long it stood still, where). Reasons:
   `next_run` (its vehicle started a newer trip), `layover_timeout`, `terminus_timeout`, `midroute_timeout`, `not_reported` (no stop lists it for 3 min), `blind_timeout` (see Stop codes),
-  `vehicle_reused` (its vehicle runs a newer trip). Each removal is also logged.
+  `vehicle_reused` (its vehicle runs a newer trip). Each removal is also logged. Also
+  `stop_list` (last download, ok), `route_checks_last_hour`, `history` (stretches
+  learned, usable, runs) and `eta_errors` (see Learned stretch times).
 - `GET /api/debug`: poll set, batch intervals, raw fix history
 
 The page uses hash links that can be shared: `/#/stop/09001`, `/#/bus/T06:1086`.
 
 ## Keeping data fresh (resync)
 
-`data/stops.json` and `data/routes.json` are snapshots scraped from the API,
-which has no stop list and no change feed. Stops, codes and route variants can
-change with timetable updates, detours or seasonal service. Resync when stops
-show as "code unknown", buses go missing, or after a timetable change:
+The server keeps itself current (see Stop codes and Route checks above): the stop list
+weekly, route shapes daily per variant and on off-route GPS. A manual resync is only
+needed if that can't work, e.g. the stop list moved or the server was down for weeks:
 
 ```
 python3 tools/scan_stops.py    # full rescan (~35 min)
@@ -132,11 +157,8 @@ rm data/routes.json            # refetch route shapes on next start
 python3 tools/check_coverage.py  # poll every route stop: are buses missing?
 ```
 
-The server's own search only looks just past nearby districts' known codes; when its log
-says route stops are still without a code, run `fill_stops.py`, which searches wider.
-As of this writing line 6's 9 stops from Barcola to Grignano (both directions) have none.
-
-Automating this (e.g. a weekly job) is worth doing once this outgrows the POC.
+After a stop-list download the log says how many stops were new, moved or no longer
+listed; route checks log `route check <trip> (<why>): unchanged` or the new variant.
 
 ## Running on a server (Docker)
 
@@ -165,6 +187,6 @@ The map is then at `http://<host>:8080`. Options via environment / `.env`:
   or a Cloudflare Tunnel.
 
 ## Next steps
-- Run `tools/check_coverage.py` against the live feed to confirm no buses are missed.
-- Better ETA: per-segment historical speeds instead of the instantaneous `v`.
+- Check `eta_errors` in `/api/status` after a few days of learned stretch times; tune
+  the bucket sizes and the pace factor if ours isn't clearly ahead.
 - Android thin client: widget, Wear OS tile, "leave now" notification.

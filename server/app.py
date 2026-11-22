@@ -29,7 +29,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-from estimator import DWELL_S, Track
+from estimator import ARRIVE_M, DWELL_S, OFFROUTE_M, History, Track
 from geo import Frame, Polyline
 
 API = "https://realtime.tplfvg.it/API/v1.0/polemonitor"
@@ -58,7 +58,17 @@ BLIND_SPEED = 3.0       # m/s, slowest speed assumed to cover a stretch no stop 
 BLIND_MAX_S = 45 * 60   # s, longest a bus is kept on such a stretch without a report
 FILL_NEAR_M = 2000      # look for missing stop codes in districts with a stop this close
 FILL_GAP = 60           # codes probed past a district's last known code
-FILL_EVERY = 24 * 3600  # s between searches while some route stops still have no code
+FILL_EVERY = 24 * 3600  # s between code searches, only while the stop list can't be downloaded
+STOPS_URL = "https://tplfvg.it/services/geojson/points/?lang=it"  # the operator's public stop list
+STOPS_EVERY = 7 * 24 * 3600  # s between downloads of it (one ~4 MB request, not the realtime API)
+STOPS_SOON = 6 * 3600   # s, earliest download again while some route stop has no code
+STOPS_RETRY = 3600      # s after a failed download
+STOPS_NEAR_KM = 20      # urban stops this close to Trieste are kept
+ROUTE_CHECK_EVERY = 24 * 3600  # s: per route variant, one trip's shape is fetched again this often
+OFFROUTE_FIXES = 3      # this many fixes in a row off the shape: fetch the trip's shape again
+RECHECK_PER_HOUR = 20   # cap on those extra shape requests
+ROUTE_UNUSED_S = 21 * 24 * 3600  # a variant no trip ran on for this long is dropped
+DATA_EVERY = 600        # s between data housekeeping rounds (saves, refresh checks)
 STREAM_EVERY = 3        # s between updates on /api/stream (the page glides markers over this)
 STREAM_MAX_S = 10 * 60  # s before a stream closes; the browser reconnects on its own
 MAX_STREAMS = 200       # open streams at once; more get 503 and the page polls instead
@@ -126,6 +136,9 @@ class Variant:
             self.stops.append({"code": code, "name": name, "lat": lat, "lon": lon, "s": round(s, 1)})
         sig = "|".join(f"{lat:.4f},{lon:.4f}" for lon, lat in ends)
         self.key = f"{line}-{direction}-{hashlib.sha1(sig.encode()).hexdigest()[:6]}"
+        # the whole path: a detour can keep the same stops (same key) on another road
+        path = "|".join(f"{lat:.5f},{lon:.5f}" for seg in segments for lon, lat in seg)
+        self.sig = hashlib.sha1(path.encode()).hexdigest()[:12]
 
     def next_stop(self, s):
         return next((st for st in self.stops if st["s"] > s + 5), None)
@@ -195,6 +208,33 @@ class StopDB:
         self.stops.append({"code": code, "name": name, "lat": lat, "lon": lon, "urban": urban,
                            "xy": FRAME.xy(lat, lon)})
 
+    def merge(self, features):
+        """Add the stops of the operator's list (GeoJSON features) that aren't known yet,
+        and move known ones that moved. Stops missing from the list are only counted:
+        a stop that's gone does no harm, one dropped by mistake would. Returns
+        (added, moved, missing)."""
+        known = {st["code"]: st for st in self.stops}
+        added = moved = 0
+        listed = set()
+        for f in features:
+            pr, (lon, lat) = f.get("properties") or {}, f["geometry"]["coordinates"]
+            code = pr.get("code")
+            if not code or "urban" not in (pr.get("services") or []):
+                continue
+            if math.dist(FRAME.xy(lat, lon), (0, 0)) > STOPS_NEAR_KM * 1000:
+                continue
+            listed.add(code)
+            st = known.get(code)
+            if st is None:
+                self.add(code, pr.get("name"), lat, lon, True)
+                added += 1
+            elif math.dist(FRAME.xy(lat, lon), st["xy"]) > 30:
+                st["lat"], st["lon"], st["xy"] = lat, lon, FRAME.xy(lat, lon)
+                moved += 1
+        missing = sum(1 for st in self.stops if st.get("urban") and st["code"] not in listed
+                      and math.dist(st["xy"], (0, 0)) <= STOPS_NEAR_KM * 1000)
+        return added, moved, missing
+
     def save(self):
         out = {st["code"]: {k: v for k, v in st.items() if k != "xy"} for st in self.stops}
         self.path.write_text(json.dumps(out, indent=0, ensure_ascii=False))
@@ -231,6 +271,17 @@ class Tracker:
         self._stop_index = (None, {})  # (variant keys it was built from, code -> entry)
         self._operator = {}            # stop code -> (time fetched, runs)
         self._live, self._live_lock = None, threading.Lock()  # (built at, body) for live()
+        self.checked = {}       # variant key -> last time one of its trips' shape was fetched
+        self.used = {}          # variant key -> last time a bus was tracked on it
+        self.routes_version = 0  # goes up whenever a route shape is added, changed or dropped
+        self._rechecked = {}    # trip -> last time its shape was fetched again
+        self._recheck_times = collections.deque()  # those fetches in the last hour
+        self.history = History(DATA / "speeds.json")
+        self._preds = {}        # (trip, stop index) -> [(made at, speed-only arrival, our arrival)]
+        self._pred_at = {}      # trip -> when its predictions were last made
+        self.eta_errors = {}    # horizon -> {"n", "speed", "ours"}: absolute errors summed (s)
+        # when the stop list was downloaded, and per variant when it was checked and last used
+        self.refresh = self._load_json(DATA / "refresh.json")
         self._load_cache()
 
     def wants(self, line):
@@ -248,7 +299,20 @@ class Tracker:
                 var = Variant(v["line"], v["direction"], v["destination"], v["segments"], self.stopdb)
                 self.variants[var.key] = var
         self.race_variant = {k: v for k, v in d["races"].items() if v in self.variants}
+        now = time.time()
+        self.checked = {k: t for k, t in self.refresh.get("checked", {}).items() if k in self.variants}
+        # a variant with no record counts as used now, so it isn't dropped at once
+        self.used = {k: self.refresh.get("used", {}).get(k, now) for k in self.variants}
+        self.routes_version = len(self.variants)
         log.info("route cache: %d variants, %d races", len(self.variants), len(self.race_variant))
+
+    @staticmethod
+    def _load_json(path):
+        try:
+            return json.loads(path.read_text()) if path.exists() else {}
+        except (OSError, ValueError) as e:
+            log.warning("reading %s: %s", path.name, e)
+            return {}
 
     def _save_cache(self):
         DATA.mkdir(exist_ok=True)
@@ -256,6 +320,11 @@ class Tracker:
             "variants": [{"line": v.line, "direction": v.direction, "destination": v.destination,
                           "segments": v.segments} for v in self.variants.values()],
             "races": self.race_variant}))
+
+    def _save_refresh(self):
+        self.refresh["checked"] = {k: round(t) for k, t in self.checked.items()}
+        self.refresh["used"] = {k: round(t) for k, t in self.used.items()}
+        (DATA / "refresh.json").write_text(json.dumps(self.refresh))
 
     def variant_for(self, run):
         trip = f"{run['Line']}:{run['Race']}"
@@ -266,16 +335,181 @@ class Tracker:
         self.stats["requests"] += 1
         if not segs:
             return None
-        var = Variant(run["Line"], run["Direction"], run["Destination"], segs, self.stopdb)
+        return self._adopt(trip, run["Direction"], run["Destination"], segs)
+
+    def _adopt(self, trip, direction, destination, segs, recheck=False):
+        """Map trip to the variant of the shape segs, adding or replacing it. On a
+        recheck (the trip's shape fetched again), a trip now on other stops than its
+        variant's means that variant changed: its other trips are fetched again too,
+        each when it next runs, so the requests stay spread out."""
+        var = Variant(trip.rpartition(":")[0], direction, destination, segs, self.stopdb)
         with self.lock:
-            if var.key not in self.variants:
-                log.info("new variant %s: %s -> %s (%d stops, %.1f km)", var.key,
-                         var.stops[0]["name"], var.stops[-1]["name"], len(var.stops),
+            old = self.race_variant.get(trip)
+            cur = self.variants.get(var.key)
+            if cur is None or cur.sig != var.sig:
+                log.info("%s variant %s: %s -> %s (%d stops, %.1f km)", "new" if cur is None else "changed path of",
+                         var.key, var.stops[0]["name"], var.stops[-1]["name"], len(var.stops),
                          var.shape.length / 1000)
                 self.variants[var.key] = var
+                self._stop_index = (None, {})
+                self.routes_version += 1
+            else:
+                var = cur
+            if recheck and old and old != var.key:
+                stale = [k for k, v in self.race_variant.items() if v == old and k != trip]
+                for k in stale:
+                    del self.race_variant[k]
+                log.info("trip %s moved from %s to %s: %d more trips of it will be fetched again",
+                         trip, old, var.key, len(stale))
             self.race_variant[trip] = var.key
+            now = time.time()
+            self.checked[var.key] = now
+            self.used.setdefault(var.key, now)
             self._save_cache()
-        return self.variants[var.key]
+        return var
+
+    def recheck(self, tr, why, t):
+        """Fetch a tracked trip's shape again (at most once a day per trip, and
+        RECHECK_PER_HOUR in all), in case its route changed."""
+        trip = tr.trip
+        if t - self._rechecked.get(trip, 0) < ROUTE_CHECK_EVERY:
+            return
+        while self._recheck_times and t - self._recheck_times[0] > 3600:
+            self._recheck_times.popleft()
+        if len(self._recheck_times) >= RECHECK_PER_HOUR:
+            return
+        self._rechecked[trip] = t
+        self._recheck_times.append(t)
+        line, _, race = trip.rpartition(":")
+        try:
+            self.stats["requests"] += 1
+            segs = get("LineGeoTrack", Line=line, Race=race)
+        except Exception as e:
+            log.warning("route check %s: %s", trip, e)
+            return
+        if not segs:
+            return
+        before = tr.variant
+        var = self._adopt(trip, tr.meta.get("direction") or before.direction,
+                          tr.meta.get("destination") or before.destination, segs, recheck=True)
+        log.info("route check %s (%s): %s", trip, why, "unchanged" if var is before else f"now {var.key}")
+
+    def _route_checks(self, t, moved):
+        """After a sweep: fetch again the shape of a bus that left its route, and of
+        one trip per variant not checked for ROUTE_CHECK_EVERY (one per sweep)."""
+        with self.lock:
+            off = [tr for tr in moved if len(tr.fixes) >= OFFROUTE_FIXES
+                   and all(f[2] > OFFROUTE_M for f in tr.fixes[-OFFROUTE_FIXES:])]
+            due = [tr for tr in moved if t - self.checked.get(tr.variant.key, 0) > ROUTE_CHECK_EVERY
+                   and tr not in off]
+            for tr in moved:
+                self.used[tr.variant.key] = t
+        for tr in off:
+            self.recheck(tr, "off route", t)
+        if due:
+            self.recheck(due[0], "daily check", t)
+            self.checked.setdefault(due[0].variant.key, 0)
+            if t - self.checked[due[0].variant.key] > ROUTE_CHECK_EVERY:
+                # capped or failed: try another trip of it later, not every sweep
+                self.checked[due[0].variant.key] = t - ROUTE_CHECK_EVERY + 3600
+
+    ETA_HORIZONS = ((180, "0-3 min"), (600, "3-10 min"), (1800, "10-30 min"))
+    ETA_EVERY = 60    # s between predictions of one bus
+    ETA_AHEAD = 8     # stops ahead predicted
+
+    def _score_etas(self, t):
+        """Measure the ETAs against real arrivals: every ETA_EVERY, note each moving
+        bus's predicted arrival at its next stops, both speed-only (time_to, the old
+        way) and ours (eta); when it arrives, add the errors by how far ahead the
+        prediction was made. Shown in /api/status as eta_errors."""
+        for trip, tr in self.tracks.items():
+            for i, ta in tr.new_arrivals:
+                for made, old, new in self._preds.pop((trip, i), []):
+                    ahead = ta - made
+                    h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
+                    if h is None or ahead < 15:
+                        continue
+                    e = self.eta_errors.setdefault(h, {"n": 0, "speed": 0.0, "ours": 0.0})
+                    e["n"] += 1
+                    e["speed"] += abs(old - ta)
+                    e["ours"] += abs(new - ta)
+            tr.new_arrivals.clear()
+            if tr.layover or tr.stopped_for(t) is not None or t - self._pred_at.get(trip, 0) < self.ETA_EVERY:
+                continue
+            s, v, *_ = tr.predict(t)
+            if not v or v <= 0.5:
+                continue
+            self._pred_at[trip] = t
+            n = 0
+            for i, st in enumerate(tr.variant.stops):
+                if st["s"] - ARRIVE_M <= s or i in tr.arrivals:
+                    continue
+                old, new = tr.time_to(s, st["s"], v), tr.eta(s, st["s"], v, t)[0]
+                if old is not None and new is not None:
+                    self._preds.setdefault((trip, i), []).append((t, t + old, t + new))
+                n += 1
+                if n >= self.ETA_AHEAD:
+                    break
+        live = set(self.tracks)
+        for k in [k for k in self._preds if k[0] not in live]:
+            del self._preds[k]
+        for k in [k for k in self._pred_at if k not in live]:
+            del self._pred_at[k]
+
+    def prune_routes(self, t):
+        """Drop variants no bus ran on for ROUTE_UNUSED_S, and their trips."""
+        with self.lock:
+            busy = {tr.variant.key for tr in self.tracks.values()}
+            gone = [k for k in self.variants if k not in busy and t - self.used.get(k, t) > ROUTE_UNUSED_S]
+            for k in gone:
+                var = self.variants.pop(k)
+                self.checked.pop(k, None)
+                self.used.pop(k, None)
+                n = 0
+                for trip in [x for x, v in self.race_variant.items() if v == k]:
+                    del self.race_variant[trip]
+                    n += 1
+                log.info("dropped unused variant %s (%s -> %s, %d trips)", k, var.stops[0]["name"],
+                         var.stops[-1]["name"], n)
+            if gone:
+                self._stop_index = (None, {})
+                self.routes_version += 1
+                self._save_cache()
+            self._rechecked = {k: v for k, v in self._rechecked.items() if t - v < ROUTE_CHECK_EVERY}
+
+    def refresh_stops(self, t):
+        """Download the operator's stop list when due (weekly, or sooner while a route
+        stop has no code), merge it into the stop db, and match code-less route stops.
+        Returns True if it was downloaded."""
+        with self.lock:
+            unknown = any(not st["code"] for v in self.variants.values() for st in v.stops)
+        last = self.refresh.get("stops", 0)
+        wait = STOPS_RETRY if not self.refresh.get("stops_ok", True) else \
+            (STOPS_SOON if unknown else STOPS_EVERY)
+        if t - last < wait:
+            return False
+        self.refresh["stops"] = t
+        try:
+            req = urllib.request.Request(STOPS_URL, headers={"User-Agent": "NoSePol/0.1"})
+            with urllib.request.urlopen(req, timeout=60) as r:
+                feats = json.loads(r.read())["features"]
+            ok = True
+        except Exception as e:
+            log.warning("stop list download: %s", e)
+            feats, ok = [], False
+        self.refresh["stops_ok"] = ok
+        if ok:
+            with self.lock:
+                added, moved, missing = self.stopdb.merge(feats)
+                matched = sum(v.refresh_codes(self.stopdb) for v in self.variants.values())
+                if added or moved:
+                    self.stopdb.save()
+                if matched:
+                    self._stop_index = (None, {})
+                    self._save_cache()
+            log.info("stop list: %d stops, %d new, %d moved, %d not listed any more, %d route stops matched",
+                     len(feats), added, moved, missing, matched)
+        return ok
 
     def poll_set(self, behind=True):
         """The fixed stops of every variant and, with behind, the stop each tracked bus
@@ -332,7 +566,7 @@ class Tracker:
                 if self.wants(r["Line"]):
                     listed.setdefault(f"{r['Line']}:{r['Race']}", []).append(r)
         runs = {trip: self._freshest(trip, rs) for trip, rs in listed.items()}
-        updated = 0
+        updated, moved = 0, []
         for trip, r in runs.items():
             if not r.get("IsStarted") or not r.get("Latitude"):
                 continue
@@ -350,11 +584,13 @@ class Tracker:
             with self.lock:
                 tr = self.tracks.get(trip)
                 if tr is None or tr.variant is not var:
-                    tr = self.tracks[trip] = Track(trip, var)
+                    tr = self.tracks[trip] = Track(trip, var, self.history)
                 tr.meta = {"line": r["Line"], "vehicle": r["Vehicle"], "direction": r["Direction"],
                            "destination": r["Destination"], "note": r["Note"] or None,
                            "api_arrival": r["ArrivalTime"]}
-                updated += tr.add_fix(t, r["Latitude"], r["Longitude"])
+                if tr.add_fix(t, r["Latitude"], r["Longitude"]):
+                    updated += 1
+                    moved.append(tr)
                 self.seen[trip] = t
         with self.lock:
             # A bus at the end of its route that this sweep didn't list has finished its
@@ -391,6 +627,12 @@ class Tracker:
             self.stats["last_sweep"] = {"t": t, "stops": len(codes), "trips": len(runs),
                                         "new_fixes": updated}
         log.info("sweep: %d stops, %d trips, %d new fixes", len(codes), len(runs), updated)
+        with self.lock:
+            self._score_etas(t)
+        try:
+            self._route_checks(t, moved)
+        except Exception:
+            log.exception("route checks failed")
         return updated
 
     def _batch_seen(self, t, interval=False):
@@ -511,7 +753,7 @@ class Tracker:
             else:
                 s_, v, *_ = tr.predict(t)
                 left = tr.variant.shape.length - s_
-                eta = tr.time_to(s_, tr.variant.shape.length, v)
+                eta = tr.eta(s_, tr.variant.shape.length, v, t)[0] if tr.stopped_for(t) is None else None
                 eta = eta if eta is not None else (0 if left < 500 else None)
                 if eta is not None:
                     cands.setdefault(key, []).append((1, left, tr, t + eta))
@@ -623,17 +865,31 @@ class Tracker:
                  found, matched, left, " (run tools/fill_stops.py)" if left else "")
         return matched
 
-    def _fill_loop(self):
+    def _data_loop(self):
+        """Housekeeping every DATA_EVERY: the stop list when due (probing codes only while
+        it can't be downloaded), dropping unused routes, saving what was learned."""
+        fill_at = 0
         while True:
+            t = time.time()
             try:
-                self.fill_codes()
+                self.refresh_stops(t)
+                if not self.refresh.get("stops_ok", True) and t - fill_at > FILL_EVERY:
+                    fill_at = t
+                    self.fill_codes()
             except Exception:
-                log.exception("stop code search failed")
-            time.sleep(FILL_EVERY)
+                log.exception("stop refresh failed")
+            try:
+                self.prune_routes(t)
+                with self.lock:
+                    self._save_refresh()
+                    self.history.save()
+            except Exception:
+                log.exception("saving data failed")
+            time.sleep(DATA_EVERY)
 
     def run(self):
         self.discover()
-        threading.Thread(target=self._fill_loop, daemon=True).start()
+        threading.Thread(target=self._data_loop, daemon=True).start()
         last, last_sweep, hb = None, 0, None  # last: (stop, signature) the heartbeat saw
         while True:
             t = time.time()
@@ -691,7 +947,7 @@ class Tracker:
                 ints = self.stats["batch_intervals"]
                 out |= {"last_batch": self.stats["last_batch"],
                         "batch_interval": round(statistics.median(ints)) if ints else None,
-                        "variants": len(self.variants)}
+                        "variants": self.routes_version}
             body = json.dumps(out, ensure_ascii=False, separators=(",", ":"))
             self._live = (now, body)
             return body
@@ -851,12 +1107,13 @@ class Tracker:
                     continue
                 stopped = tr.stopped_for(now)
                 dist = max(0.0, st["s"] - s)
-                eta = tr.time_to(s, st["s"], v) if stopped is None else None
+                eta, src = tr.eta(s, st["s"], v, now) if stopped is None else (None, None)
                 eta = None if eta is None else round(eta)
                 age = round(now - tr.fixes[-1][0])
                 deps[trip] = {"trip": trip, "line": tr.variant.line.rstrip("/"),
                               "destination": pretty(tr.meta.get("destination") or tr.variant.destination),
                               "direction": tr.variant.direction, "live": True, "eta_s": eta,
+                              "eta_src": src if eta is not None else None,
                               "dist": round(dist), "v": None if v is None else round(v, 2),
                               "stopped_s": None if stopped is None else round(stopped),
                               "stop_kind": self.stop_kind(tr, now),
@@ -872,7 +1129,7 @@ class Tracker:
             elif not r.get("IsDestination"):
                 deps[trip] = {"trip": trip, "line": r["Line"].rstrip("/"),
                               "destination": pretty(r.get("Destination")),
-                              "direction": r.get("Direction"), "live": False, "eta_s": None,
+                              "direction": r.get("Direction"), "live": False, "eta_s": None, "eta_src": None,
                               "dist": None, "v": None, "stopped_s": None, "stop_kind": None, "stale": False,
                               "age": None, **op}
             if r.get("NextPasses"):
@@ -908,9 +1165,10 @@ class Tracker:
                 if x["s"] <= s + 5:
                     continue
                 dist = x["s"] - s
-                eta = tr.time_to(s, x["s"], v) if stopped is None else None
+                eta, src = tr.eta(s, x["s"], v, now) if stopped is None else (None, None)
                 ahead.append({"code": x["code"], "name": pretty(x["name"]), "dist": round(dist),
-                              "eta_s": None if eta is None else round(eta)})
+                              "eta_s": None if eta is None else round(eta),
+                              "eta_src": src if eta is not None else None})
             fixes = [[round(t - now), round(fs)] for t, fs, *_ in tr.fixes]
         return {"t": now, **st, "destination": pretty(st.get("destination")),
                 "stop_kind": self.stop_kind(tr, now),
@@ -940,7 +1198,13 @@ class Tracker:
                     "uptime_s": round(now - self.started),
                     "drops_by_reason": dict(self.drop_counts),
                     "drops_recent": [{**d, "ago_s": round(now - d["t"])} for d in reversed(self.drops)][:20],
-                    "resync_suggested": unknown > 0}
+                    "resync_suggested": unknown > 0,
+                    "stop_list": {"downloaded": self.refresh.get("stops"), "ok": self.refresh.get("stops_ok")},
+                    "route_checks_last_hour": len(self._recheck_times),
+                    "history": self.history.summary(),
+                    "eta_errors": {h: {"n": e["n"], "speed_mae_s": round(e["speed"] / e["n"]),
+                                       "ours_mae_s": round(e["ours"] / e["n"])}
+                                   for h, e in sorted(self.eta_errors.items()) if e["n"]}}
 
     def shapes(self, line):
         with self.lock:

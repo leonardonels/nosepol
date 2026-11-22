@@ -1292,9 +1292,11 @@ async function apply(data, receivedAt) {
   batchEvery = data.batch_interval ?? batchEvery;
   online = true; paintLive();
   if (data.variants !== streamVariants || Date.now() - linesAt > 60000) {
+    // data.variants goes up whenever a route is added, changed or dropped
+    const changed = streamVariants !== -1 && data.variants !== streamVariants;
     streamVariants = data.variants; linesAt = Date.now();
     const nv = await loadLines();
-    if (nv !== knownVariants) { knownVariants = nv; await loadShapes(); }
+    if (changed || nv !== knownVariants) { knownVariants = nv; await loadShapes(); }
   }
 }
 // "● 12 s": seconds since the last GPS batch, counting up between updates

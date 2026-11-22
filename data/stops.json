@@ -9133,5 +9133,3050 @@
 "lat": 45.65662898,
 "lon": 13.77310298,
 "urban": true
+},
+"D8020": {
+"code": "D8020",
+"name": "TRIESTE strada provinciale 8 di Monrupino 146",
+"lat": 45.72192265,
+"lon": 13.78818035,
+"urban": true
+},
+"D9001": {
+"code": "D9001",
+"name": "TRIESTE strada provinciale 12 della Rosandra 137 (Lacotisce)",
+"lat": 45.61007901,
+"lon": 13.82965774,
+"urban": true
+},
+"D6116": {
+"code": "D6116",
+"name": "TRIESTE strada provinciale 6 di Comeno 12 (Ternova)",
+"lat": 45.76132024,
+"lon": 13.70501255,
+"urban": true
+},
+"E0148": {
+"code": "E0148",
+"name": "TRIESTE strada provinciale 15 delle Noghere 2",
+"lat": 45.59715114,
+"lon": 13.78515198,
+"urban": true
+},
+"E0149": {
+"code": "E0149",
+"name": "TRIESTE strada delle Saline 7 (direzione Muggia)",
+"lat": 45.59408991,
+"lon": 13.79825713,
+"urban": true
+},
+"E0150": {
+"code": "E0150",
+"name": "TRIESTE strada delle Saline 7 (direzione Aquilinia)",
+"lat": 45.59425158,
+"lon": 13.79779652,
+"urban": true
+},
+"E0160": {
+"code": "E0160",
+"name": "TRIESTE strada per Lazzaretto 99 (campeggio di San Barolomeo)",
+"lat": 45.59630398,
+"lon": 13.72401006,
+"urban": true
+},
+"E0161": {
+"code": "E0161",
+"name": "TRIESTE strada provinciale 15 delle Noghere 44 (Famila)",
+"lat": 45.58782923,
+"lon": 13.80283121,
+"urban": true
+},
+"D6018": {
+"code": "D6018",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 18 (sanatorio)",
+"lat": 45.75143746,
+"lon": 13.68571117,
+"urban": true
+},
+"D9007": {
+"code": "D9007",
+"name": "TRIESTE strada provinciale 12 della Rosandra 574 (Mattonaia)",
+"lat": 45.60368196,
+"lon": 13.83842292,
+"urban": true
+},
+"D6115": {
+"code": "D6115",
+"name": "TRIESTE strada provinciale 6 di Comeno 16 (Ternova)",
+"lat": 45.76416388,
+"lon": 13.70060005,
+"urban": true
+},
+"D7044": {
+"code": "D7044",
+"name": "TRIESTE località Sales 1/a",
+"lat": 45.74511936,
+"lon": 13.73396824,
+"urban": true
+},
+"D9006": {
+"code": "D9006",
+"name": "TRIESTE strada provinciale 12 della Rosandra 200",
+"lat": 45.60943729,
+"lon": 13.8566301,
+"urban": true
+},
+"E0151": {
+"code": "E0151",
+"name": "TRIESTE via Flavia di Stramare (angolo SP 14 di Muggia)",
+"lat": 45.60230505,
+"lon": 13.79884791,
+"urban": true
+},
+"E0154": {
+"code": "E0154",
+"name": "TRIESTE strada provinciale 15 delle Noghere 1",
+"lat": 45.59527558,
+"lon": 13.78865103,
+"urban": true
+},
+"E0156": {
+"code": "E0156",
+"name": "TRIESTE località Farnei 14 (strada provinciale 15 direzione Muggia)",
+"lat": 45.59129196,
+"lon": 13.79479835,
+"urban": true
+},
+"E0157": {
+"code": "E0157",
+"name": "TRIESTE strada di San Clemente (ponte Rio di Ospo)",
+"lat": 45.590934,
+"lon": 13.79901359,
+"urban": true
+},
+"E0158": {
+"code": "E0158",
+"name": "TRIESTE salita Muggia Vecchia 6",
+"lat": 45.60415436,
+"lon": 13.76504756,
+"urban": true
+},
+"E0159": {
+"code": "E0159",
+"name": "TRIESTE strada per Lazzaretto 99 (campeggio San Bartolomeo)",
+"lat": 45.59782126,
+"lon": 13.72334551,
+"urban": true
+},
+"E0155": {
+"code": "E0155",
+"name": "località Farnei 14 (strada provinciale 15 direzione Trieste)",
+"lat": 45.59118147,
+"lon": 13.79475492,
+"urban": true
+},
+"D6063": {
+"code": "D6063",
+"name": "SISTIANA, 55/e (SS14, fronte hotel)",
+"lat": 45.77324036,
+"lon": 13.63077536,
+"urban": true
+},
+"D6015": {
+"code": "D6015",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 76",
+"lat": 45.75438104,
+"lon": 13.69004908,
+"urban": true
+},
+"D7020": {
+"code": "D7020",
+"name": "TRIESTE strada provinciale 6 di Comeno 37 (Campo Sacro)",
+"lat": 45.7158865,
+"lon": 13.72805519,
+"urban": true
+},
+"D7021": {
+"code": "D7021",
+"name": "TRIESTE strada provinciale 6 di Comeno 61 (Gabrovizza)",
+"lat": 45.72631922,
+"lon": 13.72933526,
+"urban": true
+},
+"D6041": {
+"code": "D6041",
+"name": "SISTIANA 45 (SS14, centro)",
+"lat": 45.77161198,
+"lon": 13.63716598,
+"urban": true
+},
+"D6064": {
+"code": "D6064",
+"name": "SISTIANA 43/c (SS14,centro)",
+"lat": 45.77138998,
+"lon": 13.63744298,
+"urban": true
+},
+"E0168": {
+"code": "E0168",
+"name": "TRIESTE ACQUARIO",
+"lat": 45.6060572,
+"lon": 13.72430728,
+"urban": true
+},
+"D7009": {
+"code": "D7009",
+"name": "TRIESTE strada provinciale 1 del Carso 14 (trattoria Ai Pini)",
+"lat": 45.7204111,
+"lon": 13.72054809,
+"urban": true
+},
+"E0044": {
+"code": "E0044",
+"name": "via di Trieste 1 (cantieri navali)",
+"lat": 45.60219074,
+"lon": 13.77578822,
+"urban": true
+},
+"E0041": {
+"code": "E0041",
+"name": "TRIESTE strada delle Saline 40 (Confartigianato)",
+"lat": 45.59783737,
+"lon": 13.78959441,
+"urban": true
+},
+"E0043": {
+"code": "E0043",
+"name": "via di Trieste 8 (vigili del fuoco)",
+"lat": 45.60047497,
+"lon": 13.77736785,
+"urban": true
+},
+"E0040": {
+"code": "E0040",
+"name": "TRIESTE strada provinciale 14 di Muggia (ex raffineria)",
+"lat": 45.60279363,
+"lon": 13.80337686,
+"urban": true
+},
+"D6117": {
+"code": "D6117",
+"name": "TRIESTE strada provinciale 6 di Comeno 12 (Ternova)",
+"lat": 45.76106868,
+"lon": 13.70505373,
+"urban": true
+},
+"D6118": {
+"code": "D6118",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 43/a",
+"lat": 45.767385,
+"lon": 13.689328,
+"urban": true
+},
+"D6901": {
+"code": "D6901",
+"name": "TRIESTE località Aurisina 16 (scuola)",
+"lat": 45.74874642,
+"lon": 13.66240092,
+"urban": true
+},
+"D7001": {
+"code": "D7001",
+"name": "TRIESTE strada provinciale 1 del Carso 8",
+"lat": 45.71836855,
+"lon": 13.72342162,
+"urban": true
+},
+"D6059": {
+"code": "D6059",
+"name": "DUINO 29 (centro, ingresso Castello)",
+"lat": 45.77331214,
+"lon": 13.60451421,
+"urban": true
+},
+"E0030": {
+"code": "E0030",
+"name": "TRIESTE via Darsella 1 (strada provinciale 17, San Floriano)",
+"lat": 45.60215707,
+"lon": 13.73673698,
+"urban": true
+},
+"E0162": {
+"code": "E0162",
+"name": "TRIESTE strada provinciale 15 delle Noghere 48 (Bricocenter)",
+"lat": 45.58798038,
+"lon": 13.80017589,
+"urban": true
+},
+"E0163": {
+"code": "E0163",
+"name": "TRIESTE strada provinciale 15 delle Noghere (Montedoro)",
+"lat": 45.59195442,
+"lon": 13.80705922,
+"urban": true
+},
+"D9027": {
+"code": "D9027",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 161",
+"lat": 45.61782836,
+"lon": 13.83281423,
+"urban": true
+},
+"D7029": {
+"code": "D7029",
+"name": "TRIESTE strada provinciale 28 di Sgonico per Sales 15",
+"lat": 45.7427985,
+"lon": 13.738565,
+"urban": true
+},
+"D7031": {
+"code": "D7031",
+"name": "TRIESTE località Sales 30 (edicola votiva)",
+"lat": 45.74684827,
+"lon": 13.73079227,
+"urban": true
+},
+"D7032": {
+"code": "D7032",
+"name": "TRIESTE località Sales 66",
+"lat": 45.74801003,
+"lon": 13.72842287,
+"urban": true
+},
+"D7033": {
+"code": "D7033",
+"name": "TRIESTE località Sales 54/a",
+"lat": 45.747006,
+"lon": 13.72193083,
+"urban": true
+},
+"E0054": {
+"code": "E0054",
+"name": "TRIESTE strada provinciale 17 di Chiampore 3/a (località Zindis)",
+"lat": 45.60802081,
+"lon": 13.74978834,
+"urban": true
+},
+"D6044": {
+"code": "D6044",
+"name": "DUINO 5/f (SS14 supermercato)",
+"lat": 45.77481345,
+"lon": 13.61294751,
+"urban": true
+},
+"E0047": {
+"code": "E0047",
+"name": "TRIESTE via Vivoda 6",
+"lat": 45.59912536,
+"lon": 13.74833226,
+"urban": true
+},
+"E0051": {
+"code": "E0051",
+"name": "TRIESTE strada provinciale 17 di Chiampore (bivio Fontanella)",
+"lat": 45.60513069,
+"lon": 13.74397291,
+"urban": true
+},
+"E0048": {
+"code": "E0048",
+"name": "TRIESTE strada provinciale 17 di Chiampore 32/a",
+"lat": 45.59857692,
+"lon": 13.74387914,
+"urban": true
+},
+"E0020": {
+"code": "E0020",
+"name": "TRIESTE strada per Lazzaretto (molo T)",
+"lat": 45.60878394,
+"lon": 13.74112803,
+"urban": true
+},
+"E0049": {
+"code": "E0049",
+"name": "TRIESTE strada provinciale 17 di Chiampore 54 (ripetitore)",
+"lat": 45.60083423,
+"lon": 13.74084108,
+"urban": true
+},
+"E0059": {
+"code": "E0059",
+"name": "TRIESTE strada provinciale 15 delle Noghere (Montedoro)",
+"lat": 45.59318865,
+"lon": 13.80673257,
+"urban": true
+},
+"E0022": {
+"code": "E0022",
+"name": "TRIESTE strada per Lazzaretto 7 (marina di porto San Rocco)",
+"lat": 45.6060063,
+"lon": 13.75173125,
+"urban": true
+},
+"E0060": {
+"code": "E0060",
+"name": "TRIESTE via Flavia di Stramare 99",
+"lat": 45.59699561,
+"lon": 13.80453548,
+"urban": true
+},
+"E0061": {
+"code": "E0061",
+"name": "TRIESTE via Flavia di Stramare 12",
+"lat": 45.59819286,
+"lon": 13.80282716,
+"urban": true
+},
+"E0063": {
+"code": "E0063",
+"name": "TRIESTE via Flavia di Stramare (casa cantoniera)",
+"lat": 45.59986359,
+"lon": 13.8007817,
+"urban": true
+},
+"E0064": {
+"code": "E0064",
+"name": "TRIESTE via Flavia di Stramare 12",
+"lat": 45.59801583,
+"lon": 13.80268347,
+"urban": true
+},
+"D6061": {
+"code": "D6061",
+"name": "DUINO (fonte 5/f , SS14, supermercato)",
+"lat": 45.77465281,
+"lon": 13.61293534,
+"urban": true
+},
+"E0024": {
+"code": "E0024",
+"name": "TRIESTE lungomare Venezia (impianto balneare San Rocco)",
+"lat": 45.60678089,
+"lon": 13.76053866,
+"urban": true
+},
+"D6046": {
+"code": "D6046",
+"name": "DUINO 28 (SP 2, centro)",
+"lat": 45.77336397,
+"lon": 13.60479102,
+"urban": true
+},
+"D6045": {
+"code": "D6045",
+"name": "DUINO 10 (sentiero Rilke, direzione Cartiera)",
+"lat": 45.7739203,
+"lon": 13.60830079,
+"urban": true
+},
+"D6047": {
+"code": "D6047",
+"name": "DUINO 76  (angolo strada statale 14, Alice)",
+"lat": 45.77664961,
+"lon": 13.60143123,
+"urban": true
+},
+"E0075": {
+"code": "E0075",
+"name": "TRIESTE strada provinciale 17 di Chiampore 4 (paese)",
+"lat": 45.59801672,
+"lon": 13.74327618,
+"urban": true
+},
+"E0088": {
+"code": "E0088",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 29 (cimitero)",
+"lat": 45.6019071,
+"lon": 13.77409896,
+"urban": true
+},
+"D3055": {
+"code": "D3055",
+"name": "TRIESTE via Carsia 14",
+"lat": 45.68692954,
+"lon": 13.78162135,
+"urban": true
+},
+"D3056": {
+"code": "D3056",
+"name": "TRIESTE via Carsia 6",
+"lat": 45.68591064,
+"lon": 13.78398716,
+"urban": true
+},
+"D6084": {
+"code": "D6084",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 26 (sanatorio)",
+"lat": 45.75154464,
+"lon": 13.68603008,
+"urban": true
+},
+"E0077": {
+"code": "E0077",
+"name": "TRIESTE CEREI",
+"lat": 45.5930497,
+"lon": 13.75988756,
+"urban": true
+},
+"E0083": {
+"code": "E0083",
+"name": "TRIESTE viale XXV Aprile 6/a (angolo via Colarich)",
+"lat": 45.59998802,
+"lon": 13.76765258,
+"urban": true
+},
+"E0085": {
+"code": "E0085",
+"name": "TRIESTE via Forti 38",
+"lat": 45.59687374,
+"lon": 13.76515961,
+"urban": true
+},
+"E0091": {
+"code": "E0091",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 68",
+"lat": 45.5933089,
+"lon": 13.77054248,
+"urban": true
+},
+"E0093": {
+"code": "E0093",
+"name": "TRIESTE SANTA BARBARA",
+"lat": 45.58762634,
+"lon": 13.77739969,
+"urban": true
+},
+"E0094": {
+"code": "E0094",
+"name": "TRIESTE via Colarich 64",
+"lat": 45.58955058,
+"lon": 13.77679382,
+"urban": true
+},
+"E0095": {
+"code": "E0095",
+"name": "TRIESTE via Colarich 93",
+"lat": 45.59155017,
+"lon": 13.77566063,
+"urban": true
+},
+"E0096": {
+"code": "E0096",
+"name": "TRIESTE via Colarich 87/a",
+"lat": 45.59449205,
+"lon": 13.77384656,
+"urban": true
+},
+"E0097": {
+"code": "E0097",
+"name": "TRIESTE via Colarich 67",
+"lat": 45.59566373,
+"lon": 13.77231491,
+"urban": true
+},
+"E0065": {
+"code": "E0065",
+"name": "TRIESTE via Flavia di Stramare 99",
+"lat": 45.59701573,
+"lon": 13.80430747,
+"urban": true
+},
+"E0001": {
+"code": "E0001",
+"name": "TRIESTE MUGGIA",
+"lat": 45.602553,
+"lon": 13.77012897,
+"urban": true
+},
+"E0074": {
+"code": "E0074",
+"name": "TRIESTE strada provinciale 17 di Chiampore 54/a (ripetitore)",
+"lat": 45.60036213,
+"lon": 13.74129081,
+"urban": true
+},
+"E0081": {
+"code": "E0081",
+"name": "TRIESTE via d'Annunzio 48 (scuola media)",
+"lat": 45.59834351,
+"lon": 13.76623328,
+"urban": true
+},
+"E0082": {
+"code": "E0082",
+"name": "TRIESTE via d'Annunzio 6 (scuola elementare)",
+"lat": 45.60148025,
+"lon": 13.76663896,
+"urban": true
+},
+"E0113": {
+"code": "E0113",
+"name": "TRIESTE salita Vecchia Muggia 8 (salita ai Piai)",
+"lat": 45.6051662,
+"lon": 13.76425077,
+"urban": true
+},
+"D6065": {
+"code": "D6065",
+"name": "TRIESTE strada provinciale 1 del Carso 27/f (Sistiana)",
+"lat": 45.76946099,
+"lon": 13.64029063,
+"urban": true
+},
+"D6080": {
+"code": "D6080",
+"name": "TRIESTE strada provinciale 1 del Carso 168 (Aurisina)",
+"lat": 45.7479775,
+"lon": 13.67448845,
+"urban": true
+},
+"D7023": {
+"code": "D7023",
+"name": "TRIESTE strada provinciale 8 di Monrupino 45 (municipio di Sgonico)",
+"lat": 45.73556148,
+"lon": 13.7467096,
+"urban": true
+},
+"D7028": {
+"code": "D7028",
+"name": "TRIESTE strada provinciale 28 di Sgonico per Sales (lato Colludrozza",
+"lat": 45.7406622,
+"lon": 13.74318255,
+"urban": true
+},
+"D7058": {
+"code": "D7058",
+"name": "TRIESTE località borgo Grotta Gigante (ex caserma Dardi)",
+"lat": 45.70300438,
+"lon": 13.76883276,
+"urban": true
+},
+"D7059": {
+"code": "D7059",
+"name": "TRIESTE località borgo Grotta Gigante (ex caserma Dardi)",
+"lat": 45.70333428,
+"lon": 13.76866982,
+"urban": true
+},
+"D7063": {
+"code": "D7063",
+"name": "TRIESTE strada provinciale 29 di borgo Grotta Gigante (campo sportiv",
+"lat": 45.70430174,
+"lon": 13.75371795,
+"urban": true
+},
+"D8006": {
+"code": "D8006",
+"name": "TRIESTE strada provinciale 8 di Monrupino (monumento di Repen)",
+"lat": 45.72230276,
+"lon": 13.79220074,
+"urban": true
+},
+"D8007": {
+"code": "D8007",
+"name": "TRIESTE strada provinciale 8 di Monrupino (bivio Monrupino)",
+"lat": 45.71562437,
+"lon": 13.80850816,
+"urban": true
+},
+"E0006": {
+"code": "E0006",
+"name": "TRIESTE strada per Lazzaretto 7 (marina di porto San Rocco)",
+"lat": 45.60614151,
+"lon": 13.75160941,
+"urban": true
+},
+"E0010": {
+"code": "E0010",
+"name": "TRIESTE strada per Lazzaretto 57",
+"lat": 45.60781407,
+"lon": 13.73071655,
+"urban": true
+},
+"D6004": {
+"code": "D6004",
+"name": "TRIESTE strada provinciale 4 di Malchina 27 (piazza)",
+"lat": 45.78526767,
+"lon": 13.65982766,
+"urban": true
+},
+"D6013": {
+"code": "D6013",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 1/b",
+"lat": 45.76063592,
+"lon": 13.68646324,
+"urban": true
+},
+"D6014": {
+"code": "D6014",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 79",
+"lat": 45.75735246,
+"lon": 13.68858118,
+"urban": true
+},
+"E0015": {
+"code": "E0015",
+"name": "TRIESTE strada per Lazzaretto 91 (base logistica militare)",
+"lat": 45.60030718,
+"lon": 13.72228422,
+"urban": true
+},
+"E0017": {
+"code": "E0017",
+"name": "TRIESTE strada per Lazzaretto (bivio punta Sottile)",
+"lat": 45.60572886,
+"lon": 13.72641157,
+"urban": true
+},
+"D6016": {
+"code": "D6016",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 64 (passaggio livello)",
+"lat": 45.75247253,
+"lon": 13.69080411,
+"urban": true
+},
+"D6031": {
+"code": "D6031",
+"name": "TRIESTE strada provinciale 1 del Carso 65",
+"lat": 45.75841762,
+"lon": 13.65822927,
+"urban": true
+},
+"D6039": {
+"code": "D6039",
+"name": "TRIESTE SP 4 di Malchina 6 (Visogliano)",
+"lat": 45.77496844,
+"lon": 13.640205,
+"urban": true
+},
+"D6051": {
+"code": "D6051",
+"name": "TRIESTE strada provinciale 3 di Sistiana 64 (baia di Sistiana)",
+"lat": 45.77108733,
+"lon": 13.63101322,
+"urban": true
+},
+"E1014": {
+"code": "E1014",
+"name": "TRIESTE via Muggia 4",
+"lat": 45.6068689,
+"lon": 13.82393097,
+"urban": true
+},
+"D6053": {
+"code": "D6053",
+"name": "TRIESTE strada provinciale 3 di Sistiana (Castelreggio)",
+"lat": 45.77108899,
+"lon": 13.63115144,
+"urban": true
+},
+"D6093": {
+"code": "D6093",
+"name": "TRIESTE PREPOTTO",
+"lat": 45.76365145,
+"lon": 13.69473173,
+"urban": true
+},
+"D6094": {
+"code": "D6094",
+"name": "TRIESTE località Prepotto 3",
+"lat": 45.76456953,
+"lon": 13.69315785,
+"urban": true
+},
+"D7002": {
+"code": "D7002",
+"name": "TRIESTE strada provinciale 1 del Carso 13",
+"lat": 45.720807,
+"lon": 13.72013427,
+"urban": true
+},
+"D7003": {
+"code": "D7003",
+"name": "TRIESTE strada provinciale 1 del Carso 15",
+"lat": 45.72249723,
+"lon": 13.71755449,
+"urban": true
+},
+"D7018": {
+"code": "D7018",
+"name": "TRIESTE strada provinciale 8 di Monrupino 19/a (Rupinpiccolo)",
+"lat": 45.72763698,
+"lon": 13.76287715,
+"urban": true
+},
+"D7034": {
+"code": "D7034",
+"name": "TRIESTE strada provinciale 6 di Comeno 24",
+"lat": 45.75206216,
+"lon": 13.71410747,
+"urban": true
+},
+"D7036": {
+"code": "D7036",
+"name": "TRIESTE strada per Samatorza 30",
+"lat": 45.75862247,
+"lon": 13.71279667,
+"urban": true
+},
+"D7050": {
+"code": "D7050",
+"name": "TRIESTE strada provinciale 6 di Comeno 25 (Gabrovizza)",
+"lat": 45.72555855,
+"lon": 13.72851718,
+"urban": true
+},
+"D7056": {
+"code": "D7056",
+"name": "TRIESTE strada provinciale 1 del Carso 8",
+"lat": 45.73096483,
+"lon": 13.70301133,
+"urban": true
+},
+"D8010": {
+"code": "D8010",
+"name": "TRIESTE strada per Fernetti (Monrupino, direzione piazza Oberdan)",
+"lat": 45.71267259,
+"lon": 13.80768342,
+"urban": true
+},
+"D9003": {
+"code": "D9003",
+"name": "TRIESTE strada di Monte d'Oro 345 (località Francovec)",
+"lat": 45.60803464,
+"lon": 13.81961279,
+"urban": true
+},
+"D9026": {
+"code": "D9026",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 219 (via Gardoni)",
+"lat": 45.61580653,
+"lon": 13.8305058,
+"urban": true
+},
+"D9046": {
+"code": "D9046",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 161",
+"lat": 45.61762326,
+"lon": 13.83256195,
+"urban": true
+},
+"D9047": {
+"code": "D9047",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 192 (Log)",
+"lat": 45.61955434,
+"lon": 13.83480186,
+"urban": true
+},
+"E0009": {
+"code": "E0009",
+"name": "TRIESTE strada per Lazzaretto (punta Olmi)",
+"lat": 45.61013409,
+"lon": 13.73375088,
+"urban": true
+},
+"D4037": {
+"code": "D4037",
+"name": "TRIESTE strada provinciale 35 di Opicina 29 (centro commerciale)",
+"lat": 45.70562874,
+"lon": 13.74872002,
+"urban": true
+},
+"D6008": {
+"code": "D6008",
+"name": "TRIESTE strada provinciale 4 di Malchina 17 (Precenico inferiore)",
+"lat": 45.77888496,
+"lon": 13.68060354,
+"urban": true
+},
+"E0055": {
+"code": "E0055",
+"name": "TRIESTE strada provinciale 15 delle Noghere 6",
+"lat": 45.59661931,
+"lon": 13.78508012,
+"urban": true
+},
+"D6079": {
+"code": "D6079",
+"name": "TRIESTE strada provinciale 1 del Carso 151 (Aurisina)",
+"lat": 45.74897979,
+"lon": 13.67321051,
+"urban": true
+},
+"D6088": {
+"code": "D6088",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 79",
+"lat": 45.7574791,
+"lon": 13.68863608,
+"urban": true
+},
+"D6089": {
+"code": "D6089",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 1/b",
+"lat": 45.76074873,
+"lon": 13.68648952,
+"urban": true
+},
+"D6091": {
+"code": "D6091",
+"name": "TRIESTE strada provinciale 5 di San Pelagio (San Pelagio)",
+"lat": 45.76551603,
+"lon": 13.68739359,
+"urban": true
+},
+"D7053": {
+"code": "D7053",
+"name": "TRIESTE località Samatorza 8",
+"lat": 45.75792219,
+"lon": 13.71775691,
+"urban": true
+},
+"D9042": {
+"code": "D9042",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 142 (San Giuseppe)",
+"lat": 45.62637946,
+"lon": 13.84122863,
+"urban": true
+},
+"E0130": {
+"code": "E0130",
+"name": "TRIESTE via dei Meccanici 2/b (angolo via dei Calafati)",
+"lat": 45.59690761,
+"lon": 13.77709234,
+"urban": true
+},
+"E0138": {
+"code": "E0138",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 62/d",
+"lat": 45.59630143,
+"lon": 13.77009568,
+"urban": true
+},
+"E0139": {
+"code": "E0139",
+"name": "TRIESTE via Caduti sul Lavoro 2",
+"lat": 45.59161498,
+"lon": 13.80343498,
+"urban": true
+},
+"D9044": {
+"code": "D9044",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 26 (Log)",
+"lat": 45.62284302,
+"lon": 13.83708349,
+"urban": true
+},
+"D4036": {
+"code": "D4036",
+"name": "TRIESTE DEVINCINA",
+"lat": 45.7070126,
+"lon": 13.74318423,
+"urban": true
+},
+"D4038": {
+"code": "D4038",
+"name": "TRIESTE strada provinciale 35 di Opicina 29 (centro commerciale)",
+"lat": 45.70597092,
+"lon": 13.74791268,
+"urban": true
+},
+"D9058": {
+"code": "D9058",
+"name": "TRIESTE strada per San Lorenzo (ex motel Val Rosandra)",
+"lat": 45.63245272,
+"lon": 13.88553294,
+"urban": true
+},
+"D9059": {
+"code": "D9059",
+"name": "TRIESTE strada provinciale 13 di Caresana (serbatoi)",
+"lat": 45.59603738,
+"lon": 13.8428452,
+"urban": true
+},
+"D9060": {
+"code": "D9060",
+"name": "TRIESTE strada provinciale 13 di Caresana 152 (Ospo)",
+"lat": 45.58441156,
+"lon": 13.83717282,
+"urban": true
+},
+"D9061": {
+"code": "D9061",
+"name": "TRIESTE strada provinciale 13 di Caresana 58 (chiesa di Caresana)",
+"lat": 45.58928699,
+"lon": 13.83759283,
+"urban": true
+},
+"E0005": {
+"code": "E0005",
+"name": "TRIESTE strada per Lazzaretto 3/a",
+"lat": 45.60697155,
+"lon": 13.7559127,
+"urban": true
+},
+"D6106": {
+"code": "D6106",
+"name": "TRIESTE BORGO SAN MAURO",
+"lat": 45.7649598,
+"lon": 13.64173708,
+"urban": true
+},
+"D6108": {
+"code": "D6108",
+"name": "TRIESTE TERNOVA",
+"lat": 45.76435182,
+"lon": 13.70090111,
+"urban": true
+},
+"D6109": {
+"code": "D6109",
+"name": "TRIESTE strada provinciale 4 di Malchina 45/d",
+"lat": 45.76882483,
+"lon": 13.69219034,
+"urban": true
+},
+"D7040": {
+"code": "D7040",
+"name": "TRIESTE strada provinciale 8 di Monrupino (centro sportivo)",
+"lat": 45.73337938,
+"lon": 13.74799552,
+"urban": true
+},
+"D7041": {
+"code": "D7041",
+"name": "TRIESTE strada per Samatorza 62/b (Sales)",
+"lat": 45.7496435,
+"lon": 13.72679154,
+"urban": true
+},
+"D7043": {
+"code": "D7043",
+"name": "TRIESTE località Sales 30 (edicola votiva)",
+"lat": 45.7466973,
+"lon": 13.73097568,
+"urban": true
+},
+"D7045": {
+"code": "D7045",
+"name": "TRIESTE strada provinciale 28 di Sgonico 15",
+"lat": 45.7426079,
+"lon": 13.73882961,
+"urban": true
+},
+"D8015": {
+"code": "D8015",
+"name": "TRIESTE strada provinciale 8 di Monrupino 42 (cava di Col)",
+"lat": 45.7155469,
+"lon": 13.80712213,
+"urban": true
+},
+"D7004": {
+"code": "D7004",
+"name": "TRIESTE strada provinciale 1 del Carso 21",
+"lat": 45.73229991,
+"lon": 13.70049985,
+"urban": true
+},
+"D9002": {
+"code": "D9002",
+"name": "TRIESTE strada provinciale 12 della Rosandra 269 (Domio)",
+"lat": 45.6125388,
+"lon": 13.82608246,
+"urban": true
+},
+"D9024": {
+"code": "D9024",
+"name": "TRIESTE strada provinciale 13 di Caresana 106 (trattoria Tul)",
+"lat": 45.59315779,
+"lon": 13.83670233,
+"urban": true
+},
+"D9029": {
+"code": "D9029",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 19 (Log)",
+"lat": 45.62237485,
+"lon": 13.83688242,
+"urban": true
+},
+"E0013": {
+"code": "E0013",
+"name": "TRIESTE strada per Lazzaretto 91 (base logistica militare)",
+"lat": 45.60007889,
+"lon": 13.72224183,
+"urban": true
+},
+"E0016": {
+"code": "E0016",
+"name": "TRIESTE strada per Lazzaretto (stabilimento balneare, obelisco)",
+"lat": 45.60465504,
+"lon": 13.7193197,
+"urban": true
+},
+"E0023": {
+"code": "E0023",
+"name": "TRIESTE strada per Lazzaretto 1 (marina di porto San Rocco)",
+"lat": 45.60679339,
+"lon": 13.75676953,
+"urban": true
+},
+"E0026": {
+"code": "E0026",
+"name": "TRIESTE via Roma 9/c (angolo via Mazzini)",
+"lat": 45.60302064,
+"lon": 13.76800253,
+"urban": true
+},
+"D7005": {
+"code": "D7005",
+"name": "TRIESTE strada provinciale 1 del Carso 16 (chiosco)",
+"lat": 45.73472777,
+"lon": 13.69594808,
+"urban": true
+},
+"D9032": {
+"code": "D9032",
+"name": "TRIESTE strada provinciale 11 di Prebenico 1 (Sant'Antonio)",
+"lat": 45.62496103,
+"lon": 13.85543579,
+"urban": true
+},
+"E0036": {
+"code": "E0036",
+"name": "TRIESTE strada provinciale 14 di Muggia (ex raffineria)",
+"lat": 45.6027253,
+"lon": 13.80372774,
+"urban": true
+},
+"D7046": {
+"code": "D7046",
+"name": "TRIESTE strada provinciale 28 di Sgonico (lato Colludrozza)",
+"lat": 45.74065108,
+"lon": 13.74298998,
+"urban": true
+},
+"D7007": {
+"code": "D7007",
+"name": "TRIESTE strada provinciale 1 del Carso 24",
+"lat": 45.73192731,
+"lon": 13.70097761,
+"urban": true
+},
+"D7008": {
+"code": "D7008",
+"name": "TRIESTE strada provinciale 1 del Carso 15",
+"lat": 45.72218157,
+"lon": 13.71789904,
+"urban": true
+},
+"D7015": {
+"code": "D7015",
+"name": "TRIESTE strada provinciale di borgo Grotta Gigante (campo sportivo)",
+"lat": 45.70453763,
+"lon": 13.75388934,
+"urban": true
+},
+"D9035": {
+"code": "D9035",
+"name": "TRIESTE località San Giuseppe della Chiusa 167 (Barde)",
+"lat": 45.624998,
+"lon": 13.84569244,
+"urban": true
+},
+"D7048": {
+"code": "D7048",
+"name": "TRIESTE strada provinciale 7 di Gabrovizza 43 (Sgonico)",
+"lat": 45.7356916,
+"lon": 13.74626324,
+"urban": true
+},
+"D9039": {
+"code": "D9039",
+"name": "TRIESTE strada provinciale 11 di Prebenico (Sant'Antonio 1)",
+"lat": 45.62507686,
+"lon": 13.85531798,
+"urban": true
+},
+"D9051": {
+"code": "D9051",
+"name": "TRIESTE località San Lorenzo",
+"lat": 45.62796257,
+"lon": 13.87169299,
+"urban": true
+},
+"D9052": {
+"code": "D9052",
+"name": "TRIESTE strada provinciale 22 di Draga 36",
+"lat": 45.62031995,
+"lon": 13.88911634,
+"urban": true
+},
+"D6012": {
+"code": "D6012",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 2",
+"lat": 45.76224628,
+"lon": 13.68600429,
+"urban": true
+},
+"D6040": {
+"code": "D6040",
+"name": "TRIESTE SP 4 di Malchina 11/b (Visogliano)",
+"lat": 45.77358923,
+"lon": 13.6422997,
+"urban": true
+},
+"D7049": {
+"code": "D7049",
+"name": "TRIESTE strada provinciale 7 di Gabrovizza 72",
+"lat": 45.7295289,
+"lon": 13.73549895,
+"urban": true
+},
+"D6050": {
+"code": "D6050",
+"name": "TRIESTE strada provinciale 3 di Sistiana 56/b (infopoint)",
+"lat": 45.77238379,
+"lon": 13.62766632,
+"urban": true
+},
+"D7051": {
+"code": "D7051",
+"name": "TRIESTE strada provinciale 6 di Comeno 1 (Campo Sacro)",
+"lat": 45.71520511,
+"lon": 13.72789077,
+"urban": true
+},
+"D9053": {
+"code": "D9053",
+"name": "TRIESTE strada per San Lorenzo (ex motel Val Rosandra)",
+"lat": 45.63213407,
+"lon": 13.88605655,
+"urban": true
+},
+"D7016": {
+"code": "D7016",
+"name": "strada provinciale 8 di Monrupino (direzione Trieste)",
+"lat": 45.71239123,
+"lon": 13.7713718,
+"urban": true
+},
+"D7035": {
+"code": "D7035",
+"name": "TRIESTE strada per Samatorza 27",
+"lat": 45.75659538,
+"lon": 13.71103026,
+"urban": true
+},
+"D7052": {
+"code": "D7052",
+"name": "TRIESTE strada provinciale 6 di Comeno 40",
+"lat": 45.75460813,
+"lon": 13.71199857,
+"urban": true
+},
+"D7054": {
+"code": "D7054",
+"name": "TRIESTE strada provinciale 7 di Gabrovizza 48 (Carsiana)",
+"lat": 45.73248086,
+"lon": 13.73995048,
+"urban": true
+},
+"D8001": {
+"code": "D8001",
+"name": "TRIESTE strada provinciale 9 del Vipacco 51 (Monrupino)",
+"lat": 45.71088356,
+"lon": 13.80617425,
+"urban": true
+},
+"D7037": {
+"code": "D7037",
+"name": "TRIESTE SAMATORZA",
+"lat": 45.76148011,
+"lon": 13.71478524,
+"urban": true
+},
+"D9054": {
+"code": "D9054",
+"name": "TRIESTE strada provinciale 21 di Grozzana 2 (Pesek)",
+"lat": 45.62812708,
+"lon": 13.89776119,
+"urban": true
+},
+"D8008": {
+"code": "D8008",
+"name": "TRIESTE strada regionale 58 della Carniola 20 (campeggio europa)",
+"lat": 45.69740697,
+"lon": 13.82811691,
+"urban": true
+},
+"D6054": {
+"code": "D6054",
+"name": "TRIESTE strada provinciale 3 di Sistiana 56/e (infopoint)",
+"lat": 45.77249984,
+"lon": 13.62833551,
+"urban": true
+},
+"E0011": {
+"code": "E0011",
+"name": "TRIESTE strada per Lazzaretto (bivio punta Sottile)",
+"lat": 45.60571203,
+"lon": 13.72331565,
+"urban": true
+},
+"D6066": {
+"code": "D6066",
+"name": "TRIESTE strada provinciale 1 del Carso 25/a (Sistiana)",
+"lat": 45.76824523,
+"lon": 13.64212715,
+"urban": true
+},
+"D7039": {
+"code": "D7039",
+"name": "TRIESTE strada provinciale 8 di Monrupino (centro sportivo)",
+"lat": 45.73324497,
+"lon": 13.74804993,
+"urban": true
+},
+"D9034": {
+"code": "D9034",
+"name": "TRIESTE strada provinciale 11 di Prebenico 62 (Moccò)",
+"lat": 45.62262267,
+"lon": 13.86102813,
+"urban": true
+},
+"D9041": {
+"code": "D9041",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 55 (San Giuseppe)",
+"lat": 45.62618573,
+"lon": 13.84032181,
+"urban": true
+},
+"E0021": {
+"code": "E0021",
+"name": "TRIESTE strada per Lazzaretto 31 (marina di porto San Rocco)",
+"lat": 45.60869224,
+"lon": 13.74995664,
+"urban": true
+},
+"E0028": {
+"code": "E0028",
+"name": "TRIESTE via Darsella di San Bartolomeo 18",
+"lat": 45.60011104,
+"lon": 13.73080121,
+"urban": true
+},
+"E0029": {
+"code": "E0029",
+"name": "TRIESTE via Darsella di San Bartolomeo 18",
+"lat": 45.60013874,
+"lon": 13.7312686,
+"urban": true
+},
+"E0045": {
+"code": "E0045",
+"name": "TRIESTE via Battisti 17",
+"lat": 45.60403571,
+"lon": 13.77157407,
+"urban": true
+},
+"D9020": {
+"code": "D9020",
+"name": "TRIESTE strada provinciale 12 della Rosandra (Mattonaia 542)",
+"lat": 45.6048876,
+"lon": 13.83616352,
+"urban": true
+},
+"E1002": {
+"code": "E1002",
+"name": "TRIESTE via Ressel 6 (zona industriale)",
+"lat": 45.60844631,
+"lon": 13.82243514,
+"urban": true
+},
+"E1003": {
+"code": "E1003",
+"name": "TRIESTE via Ressel 5 (zona industriale)",
+"lat": 45.60972957,
+"lon": 13.82424221,
+"urban": true
+},
+"E1005": {
+"code": "E1005",
+"name": "TRIESTE via Muggia 19",
+"lat": 45.60770012,
+"lon": 13.82195167,
+"urban": true
+},
+"E1006": {
+"code": "E1006",
+"name": "TRIESTE via Ressel 1 (zona industriale)",
+"lat": 45.61105637,
+"lon": 13.82591059,
+"urban": true
+},
+"E1007": {
+"code": "E1007",
+"name": "TRIESTE via Ressel 6 (zona industriale)",
+"lat": 45.60813367,
+"lon": 13.82179405,
+"urban": true
+},
+"E1008": {
+"code": "E1008",
+"name": "TRIESTE via Travnik 21 (zona industriale)",
+"lat": 45.60698717,
+"lon": 13.82671364,
+"urban": true
+},
+"E1009": {
+"code": "E1009",
+"name": "TRIESTE via Travnik 3 (zona industriale, terza trasversale est)",
+"lat": 45.60872705,
+"lon": 13.82916852,
+"urban": true
+},
+"E1010": {
+"code": "E1010",
+"name": "TRIESTE strada provinciale 12 della Rosandra 137 (via Travnik)",
+"lat": 45.6093495,
+"lon": 13.83094303,
+"urban": true
+},
+"D6075": {
+"code": "D6075",
+"name": "TRIESTE strada provinciale 1 del Carso 85 (scuola di Aurisina)",
+"lat": 45.75305468,
+"lon": 13.66913241,
+"urban": true
+},
+"D9019": {
+"code": "D9019",
+"name": "TRIESTE strada provinciale 12 della Rosandra 355 (località Dolina)",
+"lat": 45.6049052,
+"lon": 13.84811114,
+"urban": true
+},
+"D9075": {
+"code": "D9075",
+"name": "TRIESTE strada provinciale 13 di Caresana 103",
+"lat": 45.58818735,
+"lon": 13.83896646,
+"urban": true
+},
+"E0073": {
+"code": "E0073",
+"name": "TRIESTE strada provinciale 17 di Chiampore (San Floriano)",
+"lat": 45.60177136,
+"lon": 13.7376721,
+"urban": true
+},
+"E0070": {
+"code": "E0070",
+"name": "TRIESTE strada provinciale 17 di Chiampore 16 (località Zindis)",
+"lat": 45.60798182,
+"lon": 13.7474616,
+"urban": true
+},
+"E0072": {
+"code": "E0072",
+"name": "TRIESTE strada provinciale 17 di Chiampore 46/b (Fontanella)",
+"lat": 45.60523639,
+"lon": 13.74376216,
+"urban": true
+},
+"D6111": {
+"code": "D6111",
+"name": "TRIESTE SLIVIA",
+"lat": 45.76981358,
+"lon": 13.66599797,
+"urban": true
+},
+"D6112": {
+"code": "D6112",
+"name": "TRIESTE strada provinciale 31 di Slivia 30/a",
+"lat": 45.76986198,
+"lon": 13.66590357,
+"urban": true
+},
+"D9033": {
+"code": "D9033",
+"name": "TRIESTE strada provinciale 11 di Prebenico  137 (Sant'Antonio)",
+"lat": 45.62381852,
+"lon": 13.85774562,
+"urban": true
+},
+"D6067": {
+"code": "D6067",
+"name": "TRIESTE strada provinciale 1 del Carso (bivio borgo San Mauro)",
+"lat": 45.76614479,
+"lon": 13.64526425,
+"urban": true
+},
+"D7061": {
+"code": "D7061",
+"name": "TRIESTE strada provinciale 6 di Comeno 18 (bivio Bristie)",
+"lat": 45.75052445,
+"lon": 13.71623525,
+"urban": true
+},
+"D9063": {
+"code": "D9063",
+"name": "TRIESTE strada provinciale 12 della Rosandra (Mattonaia 396)",
+"lat": 45.60682292,
+"lon": 13.83352663,
+"urban": true
+},
+"E0033": {
+"code": "E0033",
+"name": "via di Trieste 8 (vigili del fuoco)",
+"lat": 45.60030017,
+"lon": 13.77743576,
+"urban": true
+},
+"E0034": {
+"code": "E0034",
+"name": "via di Trieste 15 (molo Balota)",
+"lat": 45.59779314,
+"lon": 13.78289108,
+"urban": true
+},
+"E0071": {
+"code": "E0071",
+"name": "TRIESTE strada provinciale 17 di Chiampore 42/b (località Zindis)",
+"lat": 45.60605022,
+"lon": 13.74653264,
+"urban": true
+},
+"D7030": {
+"code": "D7030",
+"name": "TRIESTE località Sales 109",
+"lat": 45.74537969,
+"lon": 13.73349955,
+"urban": true
+},
+"D9062": {
+"code": "D9062",
+"name": "TRIESTE strada provinciale 13 di Caresana (Caresana, piazza)",
+"lat": 45.59058888,
+"lon": 13.83831447,
+"urban": true
+},
+"E1012": {
+"code": "E1012",
+"name": "TRIESTE via Travnik 18/4 (zona industriale)",
+"lat": 45.60691231,
+"lon": 13.82643628,
+"urban": true
+},
+"E1013": {
+"code": "E1013",
+"name": "TRIESTE via Muggia 15 (angolo via Travnik)",
+"lat": 45.60677993,
+"lon": 13.8240666,
+"urban": true
+},
+"E0152": {
+"code": "E0152",
+"name": "TRIESTE via Flavia di Stramare (angolo SP 14 di Muggia)",
+"lat": 45.60232817,
+"lon": 13.79847875,
+"urban": true
+},
+"E0153": {
+"code": "E0153",
+"name": "TRIESTE strada provinciale 15 delle Noghere 1",
+"lat": 45.59511427,
+"lon": 13.7887174,
+"urban": true
+},
+"D6083": {
+"code": "D6083",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 8",
+"lat": 45.74936697,
+"lon": 13.68333951,
+"urban": true
+},
+"E0133": {
+"code": "E0133",
+"name": "TRIESTE via dei Meccanici 3 (cabina elettrica)",
+"lat": 45.59719282,
+"lon": 13.77766954,
+"urban": true
+},
+"D9072": {
+"code": "D9072",
+"name": "TRIESTE località Dolina 462 (municipio di Dolina)",
+"lat": 45.60758131,
+"lon": 13.85645301,
+"urban": true
+},
+"D6082": {
+"code": "D6082",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 181/a",
+"lat": 45.74772125,
+"lon": 13.6787853,
+"urban": true
+},
+"D9070": {
+"code": "D9070",
+"name": "TRIESTE strada provinciale 11 di Prebenico (bivio San Giuseppe)",
+"lat": 45.62476094,
+"lon": 13.8480669,
+"urban": true
+},
+"E0132": {
+"code": "E0132",
+"name": "TRIESTE piazzale Primo Maggio",
+"lat": 45.59816651,
+"lon": 13.77865813,
+"urban": true
+},
+"D6021": {
+"code": "D6021",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 173/a (scuola)",
+"lat": 45.74786018,
+"lon": 13.6760147,
+"urban": true
+},
+"D7010": {
+"code": "D7010",
+"name": "TRIESTE strada provinciale 1 del Carso 9",
+"lat": 45.7179897,
+"lon": 13.72375148,
+"urban": true
+},
+"E0053": {
+"code": "E0053",
+"name": "TRIESTE strada provinciale 17 di Chiampore 21 (località Zindis)",
+"lat": 45.60750315,
+"lon": 13.74649441,
+"urban": true
+},
+"D7011": {
+"code": "D7011",
+"name": "TRIESTE BORGO GROTTA GIGANTE (PIAZZA)",
+"lat": 45.70618259,
+"lon": 13.76612464,
+"urban": true
+},
+"D7013": {
+"code": "D7013",
+"name": "TRIESTE strada provinciale 6 di Comeno 1 (Gabrovizza)",
+"lat": 45.72752967,
+"lon": 13.72972549,
+"urban": true
+},
+"D7014": {
+"code": "D7014",
+"name": "TRIESTE località borgo Grotta Gigante 34 (piazza)",
+"lat": 45.70621573,
+"lon": 13.76573612,
+"urban": true
+},
+"D7042": {
+"code": "D7042",
+"name": "TRIESTE SALES",
+"lat": 45.74788716,
+"lon": 13.72870528,
+"urban": true
+},
+"D9073": {
+"code": "D9073",
+"name": "TRIESTE località Dolina 480 (scuola dell'infanzia)",
+"lat": 45.60354017,
+"lon": 13.85603501,
+"urban": true
+},
+"E0052": {
+"code": "E0052",
+"name": "TRIESTE strada provinciale 17 di Chiampore 27/c (località Zindis)",
+"lat": 45.6064638,
+"lon": 13.74610838,
+"urban": true
+},
+"D8021": {
+"code": "D8021",
+"name": "TRIESTE località Fernetti 3/A (casa di riposo)",
+"lat": 45.69848908,
+"lon": 13.83152337,
+"urban": true
+},
+"D9049": {
+"code": "D9049",
+"name": "TRIESTE strada provinciale 13 di Caresana 80 (confine, Ospo)",
+"lat": 45.58319041,
+"lon": 13.83835172,
+"urban": true
+},
+"E0007": {
+"code": "E0007",
+"name": "TRIESTE strada per Lazzaretto 31",
+"lat": 45.6088455,
+"lon": 13.74988027,
+"urban": true
+},
+"E0058": {
+"code": "E0058",
+"name": "TRIESTE via Flavia di Stramare 131 (ponte)",
+"lat": 45.58922941,
+"lon": 13.80512664,
+"urban": true
+},
+"E0076": {
+"code": "E0076",
+"name": "TRIESTE via Vivoda 7",
+"lat": 45.59907779,
+"lon": 13.74933025,
+"urban": true
+},
+"D7012": {
+"code": "D7012",
+"name": "TRIESTE strada per Samatorza 77",
+"lat": 45.75315649,
+"lon": 13.72299903,
+"urban": true
+},
+"D7062": {
+"code": "D7062",
+"name": "TRIESTE strada provinciale 8 di Monrupino 45 (municipio di Sgonico)",
+"lat": 45.73553263,
+"lon": 13.74695125,
+"urban": true
+},
+"E0119": {
+"code": "E0119",
+"name": "TRIESTE salita Vecchia Muggia 45",
+"lat": 45.60051086,
+"lon": 13.75527334,
+"urban": true
+},
+"E1004": {
+"code": "E1004",
+"name": "TRIESTE via Ressel 1 (zona industriale)",
+"lat": 45.61123624,
+"lon": 13.82633327,
+"urban": true
+},
+"D6020": {
+"code": "D6020",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 181/a",
+"lat": 45.74781402,
+"lon": 13.67824636,
+"urban": true
+},
+"D7027": {
+"code": "D7027",
+"name": "TRIESTE strada provinciale 28 di Sgonico per Sales 60 (cimitero)",
+"lat": 45.73757112,
+"lon": 13.74775401,
+"urban": true
+},
+"D7047": {
+"code": "D7047",
+"name": "TRIESTE strada provinciale 28 di Sgonico 60 (cimitero Sgonico)",
+"lat": 45.73758626,
+"lon": 13.74749338,
+"urban": true
+},
+"D9008": {
+"code": "D9008",
+"name": "TRIESTE strada provinciale 11 di Prebenico 266 (teatro sloveno)",
+"lat": 45.61249023,
+"lon": 13.85769027,
+"urban": true
+},
+"D6023": {
+"code": "D6023",
+"name": "TRIESTE strada provinciale 1 del Carso 142 (Aurisina)",
+"lat": 45.7498217,
+"lon": 13.67215757,
+"urban": true
+},
+"D6103": {
+"code": "D6103",
+"name": "TRIESTE località Aurisina 40 (stazione ferroviaria)",
+"lat": 45.75341843,
+"lon": 13.68734579,
+"urban": true
+},
+"D6038": {
+"code": "D6038",
+"name": "TRIESTE SP 4 di Malchina 6/l (Visogliano)",
+"lat": 45.77599438,
+"lon": 13.64019293,
+"urban": true
+},
+"D9014": {
+"code": "D9014",
+"name": "TRIESTE località Dolina 230 (piazza)",
+"lat": 45.60099162,
+"lon": 13.85815768,
+"urban": true
+},
+"D6001": {
+"code": "D6001",
+"name": "TRIESTE CEROGLIE",
+"lat": 45.7876361,
+"lon": 13.64429415,
+"urban": true
+},
+"D6069": {
+"code": "D6069",
+"name": "TRIESTE strada provinciale 1 del Carso 55",
+"lat": 45.76103677,
+"lon": 13.65286883,
+"urban": true
+},
+"E0105": {
+"code": "E0105",
+"name": "TRIESTE via di Zaule 1 (angolo via Flavia di Aquilinia)",
+"lat": 45.60425508,
+"lon": 13.80670232,
+"urban": true
+},
+"E0109": {
+"code": "E0109",
+"name": "TRIESTE via di Noghere 3 (via di monte San Giovanni)",
+"lat": 45.60067375,
+"lon": 13.80508246,
+"urban": true
+},
+"D6068": {
+"code": "D6068",
+"name": "TRIESTE strada provinciale 1 del Carso 23/a",
+"lat": 45.76440608,
+"lon": 13.64779156,
+"urban": true
+},
+"D8005": {
+"code": "D8005",
+"name": "TRIESTE strada provinciale 8 di Monrupino 86 (casa della cultura)",
+"lat": 45.72155783,
+"lon": 13.7953876,
+"urban": true
+},
+"D6095": {
+"code": "D6095",
+"name": "TRIESTE località Prepotto 10/c (centro)",
+"lat": 45.76357832,
+"lon": 13.69474292,
+"urban": true
+},
+"D9012": {
+"code": "D9012",
+"name": "TRIESTE località Dolina 200 (angolo SP 12 della Rosandra)",
+"lat": 45.60292499,
+"lon": 13.85527493,
+"urban": true
+},
+"D6070": {
+"code": "D6070",
+"name": "TRIESTE strada provinciale 1 del Carso 65",
+"lat": 45.75783647,
+"lon": 13.65856145,
+"urban": true
+},
+"D9013": {
+"code": "D9013",
+"name": "TRIESTE strada provinciale 11 della Rosandra 216 (Dolina)",
+"lat": 45.60236838,
+"lon": 13.85586969,
+"urban": true
+},
+"D9021": {
+"code": "D9021",
+"name": "TRIESTE strada provinciale 11 di Prebenico 96 (Prebeneg)",
+"lat": 45.58963558,
+"lon": 13.84849292,
+"urban": true
+},
+"D6002": {
+"code": "D6002",
+"name": "TRIESTE località Ceroglie 3 (angolo SP 4 per Sistiana)",
+"lat": 45.78512366,
+"lon": 13.64343201,
+"urban": true
+},
+"E0056": {
+"code": "E0056",
+"name": "TRIESTE ALTO ADRIATICO",
+"lat": 45.60187645,
+"lon": 13.77505967,
+"urban": true
+},
+"D7901": {
+"code": "D7901",
+"name": "TRIESTE strada provinciale 6 di Comeno 83 (Baita)",
+"lat": 45.74666815,
+"lon": 13.72233903,
+"urban": true
+},
+"E0078": {
+"code": "E0078",
+"name": "TRIESTE via di Crevatini 25 (carabinieri)",
+"lat": 45.59441752,
+"lon": 13.76193126,
+"urban": true
+},
+"D8003": {
+"code": "D8003",
+"name": "TRIESTE strada provinciale 8 di Monrupino 50 (cimitero di Col)",
+"lat": 45.71670121,
+"lon": 13.80474978,
+"urban": true
+},
+"E0164": {
+"code": "E0164",
+"name": "TRIESTE strada per Lazzaretto 47(Acquario)",
+"lat": 45.60599556,
+"lon": 13.72782999,
+"urban": true
+},
+"D9015": {
+"code": "D9015",
+"name": "TRIESTE DOLINA",
+"lat": 45.60070717,
+"lon": 13.85941686,
+"urban": true
+},
+"D9017": {
+"code": "D9017",
+"name": "TRIESTE strada provinciale 11 di Prebenico (Dolina, lavatoio)",
+"lat": 45.59968448,
+"lon": 13.86066213,
+"urban": true
+},
+"D9018": {
+"code": "D9018",
+"name": "TRIESTE strada provinciale 11 di Prebenico 220",
+"lat": 45.60733403,
+"lon": 13.85872791,
+"urban": true
+},
+"D9028": {
+"code": "D9028",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 204 (Log)",
+"lat": 45.62063592,
+"lon": 13.83582808,
+"urban": true
+},
+"D9031": {
+"code": "D9031",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 1 (cimitero)",
+"lat": 45.62700905,
+"lon": 13.84162618,
+"urban": true
+},
+"D6042": {
+"code": "D6042",
+"name": "SISTIANA, 54/f (SS14, hotel)",
+"lat": 45.77333825,
+"lon": 13.63050809,
+"urban": true
+},
+"D4046": {
+"code": "D4046",
+"name": "TRIESTE DEVINCINA",
+"lat": 45.70692318,
+"lon": 13.74323762,
+"urban": true
+},
+"D6011": {
+"code": "D6011",
+"name": "TRIESTE strada provinciale 5 di San Pelagio (San Pelagio)",
+"lat": 45.76549224,
+"lon": 13.68728162,
+"urban": true
+},
+"D6097": {
+"code": "D6097",
+"name": "TRIESTE strada provinciale 4 di Malchina 17 (Precenico inferiore)",
+"lat": 45.77903428,
+"lon": 13.6810631,
+"urban": true
+},
+"D7022": {
+"code": "D7022",
+"name": "TRIESTE strada provinciale 7 di Gabrovizza 72",
+"lat": 45.72981091,
+"lon": 13.73658181,
+"urban": true
+},
+"D6104": {
+"code": "D6104",
+"name": "TRIESTE strada provinciale 1 del Carso 1/h",
+"lat": 45.74601799,
+"lon": 13.67704816,
+"urban": true
+},
+"D7006": {
+"code": "D7006",
+"name": "TRIESTE strada provinciale 1 del Carso 16 (chiosco)",
+"lat": 45.73443518,
+"lon": 13.69633728,
+"urban": true
+},
+"D8011": {
+"code": "D8011",
+"name": "TRIESTE strada provinciale 8 di Monrupino 95 (girasoli)",
+"lat": 45.72018886,
+"lon": 13.79829862,
+"urban": true
+},
+"D9043": {
+"code": "D9043",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 144 (scuola)",
+"lat": 45.62460872,
+"lon": 13.83969689,
+"urban": true
+},
+"E0019": {
+"code": "E0019",
+"name": "TRIESTE strada per Lazzaretto (punta Olmi, lato mare)",
+"lat": 45.61026719,
+"lon": 13.73437335,
+"urban": true
+},
+"E0062": {
+"code": "E0062",
+"name": "TRIESTE via Flavia di Stramare 31 (casa cantoniera)",
+"lat": 45.60010269,
+"lon": 13.80040796,
+"urban": true
+},
+"D9004": {
+"code": "D9004",
+"name": "TRIESTE strada provinciale 12 della Rosandra 306 (Mattonaia)",
+"lat": 45.60550033,
+"lon": 13.83490374,
+"urban": true
+},
+"D9005": {
+"code": "D9005",
+"name": "TRIESTE strada provinciale 12 della Rosandra 355 (rotatoria)",
+"lat": 45.60493624,
+"lon": 13.84851124,
+"urban": true
+},
+"D9030": {
+"code": "D9030",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe176 (scuola)",
+"lat": 45.62470066,
+"lon": 13.83988741,
+"urban": true
+},
+"E0008": {
+"code": "E0008",
+"name": "TRIESTE strada per Lazzaretto (molo T)",
+"lat": 45.60940918,
+"lon": 13.73984158,
+"urban": true
+},
+"E0032": {
+"code": "E0032",
+"name": "via di Trieste 1 (canteri San Rocco)",
+"lat": 45.60173871,
+"lon": 13.77602285,
+"urban": true
+},
+"E0042": {
+"code": "E0042",
+"name": "via di Trieste 15 (molo Balota)",
+"lat": 45.59792649,
+"lon": 13.78273433,
+"urban": true
+},
+"E1011": {
+"code": "E1011",
+"name": "TRIESTE via Travnik 12 (zona industriale)",
+"lat": 45.60859226,
+"lon": 13.82875132,
+"urban": true
+},
+"D6086": {
+"code": "D6086",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 63 (passaggio livello)",
+"lat": 45.75246526,
+"lon": 13.69095535,
+"urban": true
+},
+"D6087": {
+"code": "D6087",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 76",
+"lat": 45.75469872,
+"lon": 13.68988735,
+"urban": true
+},
+"D6092": {
+"code": "D6092",
+"name": "TRIESTE località Prepotto 3",
+"lat": 45.76457238,
+"lon": 13.69301311,
+"urban": true
+},
+"D9011": {
+"code": "D9011",
+"name": "TRIESTE località Dolina 462 (municipio di Dolina)",
+"lat": 45.60764845,
+"lon": 13.85641638,
+"urban": true
+},
+"D6085": {
+"code": "D6085",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 54 (passaggio livello)",
+"lat": 45.75158107,
+"lon": 13.68825162,
+"urban": true
+},
+"D7026": {
+"code": "D7026",
+"name": "TRIESTE strada provinciale 28 di Monrupino 45 (municipio di Sgonico)",
+"lat": 45.73580361,
+"lon": 13.74703837,
+"urban": true
+},
+"E0003": {
+"code": "E0003",
+"name": "TRIESTE lungomare Venezia (chiosco)",
+"lat": 45.606531,
+"lon": 13.76265358,
+"urban": true
+},
+"E0120": {
+"code": "E0120",
+"name": "TRIESTE salita Vecchia Muggia 27",
+"lat": 45.60235031,
+"lon": 13.75722383,
+"urban": true
+},
+"D6110": {
+"code": "D6110",
+"name": "TRIESTE strada provinciale 4 di Malchina 45/d",
+"lat": 45.76862169,
+"lon": 13.69252948,
+"urban": true
+},
+"D6100": {
+"code": "D6100",
+"name": "TRIESTE località Ceroglie 3 (angolo SP per Sistiana)",
+"lat": 45.78525581,
+"lon": 13.64357032,
+"urban": true
+},
+"D6101": {
+"code": "D6101",
+"name": "TRIESTE località Ceroglie 18/a",
+"lat": 45.7884439,
+"lon": 13.64334502,
+"urban": true
+},
+"D6102": {
+"code": "D6102",
+"name": "TRIESTE strada provinciale 1 del Carso 1/f",
+"lat": 45.74628162,
+"lon": 13.67688444,
+"urban": true
+},
+"D6113": {
+"code": "D6113",
+"name": "TRIESTE località Aurisina Cave 62/d",
+"lat": 45.76057266,
+"lon": 13.6616271,
+"urban": true
+},
+"D9036": {
+"code": "D9036",
+"name": "TRIESTE strada provinciale 11 di Prebenico (Bagnoli)",
+"lat": 45.61461303,
+"lon": 13.85799667,
+"urban": true
+},
+"D9038": {
+"code": "D9038",
+"name": "TRIESTE strada provinciale 11 di Prebenico (Sant'Antonio 137)",
+"lat": 45.62398041,
+"lon": 13.85773271,
+"urban": true
+},
+"E0166": {
+"code": "E0166",
+"name": "TRIESTE via del Canneto 2 (Zudek)",
+"lat": 45.58724377,
+"lon": 13.81072846,
+"urban": true
+},
+"E0165": {
+"code": "E0165",
+"name": "TRIESTE via dei Laghetti 1",
+"lat": 45.58705891,
+"lon": 13.80458654,
+"urban": true
+},
+"D6028": {
+"code": "D6028",
+"name": "TRIESTE località Aurisina Cave 82",
+"lat": 45.75458646,
+"lon": 13.6611852,
+"urban": true
+},
+"D6033": {
+"code": "D6033",
+"name": "TRIESTE strada provinciale 1 del Carso 23/e",
+"lat": 45.76486034,
+"lon": 13.64738835,
+"urban": true
+},
+"D6096": {
+"code": "D6096",
+"name": "TRIESTE strada provinciale 4 di Malchina 4 (Precenico superiore)",
+"lat": 45.7760788,
+"lon": 13.68468614,
+"urban": true
+},
+"E0087": {
+"code": "E0087",
+"name": "TRIESTE via di Crevatini 22 (carabinieri)",
+"lat": 45.59428308,
+"lon": 13.76156882,
+"urban": true
+},
+"E0089": {
+"code": "E0089",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 42",
+"lat": 45.59919437,
+"lon": 13.77419971,
+"urban": true
+},
+"D6026": {
+"code": "D6026",
+"name": "TRIESTE strada provinciale 1 del Carso 85 (scuola di Aurisina)",
+"lat": 45.75323686,
+"lon": 13.668932,
+"urban": true
+},
+"E0086": {
+"code": "E0086",
+"name": "TRIESTE via di Crevatini 12",
+"lat": 45.59540494,
+"lon": 13.76292885,
+"urban": true
+},
+"E0131": {
+"code": "E0131",
+"name": "TRIESTE via Frausin 13 (angolo via Giacomo Matteotti)",
+"lat": 45.60354503,
+"lon": 13.77239906,
+"urban": true
+},
+"E0116": {
+"code": "E0116",
+"name": "TRIESTE salita Vecchia Muggia 24",
+"lat": 45.60392406,
+"lon": 13.75957743,
+"urban": true
+},
+"D6030": {
+"code": "D6030",
+"name": "TRIESTE località Aurisina Cave 28 (bivio stazione ferroviaria)",
+"lat": 45.75485673,
+"lon": 13.65813783,
+"urban": true
+},
+"D6034": {
+"code": "D6034",
+"name": "TRIESTE strada provinciale 1 del Carso (bivio borgo San Mauro)",
+"lat": 45.7662395,
+"lon": 13.64528125,
+"urban": true
+},
+"E0117": {
+"code": "E0117",
+"name": "TRIESTE salita Vecchia Muggia 42",
+"lat": 45.60253088,
+"lon": 13.75727434,
+"urban": true
+},
+"E0118": {
+"code": "E0118",
+"name": "TRIESTE salita Vecchia Muggia 62",
+"lat": 45.60054944,
+"lon": 13.75509657,
+"urban": true
+},
+"D6114": {
+"code": "D6114",
+"name": "TRIESTE località Aurisina Cave 62/d",
+"lat": 45.76056959,
+"lon": 13.66174934,
+"urban": true
+},
+"D9055": {
+"code": "D9055",
+"name": "TRIESTE GROZZANA",
+"lat": 45.63394282,
+"lon": 13.90866714,
+"urban": true
+},
+"E0123": {
+"code": "E0123",
+"name": "TRIESTE borgo San Cristoforo 24",
+"lat": 45.60591246,
+"lon": 13.7615754,
+"urban": true
+},
+"D6025": {
+"code": "D6025",
+"name": "TRIESTE strada provinciale 1 del Carso 125 (Aurisina)",
+"lat": 45.75193772,
+"lon": 13.66944464,
+"urban": true
+},
+"D6076": {
+"code": "D6076",
+"name": "TRIESTE strada provinciale 1 del Carso 129 (Aurisina)",
+"lat": 45.75148803,
+"lon": 13.6690889,
+"urban": true
+},
+"D6077": {
+"code": "D6077",
+"name": "TRIESTE strada provinciale 1 del Carso 139 (Aurisina)",
+"lat": 45.75015827,
+"lon": 13.6708369,
+"urban": true
+},
+"D6081": {
+"code": "D6081",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 173 (scuola)",
+"lat": 45.74778425,
+"lon": 13.6756758,
+"urban": true
+},
+"D6058": {
+"code": "D6058",
+"name": "DUINO 72/I (angolo strada statale 14, Alice)",
+"lat": 45.77646288,
+"lon": 13.60147923,
+"urban": true
+},
+"D9040": {
+"code": "D9040",
+"name": "TRIESTE località Dolina 270 (centro sportivo)",
+"lat": 45.60499469,
+"lon": 13.85612086,
+"urban": true
+},
+"D9056": {
+"code": "D9056",
+"name": "TRIESTE strada provinciale 21 di Grozzana 2 (Pesek)",
+"lat": 45.62805708,
+"lon": 13.89750278,
+"urban": true
+},
+"E0115": {
+"code": "E0115",
+"name": "TRIESTE salita Vecchia Muggia 20 (borgo San Pietro)",
+"lat": 45.60436931,
+"lon": 13.76120862,
+"urban": true
+},
+"D6074": {
+"code": "D6074",
+"name": "TRIESTE strada provinciale 1 del Carso 79/l (Aurisina Cave)",
+"lat": 45.75417978,
+"lon": 13.66412006,
+"urban": true
+},
+"D6073": {
+"code": "D6073",
+"name": "TRIESTE località Aurisina Cave 78",
+"lat": 45.75453503,
+"lon": 13.66140501,
+"urban": true
+},
+"E1015": {
+"code": "E1015",
+"name": "TRIESTE via Muggia 19",
+"lat": 45.60765679,
+"lon": 13.82186196,
+"urban": true
+},
+"D7024": {
+"code": "D7024",
+"name": "TRIESTE strada provinciale 8 di Monrupino 67 (Rupinpiccolo, loggia)",
+"lat": 45.72550641,
+"lon": 13.76312016,
+"urban": true
+},
+"D8002": {
+"code": "D8002",
+"name": "TRIESTE località Monrupino 78 (chiosco)",
+"lat": 45.71725063,
+"lon": 13.8108222,
+"urban": true
+},
+"D9010": {
+"code": "D9010",
+"name": "TRIESTE strada provinciale 11 di Prebenico 373 (teatro sloveno)",
+"lat": 45.6123214,
+"lon": 13.85745964,
+"urban": true
+},
+"D9045": {
+"code": "D9045",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe 174 (Log)",
+"lat": 45.61998954,
+"lon": 13.83511031,
+"urban": true
+},
+"D9050": {
+"code": "D9050",
+"name": "TRIESTE strada provinciale 20 di San Giuseppe (cavalcavia Log)",
+"lat": 45.62381047,
+"lon": 13.83854261,
+"urban": true
+},
+"E0039": {
+"code": "E0039",
+"name": "TRIESTE via Flavia di Aquilinia (ex raffineria)",
+"lat": 45.60449524,
+"lon": 13.80642794,
+"urban": true
+},
+"E0080": {
+"code": "E0080",
+"name": "TRIESTE via di Crevatini 3/a",
+"lat": 45.59660522,
+"lon": 13.76446672,
+"urban": true
+},
+"D6032": {
+"code": "D6032",
+"name": "TRIESTE strada provinciale 1 del Carso 55",
+"lat": 45.76130928,
+"lon": 13.65269831,
+"urban": true
+},
+"D6022": {
+"code": "D6022",
+"name": "TRIESTE strada provinciale 1 del Carso 167 (pizzeria, Aurisina)",
+"lat": 45.74814802,
+"lon": 13.67444584,
+"urban": true
+},
+"D6035": {
+"code": "D6035",
+"name": "TRIESTE strada provinciale 1 del Carso 25/a (Sistiana)",
+"lat": 45.76858364,
+"lon": 13.64182313,
+"urban": true
+},
+"D6052": {
+"code": "D6052",
+"name": "TRIESTE SISTIANA MARE",
+"lat": 45.76935683,
+"lon": 13.63307156,
+"urban": true
+},
+"D8009": {
+"code": "D8009",
+"name": "TRIESTE località Fernetti (confine di Stato)",
+"lat": 45.69880089,
+"lon": 13.83160408,
+"urban": true
+},
+"D6090": {
+"code": "D6090",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 47/a",
+"lat": 45.76242393,
+"lon": 13.6861898,
+"urban": true
+},
+"D9071": {
+"code": "D9071",
+"name": "TRIESTE strada provinciale 11 di Prebenico (bivio San Giuseppe)",
+"lat": 45.62471829,
+"lon": 13.84830029,
+"urban": true
+},
+"D7055": {
+"code": "D7055",
+"name": "TRIESTE strada provinciale 7 di Gabrovizza 55 (Carsiana)",
+"lat": 45.73237454,
+"lon": 13.73969581,
+"urban": true
+},
+"E0027": {
+"code": "E0027",
+"name": "TRIESTE via Darsella 1 (strada provinciale 17, San Floriano)",
+"lat": 45.60226792,
+"lon": 13.73658703,
+"urban": true
+},
+"E0037": {
+"code": "E0037",
+"name": "TRIESTE AQUILINIA",
+"lat": 45.60525042,
+"lon": 13.80759306,
+"urban": true
+},
+"E0057": {
+"code": "E0057",
+"name": "TRIESTE via di Noghere 96",
+"lat": 45.59834874,
+"lon": 13.80525042,
+"urban": true
+},
+"E0167": {
+"code": "E0167",
+"name": "TRIESTE VIA DEL CANNETO 14 (ARGUS)",
+"lat": 45.58784158,
+"lon": 13.80735192,
+"urban": true
+},
+"D7019": {
+"code": "D7019",
+"name": "TRIESTE strada provinciale 8 di Monrupino (direzione Opicina)",
+"lat": 45.71270414,
+"lon": 13.771593,
+"urban": true
+},
+"D8017": {
+"code": "D8017",
+"name": "TRIESTE strada per Fernetti (Monrupino, direzione Opicina)",
+"lat": 45.71260162,
+"lon": 13.80779188,
+"urban": true
+},
+"D8019": {
+"code": "D8019",
+"name": "TRIESTE strada provinciale 8 di Monrupino 103 (Repen)",
+"lat": 45.7225156,
+"lon": 13.7889257,
+"urban": true
+},
+"E0046": {
+"code": "E0046",
+"name": "TRIESTE MUGGIA VECCHIA",
+"lat": 45.59977698,
+"lon": 13.75194652,
+"urban": true
+},
+"D8012": {
+"code": "D8012",
+"name": "TRIESTE strada provinciale 8 di Monrupino (monumento Repen)",
+"lat": 45.72214967,
+"lon": 13.79304574,
+"urban": true
+},
+"D8016": {
+"code": "D8016",
+"name": "TRIESTE strada provinciale 9 del Vipacco 53 (Monrupino)",
+"lat": 45.71072397,
+"lon": 13.8059753,
+"urban": true
+},
+"D8018": {
+"code": "D8018",
+"name": "TRIESTE località Fernetti (confine di Stato)",
+"lat": 45.69876441,
+"lon": 13.8314668,
+"urban": true
+},
+"D7060": {
+"code": "D7060",
+"name": "TRIESTE strada provinciale 8 di Monrupino 42 (Rupinpiccolo)",
+"lat": 45.72890119,
+"lon": 13.75827715,
+"urban": true
+},
+"E0031": {
+"code": "E0031",
+"name": "TRIESTE via Battisti 14",
+"lat": 45.60396797,
+"lon": 13.77238983,
+"urban": true
+},
+"E0050": {
+"code": "E0050",
+"name": "TRIESTE strada provinciale 17 di Chiampore (San Floriano)",
+"lat": 45.60191315,
+"lon": 13.73747016,
+"urban": true
+},
+"D6043": {
+"code": "D6043",
+"name": "SISTIANA 59 (SS14, campeggio)",
+"lat": 45.77314518,
+"lon": 13.62347785,
+"urban": true
+},
+"D6062": {
+"code": "D6062",
+"name": "SISTIANA 60 (SS14, campeggio)",
+"lat": 45.77289365,
+"lon": 13.62455001,
+"urban": true
+},
+"D6003": {
+"code": "D6003",
+"name": "TRIESTE strada provinciale 4 di Malchina 7",
+"lat": 45.78535145,
+"lon": 13.65776405,
+"urban": true
+},
+"D6098": {
+"code": "D6098",
+"name": "TRIESTE strada provinciale 4 di Malchina 26 (piazza)",
+"lat": 45.78554771,
+"lon": 13.65991422,
+"urban": true
+},
+"D6017": {
+"code": "D6017",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 54 (passaggio livello)",
+"lat": 45.75165606,
+"lon": 13.68824986,
+"urban": true
+},
+"D6099": {
+"code": "D6099",
+"name": "TRIESTE strada provinciale 4 di Malchina 7",
+"lat": 45.78542904,
+"lon": 13.65747273,
+"urban": true
+},
+"D7057": {
+"code": "D7057",
+"name": "TRIESTE strada provinciale 1 del Carso 8",
+"lat": 45.73093158,
+"lon": 13.70285787,
+"urban": true
+},
+"D8014": {
+"code": "D8014",
+"name": "TRIESTE strada provinciale 8 di Monrupino 40 (Col)",
+"lat": 45.7178913,
+"lon": 13.80150241,
+"urban": true
+},
+"D6019": {
+"code": "D6019",
+"name": "TRIESTE strada provinciale 5 di San Pelagio 10/b",
+"lat": 45.75007699,
+"lon": 13.68402993,
+"urban": true
+},
+"00101": {
+"code": "00101",
+"name": "deposito marittimo Trieste",
+"lat": 45.65899948,
+"lon": 13.7654992,
+"urban": true
+},
+"D4023": {
+"code": "D4023",
+"name": "TRIESTE strada provinciale 1 del Carso 16 (Campo Sacro)",
+"lat": 45.7160033,
+"lon": 13.72642072,
+"urban": true
+},
+"E0018": {
+"code": "E0018",
+"name": "TRIESTE strada per Lazzaretto 53",
+"lat": 45.60836096,
+"lon": 13.73145328,
+"urban": true
+},
+"D6036": {
+"code": "D6036",
+"name": "TRIESTE strada provinciale 1 del Carso 29/a (Sistiana)",
+"lat": 45.76980382,
+"lon": 13.63998006,
+"urban": true
+},
+"D7017": {
+"code": "D7017",
+"name": "TRIESTE strada provinciale 8 di Monrupino 17/a (Rupinpiccolo)",
+"lat": 45.72719542,
+"lon": 13.76282906,
+"urban": true
+},
+"D7038": {
+"code": "D7038",
+"name": "TRIESTE località Samatorza 16",
+"lat": 45.76066869,
+"lon": 13.71626662,
+"urban": true
+},
+"D8004": {
+"code": "D8004",
+"name": "TRIESTE strada provinciale 8 di Monrupino 40 (municipio di Col)",
+"lat": 45.71791538,
+"lon": 13.80165288,
+"urban": true
+},
+"D8013": {
+"code": "D8013",
+"name": "TRIESTE strada provinciale 8 di Monrupino 87",
+"lat": 45.72167018,
+"lon": 13.79494506,
+"urban": true
+},
+"D6009": {
+"code": "D6009",
+"name": "TRIESTE PRECENICO",
+"lat": 45.77586539,
+"lon": 13.68491304,
+"urban": true
+},
+"D9037": {
+"code": "D9037",
+"name": "TRIESTE strada provinciale 11 di Prebenico 62 (Moccò)",
+"lat": 45.62270069,
+"lon": 13.86118048,
+"urban": true
+},
+"D9066": {
+"code": "D9066",
+"name": "TRIESTE strada provinciale 11 di Prebenico 154/a (Chiusa)",
+"lat": 45.62829479,
+"lon": 13.84326424,
+"urban": true
+},
+"E0004": {
+"code": "E0004",
+"name": "TRIESTE lungomare Venezia (impianto balneare San Rocco)",
+"lat": 45.60687844,
+"lon": 13.75935161,
+"urban": true
+},
+"E0012": {
+"code": "E0012",
+"name": "TRIESTE strada per Lazzaretto (stabilimento balneare, obelisco)",
+"lat": 45.60445874,
+"lon": 13.71924877,
+"urban": true
+},
+"E0014": {
+"code": "E0014",
+"name": "TRIESTE LAZZARETTO",
+"lat": 45.59521327,
+"lon": 13.72429318,
+"urban": true
+},
+"E0025": {
+"code": "E0025",
+"name": "TRIESTE lungomare Venezia 1/b (incrocio borgo San Cristoforo)",
+"lat": 45.60600953,
+"lon": 13.76430474,
+"urban": true
+},
+"E0035": {
+"code": "E0035",
+"name": "TRIESTE via Colarich 72",
+"lat": 45.59303111,
+"lon": 13.77526624,
+"urban": true
+},
+"E0066": {
+"code": "E0066",
+"name": "TRIESTE strada delle Saline 30 (Confartigianato)",
+"lat": 45.5977265,
+"lon": 13.78974906,
+"urban": true
+},
+"E0084": {
+"code": "E0084",
+"name": "TRIESTE viale XXV Aprile 16/a (via dei Mulini)",
+"lat": 45.59840377,
+"lon": 13.76722888,
+"urban": true
+},
+"D6072": {
+"code": "D6072",
+"name": "TRIESTE AURISINA MUNICIPIO",
+"lat": 45.75408977,
+"lon": 13.65969587,
+"urban": true
+},
+"E0079": {
+"code": "E0079",
+"name": "TRIESTE via di Crevatini 17",
+"lat": 45.59552581,
+"lon": 13.7632852,
+"urban": true
+},
+"D6027": {
+"code": "D6027",
+"name": "TRIESTE strada provinciale 1 del Carso 82/m (stazione carabinieri)",
+"lat": 45.75423245,
+"lon": 13.6640063,
+"urban": true
+},
+"D6060": {
+"code": "D6060",
+"name": "DUINO (fronte civico 10, sentiero Rilke)",
+"lat": 45.77399508,
+"lon": 13.60862378,
+"urban": true
+},
+"D7025": {
+"code": "D7025",
+"name": "TRIESTE strada provinciale 8 di Monrupino 11 (Rupinpiccolo)",
+"lat": 45.72628867,
+"lon": 13.76304507,
+"urban": true
+},
+"D9009": {
+"code": "D9009",
+"name": "TRIESTE BAGNOLI",
+"lat": 45.61409524,
+"lon": 13.85842402,
+"urban": true
+},
+"D9016": {
+"code": "D9016",
+"name": "TRIESTE Dolina (cimitero di Dolina)",
+"lat": 45.59967281,
+"lon": 13.85859155,
+"urban": true
+},
+"E0090": {
+"code": "E0090",
+"name": "TRIESTE via di Santa Barbara, stradello A 1/b",
+"lat": 45.59803769,
+"lon": 13.77209965,
+"urban": true
+},
+"D6029": {
+"code": "D6029",
+"name": "TRIESTE località Aurisina Cave 24/b (municipio)",
+"lat": 45.75418324,
+"lon": 13.65920903,
+"urban": true
+},
+"D6071": {
+"code": "D6071",
+"name": "TRIESTE località Aurisina Cave 28 (stazione ferroviaria)",
+"lat": 45.75472792,
+"lon": 13.65789983,
+"urban": true
+},
+"E0038": {
+"code": "E0038",
+"name": "TRIESTE VIA FLAVIA DI AQUILINIA 12",
+"lat": 45.60592661,
+"lon": 13.80774087,
+"urban": true
+},
+"E0098": {
+"code": "E0098",
+"name": "TRIESTE via di Santa Barbara, stradello A 1/b",
+"lat": 45.59794907,
+"lon": 13.7722298,
+"urban": true
+},
+"E0099": {
+"code": "E0099",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 29/a",
+"lat": 45.59925081,
+"lon": 13.77442608,
+"urban": true
+},
+"E0100": {
+"code": "E0100",
+"name": "TRIESTE via di Santa Barbara, stradello A 20/a",
+"lat": 45.59710196,
+"lon": 13.775489,
+"urban": true
+},
+"E0125": {
+"code": "E0125",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 29 (cimitero)",
+"lat": 45.60211396,
+"lon": 13.77408444,
+"urban": true
+},
+"E0126": {
+"code": "E0126",
+"name": "TRIESTE via Frausin 10 (angolo via Giacomo Matteotti)",
+"lat": 45.60349321,
+"lon": 13.77176544,
+"urban": true
+},
+"E0127": {
+"code": "E0127",
+"name": "TRIESTE via di Santa Barbara, stradello A 20/a",
+"lat": 45.59731986,
+"lon": 13.77524385,
+"urban": true
+},
+"E0128": {
+"code": "E0128",
+"name": "TRIESTE via dei Fonditori (cavalcavia, direzione Aquilinia)",
+"lat": 45.59999065,
+"lon": 13.77668917,
+"urban": true
+},
+"E0129": {
+"code": "E0129",
+"name": "TRIESTE via dei Fonditori (cavalcavia, direzione Muggia)",
+"lat": 45.60030262,
+"lon": 13.77640349,
+"urban": true
+},
+"E0134": {
+"code": "E0134",
+"name": "TRIESTE strada per Lazzaretto (punta Sottile)",
+"lat": 45.60556186,
+"lon": 13.72063415,
+"urban": true
+},
+"E0135": {
+"code": "E0135",
+"name": "TRIESTE strada per Lazzaretto (punta Sottile)",
+"lat": 45.60536767,
+"lon": 13.72097595,
+"urban": true
+},
+"E0136": {
+"code": "E0136",
+"name": "TRIESTE via Roma 9 (museo d'arte moderna Carà)",
+"lat": 45.603108,
+"lon": 13.76775698,
+"urban": true
+},
+"E0137": {
+"code": "E0137",
+"name": "TRIESTE strada di San Clemente (raccordo di Rabuiese, confine)",
+"lat": 45.59239957,
+"lon": 13.8010036,
+"urban": true
+},
+"E0140": {
+"code": "E0140",
+"name": "TRIESTE via Caduti sul Lavoro 10 (angolo via Flavia di Stramare)",
+"lat": 45.59050625,
+"lon": 13.80586275,
+"urban": true
+},
+"E0144": {
+"code": "E0144",
+"name": "TRIESTE via di Noghere 94",
+"lat": 45.59855982,
+"lon": 13.80520748,
+"urban": true
+},
+"E0101": {
+"code": "E0101",
+"name": "TRIESTE strada provinciale 13 di Caresana 2 (località Noghere)",
+"lat": 45.59098332,
+"lon": 13.80888106,
+"urban": true
+},
+"E0102": {
+"code": "E0102",
+"name": "TRIESTE strada provinciale 13 di Caresana 7 (località Noghere)",
+"lat": 45.58936472,
+"lon": 13.81292437,
+"urban": true
+},
+"E0106": {
+"code": "E0106",
+"name": "TRIESTE via di Zaule 89 (scuola)",
+"lat": 45.60230749,
+"lon": 13.80594859,
+"urban": true
+},
+"E0145": {
+"code": "E0145",
+"name": "TRIESTE MUGGIA",
+"lat": 45.60254919,
+"lon": 13.77019317,
+"urban": true
+},
+"E0146": {
+"code": "E0146",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 55",
+"lat": 45.59797032,
+"lon": 13.77169402,
+"urban": true
+},
+"E0147": {
+"code": "E0147",
+"name": "TRIESTE strada provinciale 16 di Santa Barbara 55",
+"lat": 45.59776695,
+"lon": 13.77161512,
+"urban": true
+},
+"E0107": {
+"code": "E0107",
+"name": "TRIESTE via di Noghere 8 (via di monte San Giovanni)",
+"lat": 45.60009415,
+"lon": 13.80517491,
+"urban": true
+},
+"E0108": {
+"code": "E0108",
+"name": "TRIESTE via di Noghere 156 (angolo via Flavia di Stramare)",
+"lat": 45.59747244,
+"lon": 13.80470101,
+"urban": true
+},
+"E0110": {
+"code": "E0110",
+"name": "TRIESTE via di Zaule 89 (scuola)",
+"lat": 45.6022546,
+"lon": 13.8060555,
+"urban": true
+},
+"E0114": {
+"code": "E0114",
+"name": "TRIESTE salita Vecchia Muggia 16 (borgo San Cristoforo)",
+"lat": 45.60520166,
+"lon": 13.76241587,
+"urban": true
+},
+"E0121": {
+"code": "E0121",
+"name": "TRIESTE salita Vecchia Muggia 15",
+"lat": 45.6040819,
+"lon": 13.76043593,
+"urban": true
+},
+"E0122": {
+"code": "E0122",
+"name": "TRIESTE borgo San Cristoforo 72",
+"lat": 45.6056442,
+"lon": 13.76173839,
+"urban": true
+},
+"E0124": {
+"code": "E0124",
+"name": "TRIESTE borgo San Cristoforo 1",
+"lat": 45.6063857,
+"lon": 13.76163872,
+"urban": true
+},
+"G010505": {
+"code": "G010505",
+"name": "BIGLIETTERIA AUTOSTAZIONE",
+"lat": 45.657196,
+"lon": 13.771011,
+"urban": true
+},
+"G090012": {
+"code": "G090012",
+"name": "EMETTITRICIE DUINO CENTRO (castello)",
+"lat": 45.771978,
+"lon": 13.603703,
+"urban": true
+},
+"G090007": {
+"code": "G090007",
+"name": "EMETTITRICE TRIESTE",
+"lat": 45.657198,
+"lon": 13.771012,
+"urban": true
 }
 }

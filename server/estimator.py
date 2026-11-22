@@ -1,6 +1,11 @@
 """Per-trip state along the route: s(t) = s0 + v*(t - t_now), least squares
-over a short window of GPS fixes projected onto the route shape."""
+over a short window of GPS fixes projected onto the route shape, and ETAs from
+learned travel times between stops (History) where there are enough of them."""
+import collections
+import json
 import math
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 WINDOW_S = 150      # fit window
 MAX_FIXES = 8
@@ -10,12 +15,77 @@ OFFROUTE_M = 80     # fixes further than this from the shape are not used in the
 STOP_AFTER_S = 90   # still listed, same position this long (~4 GPS batches) -> stopped
 DWELL_S = 20        # assumed stand at every stop the bus passes while dead-reckoning
 MAX_V = 13.9        # m/s, cap on the stop-corrected speed (50 km/h), never below the fitted one
+ARRIVE_M = 20       # a bus is "at" a stop this far before it: arrival times are taken here
+HIST_MIN_N = 3      # timed runs of a stretch before its history is used
+HIST_ALPHA = 0.15   # weight of a new run once a bucket has enough
+HIST_MAX_GAP_S = 240  # fixes further apart than this don't time a stretch
+HIST_V = (0.8, 20.0)  # m/s, plausible average over a stretch (else: an incident, or bad GPS)
+LIVE_FACTOR = (0.75, 1.5)  # how far this bus's own pace may scale the history
+LOCAL_TZ = ZoneInfo("Europe/Rome")
+
+
+class History:
+    """Learned travel times between consecutive stops: from arriving at one to arriving
+    at the next, so the stand at the first is included. Keyed by the two stop codes,
+    so lines and variants sharing a stretch learn it together. Each stretch keeps a
+    moving average per day type and hour, per hour, and overall; the narrowest one
+    with HIST_MIN_N runs answers."""
+
+    def __init__(self, path):
+        self.path = path
+        try:
+            self.d = json.loads(path.read_text()) if path.exists() else {}
+        except (OSError, ValueError):
+            self.d = {}
+        self.dirty = False
+
+    @staticmethod
+    def buckets(t):
+        lt = datetime.fromtimestamp(t, LOCAL_TZ)
+        day = "wd" if lt.weekday() < 5 else ("sa" if lt.weekday() == 5 else "su")
+        return f"{day}{lt.hour:02d}", f"h{lt.hour:02d}", "all"
+
+    def add(self, a, b, secs, t):
+        seg = self.d.setdefault(f"{a}>{b}", {})
+        for k in self.buckets(t):
+            m, n = seg.get(k, (secs, 0))
+            if n >= HIST_MIN_N:  # a known stretch: don't let one odd run swing it
+                secs_k = min(max(secs, 0.4 * m), 3 * m)
+            else:
+                secs_k = secs
+            n = min(n + 1, 10000)
+            m += (secs_k - m) * max(1 / n, HIST_ALPHA)
+            seg[k] = (round(m, 1), n)
+        self.dirty = True
+
+    def get(self, a, b, t):
+        seg = self.d.get(f"{a}>{b}")
+        if not seg:
+            return None
+        for k in self.buckets(t):
+            m, n = seg.get(k, (None, 0))
+            if n >= HIST_MIN_N:
+                return m
+        return None
+
+    def save(self):
+        if self.dirty:
+            self.path.write_text(json.dumps(self.d, separators=(",", ":")))
+            self.dirty = False
+
+    def summary(self):
+        n = [seg.get("all", (0, 0))[1] for seg in self.d.values()]
+        return {"stretches": len(n), "usable": sum(1 for x in n if x >= HIST_MIN_N), "runs": sum(n)}
 
 
 class Track:
-    def __init__(self, trip, variant):
+    def __init__(self, trip, variant, history=None):
         self.trip = trip
         self.variant = variant
+        self.history = history
+        self.arrivals = {}       # stop index -> time the bus reached it (interpolated)
+        self.new_arrivals = []   # (stop index, time) since the tracker last took them
+        self.pace = collections.deque(maxlen=4)  # (seconds taken, history's) per stretch just driven
         self.fixes = []        # (t, s, perp, lat, lon)
         self.last_report = None  # last time the API reported this trip, moved or not
         self.layover = False     # set by the tracker: trip over at the terminus, bus waiting there
@@ -34,9 +104,91 @@ class Track:
         hint = self.predict(t)[0] if self.fixes else None
         perp, s = self.variant.shape.project(lat, lon, hint)
         self.fixes.append((t, s, perp, lat, lon))
+        if len(self.fixes) > 1:
+            self._time_stops(self.fixes[-2], self.fixes[-1])
         self.fixes = [f for f in self.fixes if t - f[0] <= WINDOW_S][-MAX_FIXES:]
         self.last_report = t
         return True
+
+    def _time_stops(self, f1, f2):
+        """Arrival times at the stops passed between two fixes, interpolated, and from
+        them the time taken over each stretch both ends of which it was seen reaching.
+        The stretch out of the first stop isn't learned: it holds the terminus wait."""
+        (t1, s1, p1), (t2, s2, p2) = f1[:3], f2[:3]
+        if s2 <= s1 or t2 - t1 > HIST_MAX_GAP_S or max(p1, p2) > OFFROUTE_M:
+            return
+        stops = self.variant.stops
+        for i, st in enumerate(stops):
+            x = st["s"] - ARRIVE_M
+            if not s1 < x <= s2 or i in self.arrivals:
+                continue
+            ta = t1 + (x - s1) / (s2 - s1) * (t2 - t1)
+            self.arrivals[i] = ta
+            self.new_arrivals.append((i, ta))
+            j, prev = i - 1, stops[i - 1] if i else None
+            if self.history is None or j < 1 or j not in self.arrivals or not (prev["code"] and st["code"]):
+                continue
+            secs = ta - self.arrivals[j]
+            if secs <= 0 or not HIST_V[0] <= (st["s"] - prev["s"]) / secs <= HIST_V[1]:
+                continue
+            h = self.history.get(prev["code"], st["code"], self.arrivals[j])
+            if h:
+                self.pace.append((secs, h))
+            self.history.add(prev["code"], st["code"], secs, self.arrivals[j])
+
+    def live_factor(self):
+        """How this bus has driven its last stretches against their history (1: as usual)."""
+        if not self.pace:
+            return 1.0
+        f = sum(a for a, _ in self.pace) / sum(h for _, h in self.pace)
+        return min(max(f, LIVE_FACTOR[0]), LIVE_FACTOR[1])
+
+    def _hist(self, i, t):
+        """History's time for the stretch from stop i to stop i+1 at time t, or None."""
+        if self.history is None or i < 1:
+            return None
+        a, b = self.variant.stops[i]["code"], self.variant.stops[i + 1]["code"]
+        return self.history.get(a, b, t) if a and b else None
+
+    def eta(self, s_from, s_to, v, now):
+        """(seconds from s_from to s_to, "history" or "speed"). Whole stretches ahead
+        take their learned time, scaled by this bus's pace on its last stretches;
+        the rest of the stretch it is on, and stretches with no history, go at v
+        with a stand at each stop (as time_to). The time of day for each stretch is
+        when the bus should get there, so a trip into the rush hour slows down."""
+        base = self.time_to(s_from, s_to, v)
+        if self.history is None:
+            return base, "speed"
+        stops = self.variant.stops
+        moving = v is not None and v > 0.5
+        k = next((i for i, st in enumerate(stops) if st["s"] > s_from + 1), None)
+        if k is None or stops[k]["s"] > s_to + 1:
+            return base, "speed"  # on the last stretch before s_to
+        f = self.live_factor()
+        used = False
+        left = stops[k]["s"] - s_from
+        if moving:
+            total = left / v
+        else:  # no usable speed (one fix, or crawling): the share of the stretch left
+            h = self._hist(k - 1, now) if k >= 1 else None
+            if not h:
+                return base, "speed"
+            seg = max(stops[k]["s"] - stops[k - 1]["s"], 1.0)
+            total, used = h * f * min(1.0, left / seg), True
+        i = k
+        while i + 1 < len(stops) and stops[i + 1]["s"] <= s_to + 1:
+            h = self._hist(i, now + total)
+            if h:
+                total += h * f
+                used = True
+            elif moving:
+                total += (stops[i + 1]["s"] - stops[i]["s"]) / v + DWELL_S
+            else:
+                return base, "speed"
+            i += 1
+        if s_to > stops[i]["s"] + 1:  # past the last stop (the end of the shape)
+            total += DWELL_S + ((s_to - stops[i]["s"]) / v if moving else 0.0)
+        return total, "history" if used else "speed"
 
     def stopped_for(self, now):
         """Seconds the bus has stood still, or None if it is moving (or we can't tell yet)."""
@@ -120,7 +272,7 @@ class Track:
         lat, lon = self.variant.shape.at(s)
         nxt = self.variant.next_stop(s)
         eta = None
-        if nxt and (e := self.time_to(s, nxt["s"], v)) is not None:
+        if nxt and self.stopped_for(now) is None and (e := self.eta(s, nxt["s"], v, now)[0]) is not None:
             eta = round(e)
         last = self.fixes[-1]
         stopped = self.stopped_for(now)
