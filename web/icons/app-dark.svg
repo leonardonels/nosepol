@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E5FA8"/><stop offset="1" stop-color="#0B2F66"/>
+    </linearGradient>
+    <linearGradient id="tileRim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".55"/><stop offset=".35" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset=".7" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".3"/>
+    </linearGradient>
+    <linearGradient id="glass" x1=".15" y1="0" x2=".85" y2="1">
+      <stop offset="0" stop-color="#C9D2E3" stop-opacity="0.9"/><stop offset="1" stop-color="#C9D2E3" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="rim" x1=".1" y1="0" x2=".9" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".95"/><stop offset=".4" stop-color="#FFFFFF" stop-opacity=".15"/>
+      <stop offset=".75" stop-color="#FFFFFF" stop-opacity=".1"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".65"/>
+    </linearGradient>
+    <clipPath id="tileClip"><rect width="1024" height="1024" rx="230"/></clipPath>
+    <clipPath id="inDisc"><path d="M320 685 A150 150 0 1 0 620 685 A150 150 0 1 0 320 685 Z"/></clipPath>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1424" height="1424"><feGaussianBlur stdDeviation="24"/></filter>
+    <filter id="lift" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1424" height="1424"><feGaussianBlur stdDeviation="10"/></filter>
+    <filter id="refract" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1424" height="1424"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="drop" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1424" height="1424"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <g clip-path="url(#tileClip)">
+    <rect width="1024" height="1024" fill="url(#sea)"/>
+    <path d="M180 190 q 40 -26 80 0 t 80 0" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="16" stroke-linecap="round"/><path d="M300 250 q 40 -26 80 0 t 80 0" fill="none" stroke="#FFFFFF" stroke-opacity="0.34" stroke-width="16" stroke-linecap="round"/>
+    <path d="M-40 300 C 180 330 300 420 400 520 S 620 760 1064 820 L1064 1064 L-40 1064 Z" fill="#1D2430"/>
+    <path d="M-40 300 C 180 330 300 420 400 520 S 620 760 1064 820" fill="none" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="8"/>
+    <!-- solid pieces: the route and the heading wedge, a soft shadow under each, glowing in dark mode -->
+    <path d="M-20 420 C 170 440 290 520 390 620 S 600 850 1044 905" fill="none" stroke="#FF8A4C" stroke-opacity=".5" stroke-width="110" filter="url(#soft)"/><path d="M692.5 803.3 L589.0 827.6 L644.5 777.8 L654.7 703.9 Z" fill="#FF8A4C" fill-opacity=".5" filter="url(#soft)"/>
+    <path d="M-20 420 C 170 440 290 520 390 620 S 600 850 1044 905" fill="none" stroke="#000000" stroke-opacity="0.36" stroke-width="70" stroke-linecap="round" transform="translate(0 14)" filter="url(#lift)"/>
+    <path d="M-20 420 C 170 440 290 520 390 620 S 600 850 1044 905" fill="none" stroke="#FF8A4C" stroke-width="70" stroke-linecap="round"/>
+    <path d="M692.5 803.3 L589.0 827.6 L644.5 777.8 L654.7 703.9 Z" fill="#000000" fill-opacity="0.36" transform="translate(0 14)" filter="url(#lift)"/>
+    <path d="M692.5 803.3 L589.0 827.6 L644.5 777.8 L654.7 703.9 Z" fill="#FF8A4C" stroke="#FF8A4C" stroke-width="8" stroke-linejoin="round"/>
+    <!-- the glass bus: its shadow, the shore and route seen through it (blurred, magnified a touch), the glass, its rim -->
+    <path d="M320 685 A150 150 0 1 0 620 685 A150 150 0 1 0 320 685 Z" fill="#000000" fill-opacity="0.6" transform="translate(0 28)" filter="url(#drop)"/>
+    <g clip-path="url(#inDisc)">
+      <rect width="1024" height="1024" fill="url(#sea)"/>
+      <g filter="url(#refract)" transform="translate(470 685) scale(1.12) translate(-470 -685)"><path d="M-40 300 C 180 330 300 420 400 520 S 620 760 1064 820 L1064 1064 L-40 1064 Z" fill="#1D2430"/><path d="M-20 420 C 170 440 290 520 390 620 S 600 850 1044 905" fill="none" stroke="#FF8A4C" stroke-width="70" stroke-linecap="round"/></g>
+    </g>
+    <path d="M320 685 A150 150 0 1 0 620 685 A150 150 0 1 0 320 685 Z" fill="url(#glass)"/>
+    <path d="M320 685 A150 150 0 1 0 620 685 A150 150 0 1 0 320 685 Z" fill="none" stroke="url(#rim)" stroke-width="7"/>
+    <ellipse cx="418" cy="615" rx="70" ry="28" fill="#FFFFFF" fill-opacity=".3" transform="rotate(-34 418 615)"/>
+  </g>
+  <rect x="3" y="3" width="1018" height="1018" rx="227" fill="none" stroke="url(#tileRim)" stroke-width="6"/>
+</svg>

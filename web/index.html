@@ -5,254 +5,295 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NoSePol</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#F9F9FF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/app-default-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/app-default-full-180.png">
+<meta name="theme-color" content="#F2F0EB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1C1F22" media="(prefers-color-scheme: dark)">
 <script>try { const t = JSON.parse(localStorage.getItem("nsp.theme")); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch {}</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-  /* Material 3 tokens (scheme from a calm blue seed), light and dark */
+  /* Liquid Glass over the map: the map is the content, glass is the control layer.
+     Two materials: clear for controls (pills, chips, map buttons), regular for sheets. */
   :root {
     color-scheme: light dark;
-    --md-primary:#415F91; --md-on-primary:#FFFFFF; --md-primary-container:#D6E3FF; --md-on-primary-container:#001B3E;
-    --md-secondary-container:#DAE2F9; --md-on-secondary-container:#131C2B;
-    --md-error:#BA1A1A; --md-error-container:#FFDAD6; --md-on-error-container:#410002;
-    --md-good:#1B6C3A;
-    --md-surface:#F9F9FF; --md-on-surface:#191C20; --md-on-surface-variant:#44474E;
-    --md-outline:#74777F; --md-outline-variant:#C4C6D0;
-    --md-surface-container-low:#F3F3FA; --md-surface-container:#EDEDF4;
-    --md-surface-container-high:#E7E8EE; --md-surface-container-highest:#E2E2E9;
-    --md-inverse-surface:#2E3036; --md-inverse-on-surface:#F0F0F7;
-    --halo:#FFFFFF; --stop-fill:#FFFFFF; --stop-ring:#44474E;
-    --md-elev-1:0 1px 2px rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15);
-    --md-elev-2:0 1px 2px rgba(0,0,0,.3), 0 2px 6px 2px rgba(0,0,0,.15);
-    --md-elev-3:0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.3);
-    /* names the page script uses */
-    --ink:var(--md-surface); --fg:var(--md-on-surface); --muted:var(--md-on-surface-variant);
-    --lime:var(--md-primary); --orange:var(--md-error); --line:var(--md-outline-variant); --edge:var(--md-outline-variant);
-    --cond:Roboto, system-ui, sans-serif; --mono:Roboto, system-ui, sans-serif;
+    --tint:#0A5FD0; --on-tint:#FFFFFF;
+    --label:#1D1D1F; --label2:rgba(60,60,67,.85); --label3:rgba(60,60,67,.62); --sep:rgba(60,60,67,.18);
+    --fill:rgba(118,118,128,.14); --fill2:rgba(118,118,128,.22);
+    --bg:#F2F0EB; --solid:#F8F8FA;
+    --good:#1F7A45; --warn:#A0480F; --bad:#C4262E; --amber:#F2B33D;
+    --ctl-bg:rgba(255,255,255,.26); --sheet-bg:rgba(248,248,250,.74); --scrim:rgba(248,248,250,.72);
+    --rim-a:rgba(255,255,255,.95); --rim-b:rgba(255,255,255,.6); --rim-line:rgba(0,0,0,.08); --rim-glow:rgba(255,255,255,.28);
+    --shadow:0 1px 2px rgba(0,0,0,.08), 0 8px 22px rgba(0,0,0,.14);
+    --halo:#FFFFFF; --stop-fill:#FFFFFF; --stop-ring:#3C3C43; --pill:rgba(255,255,255,.92); --pill-ink:#3C3C43;
+    --tiles:saturate(.55) brightness(1.03) contrast(.96);
+    /* Material names the page script still uses, mapped onto the glass tokens */
+    --md-primary:var(--tint); --md-on-primary:var(--on-tint); --md-primary-container:var(--fill2); --md-on-primary-container:var(--label);
+    --md-secondary-container:var(--fill2); --md-on-secondary-container:var(--label);
+    --md-error:var(--bad); --md-error-container:color-mix(in srgb, var(--bad) 18%, transparent); --md-on-error-container:var(--bad);
+    --md-good:var(--good);
+    --md-surface:var(--solid); --md-on-surface:var(--label); --md-on-surface-variant:var(--label2);
+    --md-outline:var(--label3); --md-outline-variant:var(--sep);
+    --md-surface-container-low:var(--fill); --md-surface-container:var(--fill);
+    --md-surface-container-high:var(--fill); --md-surface-container-highest:var(--fill2);
+    --md-inverse-surface:var(--label); --md-inverse-on-surface:var(--solid);
+    --md-elev-1:0 1px 2px rgba(0,0,0,.2); --md-elev-2:var(--shadow); --md-elev-3:var(--shadow);
+    --ink:var(--solid); --fg:var(--label); --muted:var(--label2);
+    --lime:var(--tint); --orange:var(--warn); --line:var(--sep); --edge:var(--sep);
+    --font:Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --cond:var(--font); --mono:var(--font);
     --safe-b: env(safe-area-inset-bottom, 0px);
   }
-  /* dark: when the user picks it, or follows a dark system setting */
   :root[data-theme="dark"] {
     color-scheme: dark;
-      --md-primary:#AAC7FF; --md-on-primary:#0A305F; --md-primary-container:#284777; --md-on-primary-container:#D6E3FF;
-      --md-secondary-container:#3E4759; --md-on-secondary-container:#DAE2F9;
-      --md-error:#FFB4AB; --md-error-container:#93000A; --md-on-error-container:#FFDAD6;
-      --md-good:#8BD89B;
-      --md-surface:#111318; --md-on-surface:#E2E2E9; --md-on-surface-variant:#C4C6D0;
-      --md-outline:#8E9099; --md-outline-variant:#44474E;
-      --md-surface-container-low:#191C20; --md-surface-container:#1D2024;
-      --md-surface-container-high:#282A2F; --md-surface-container-highest:#33353A;
-      --md-inverse-surface:#E2E2E9; --md-inverse-on-surface:#2E3036;
-      --halo:#1D2024; --stop-fill:#C4C6D0; --stop-ring:#1D2024;
+    --tint:#7FB2FF; --on-tint:#0B1B33;
+    --label:#F5F5F7; --label2:rgba(235,235,245,.72); --label3:rgba(235,235,245,.5); --sep:rgba(235,235,245,.16);
+    --fill:rgba(118,118,128,.24); --fill2:rgba(118,118,128,.34);
+    --bg:#1C1F22; --solid:#1C1C20;
+    --good:#30C46C; --warn:#F2B33D; --bad:#FF6369;
+    --ctl-bg:rgba(36,36,42,.34); --sheet-bg:rgba(28,28,32,.7); --scrim:rgba(28,28,32,.72);
+    --rim-a:rgba(255,255,255,.5); --rim-b:rgba(255,255,255,.22); --rim-line:rgba(255,255,255,.1); --rim-glow:rgba(255,255,255,.05);
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.45);
+    --halo:#1C1F22; --stop-fill:#1C1F22; --stop-ring:#EBEBF5; --pill:rgba(28,28,32,.92); --pill-ink:#EBEBF5;
+    --tiles:invert(1) hue-rotate(180deg) brightness(.8) contrast(.9) saturate(.45);
   }
-  :root[data-theme="dark"] .leaflet-tile-pane { filter:brightness(.82) saturate(.75); }
   :root[data-theme="light"] { color-scheme: light; }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --md-primary:#AAC7FF; --md-on-primary:#0A305F; --md-primary-container:#284777; --md-on-primary-container:#D6E3FF;
-      --md-secondary-container:#3E4759; --md-on-secondary-container:#DAE2F9;
-      --md-error:#FFB4AB; --md-error-container:#93000A; --md-on-error-container:#FFDAD6;
-      --md-good:#8BD89B;
-      --md-surface:#111318; --md-on-surface:#E2E2E9; --md-on-surface-variant:#C4C6D0;
-      --md-outline:#8E9099; --md-outline-variant:#44474E;
-      --md-surface-container-low:#191C20; --md-surface-container:#1D2024;
-      --md-surface-container-high:#282A2F; --md-surface-container-highest:#33353A;
-      --md-inverse-surface:#E2E2E9; --md-inverse-on-surface:#2E3036;
-      --halo:#1D2024; --stop-fill:#C4C6D0; --stop-ring:#1D2024;
+      --tint:#7FB2FF; --on-tint:#0B1B33;
+      --label:#F5F5F7; --label2:rgba(235,235,245,.72); --label3:rgba(235,235,245,.5); --sep:rgba(235,235,245,.16);
+      --fill:rgba(118,118,128,.24); --fill2:rgba(118,118,128,.34);
+      --bg:#1C1F22; --solid:#1C1C20;
+      --good:#30C46C; --warn:#F2B33D; --bad:#FF6369;
+      --ctl-bg:rgba(36,36,42,.34); --sheet-bg:rgba(28,28,32,.7); --scrim:rgba(28,28,32,.72);
+      --rim-a:rgba(255,255,255,.5); --rim-b:rgba(255,255,255,.22); --rim-line:rgba(255,255,255,.1); --rim-glow:rgba(255,255,255,.05);
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.45);
+      --halo:#1C1F22; --stop-fill:#1C1F22; --stop-ring:#EBEBF5; --pill:rgba(28,28,32,.92); --pill-ink:#EBEBF5;
+      --tiles:invert(1) hue-rotate(180deg) brightness(.8) contrast(.9) saturate(.45);
     }
-    :root:not([data-theme="light"]) .leaflet-tile-pane { filter:brightness(.82) saturate(.75); }
   }
   * { box-sizing:border-box; }
-  html, body { margin:0; height:100%; background:var(--md-surface); color:var(--md-on-surface);
-    font:400 14px/20px Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing:.25px;
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--label);
+    font:400 15px/20px var(--font); letter-spacing:-.01em; -webkit-font-smoothing:antialiased;
     font-variant-numeric:tabular-nums; overscroll-behavior:none; -webkit-tap-highlight-color:transparent; }
   button, input { font:inherit; color:inherit; letter-spacing:inherit; }
   button { cursor:pointer; }
-  #map { position:fixed; inset:0; background:var(--md-surface-container); }
-  .leaflet-tile-pane { filter:saturate(.8); }
-  .leaflet-control-attribution { font-size:10px; border-radius:8px 0 0 0; background:color-mix(in srgb, var(--md-surface-container) 85%, transparent) !important; color:var(--md-on-surface-variant); }
-  .leaflet-control-attribution a { color:var(--md-primary); }
+  #map { position:fixed; inset:0; background:var(--bg); }
+  .leaflet-container { font-family:var(--font); }
+  .leaflet-tile-pane { filter:var(--tiles); }
+  .leaflet-control-attribution { font-size:10px; border-radius:10px 0 0 0; background:var(--scrim) !important; color:var(--label2);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .leaflet-control-attribution a { color:var(--tint); }
   .route-halo { stroke:var(--halo); }
   .stop-dot { stroke:var(--stop-ring); fill:var(--stop-fill); }
-  .mono { font:500 12px/16px Roboto, system-ui, sans-serif; letter-spacing:.5px; color:var(--md-on-surface-variant); }
-  .cond { font-weight:500; }
+  .mono { font:600 12px/16px var(--font); letter-spacing:0; color:var(--label2); }
+  .cond { font-weight:600; }
   .hide { display:none !important; }
-  .icon-btn { width:48px; height:48px; flex:none; display:flex; align-items:center; justify-content:center;
-    border:0; border-radius:50%; background:transparent; color:var(--md-on-surface-variant); }
-  .icon-btn:hover { background:color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+  .icon-btn { width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center;
+    border:0; border-radius:50%; background:transparent; color:var(--label); }
+  .icon-btn:hover { background:var(--fill); }
 
-  /* top: M3 search bar + filter chips */
-  #top { position:fixed; z-index:1000; top:0; left:0; right:0; padding:12px 16px 0;
-    padding-top:max(12px, env(safe-area-inset-top)); display:flex; flex-direction:column; gap:10px; pointer-events:none; }
+  /* the two materials */
+  .glass { position:relative; isolation:isolate; background:var(--ctl-bg);
+    -webkit-backdrop-filter:blur(8px) saturate(180%); backdrop-filter:blur(8px) saturate(180%);
+    box-shadow:inset 1.5px 1.5px 1px -1px var(--rim-a), inset -1px -1px 1px -.5px var(--rim-b),
+      inset 0 0 0 .5px var(--rim-line), inset 0 0 16px var(--rim-glow), var(--shadow); }
+  .glass::before { content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:linear-gradient(135deg, var(--rim-a) 0%, transparent 28%, transparent 70%, var(--rim-b) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+  .glass.regular { background:var(--sheet-bg); -webkit-backdrop-filter:blur(26px) saturate(180%); backdrop-filter:blur(26px) saturate(180%); }
+  /* no blur support, or the user asked for less transparency: the same colours, solid */
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+    .glass, .glass.regular, .overlay { background:var(--solid); }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .glass, .glass.regular, .overlay { background:var(--solid); -webkit-backdrop-filter:none; backdrop-filter:none; }
+  }
+
+  /* top: search capsule, then the GPS pill's line filter */
+  #top { position:fixed; z-index:1000; top:0; left:0; right:0; padding:12px 12px 0;
+    padding-top:max(12px, env(safe-area-inset-top)); display:flex; flex-direction:column; align-items:flex-start; gap:10px; pointer-events:none; }
   #top > * { pointer-events:auto; }
-  .bar { display:flex; align-items:center; gap:4px; height:56px; padding:0 4px 0 4px; border-radius:28px;
-    background:var(--md-surface-container-high); box-shadow:var(--md-elev-2); }
-  .field { flex:1; min-width:0; height:56px; display:flex; align-items:center; gap:16px; padding:0 12px;
-    background:none; border:0; border-radius:28px; color:var(--md-on-surface-variant); text-align:left; font-size:16px; }
-  .sq { width:48px; height:48px; flex:none; display:flex; align-items:center; justify-content:center;
-    background:transparent; border:0; border-radius:50%; color:var(--md-on-surface-variant); }
-  #live { width:auto; height:32px; padding:0 12px; border-radius:16px; font:500 12px/16px Roboto, sans-serif;
-    background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
-  #live.bad { background:var(--md-error-container); color:var(--md-on-error-container); }
-  #chips { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:2px 2px 6px; }
+  .bar { align-self:stretch; display:flex; align-items:center; gap:2px; height:52px; padding:0 4px; border-radius:999px; }
+  .field { flex:1; min-width:0; height:52px; display:flex; align-items:center; gap:10px; padding:0 12px;
+    background:none; border:0; border-radius:999px; color:var(--label2); text-align:left; font-size:16px; }
+  .sq { width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center;
+    background:transparent; border:0; border-radius:50%; color:var(--label); }
+  #live { width:auto; height:36px; padding:0 10px; border-radius:999px; font:700 13px/16px var(--font); color:var(--label); background:transparent; }
+  #live::first-letter { color:var(--good); }
+  #live.bad, #live.bad::first-letter { color:var(--bad); }
+  #chips { display:flex; gap:6px; max-width:100%; overflow-x:auto; scrollbar-width:none; padding:6px; border-radius:999px; }
+  #chips:empty { display:none; }
   #chips::-webkit-scrollbar { display:none; }
-  .chip { flex:none; height:32px; display:flex; align-items:center; gap:8px; padding:0 16px 0 8px; border-radius:8px;
-    border:1px solid var(--md-outline-variant); background:var(--md-surface-container-low); color:var(--md-on-surface-variant);
-    font:500 14px/20px Roboto, sans-serif; box-shadow:var(--md-elev-1); }
-  .chip .dot { width:18px; height:18px; border-radius:50%; border:2px solid var(--c); background:transparent; }
-  .chip[aria-pressed=true] { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-color:transparent; }
-  .chip[aria-pressed=true] .dot { background:var(--c); }
+  .chip { flex:none; height:32px; min-width:32px; display:flex; align-items:center; justify-content:center; padding:0 10px; border-radius:999px;
+    border:0; background:color-mix(in srgb, var(--c) 20%, transparent); color:var(--label); box-shadow:inset 0 0 0 1.5px var(--c);
+    font:800 14px/1 var(--font); }
+  .chip .dot { display:none; }
+  .chip[aria-pressed=true] { background:var(--c); color:var(--k); box-shadow:none; }
 
-  /* map markers */
+  /* map controls: one glass stack, locate over the compass */
+  #ctrl { position:fixed; z-index:1000; right:12px; top:calc(max(12px, env(safe-area-inset-top)) + 62px);
+    width:48px; padding:2px 0; border-radius:24px; display:flex; flex-direction:column; align-items:center; }
+  #ctrl hr { width:26px; height:0; margin:0; border:0; border-top:.5px solid var(--label3); }
+  #locate, #compass { width:44px; height:44px; border:0; padding:0; border-radius:50%; background:transparent; color:var(--label);
+    display:flex; align-items:center; justify-content:center; }
+  #compass { transition:opacity .2s; }
+  #compass.north { opacity:.6; }
+
+  /* map markers: the colour is always the line; state is an outline, a badge or opacity */
   .bus { position:relative; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:50%;
-    font:700 14px/1 Roboto, sans-serif; box-shadow:0 0 0 2px var(--halo), var(--md-elev-2); }
+    font:800 13px/1 var(--font); box-shadow:0 0 0 2.5px #fff, 0 2px 6px rgba(0,0,0,.32); }
   .bus .arrow { position:absolute; left:50%; top:50%; width:20px; height:18px; margin:-9px 0 0 -10px; display:block; }
-  .bus .arrow path { fill:var(--c); stroke:#1B1B1F; stroke-width:1.5; stroke-linejoin:round; }
-  .bus.sel { box-shadow:0 0 0 2px var(--halo), 0 0 0 5px var(--md-primary), var(--md-elev-2); }
-  /* run number (the :xxx of the trip) bottom right; status (stopped time, next departure) top left */
-  .bus .run { position:absolute; left:calc(100% - 8px); bottom:-11px; height:15px; padding:0 4px; border-radius:8px; white-space:nowrap;
-    font:500 10px/15px Roboto, sans-serif; letter-spacing:0; background:var(--md-surface-container-highest); color:var(--md-on-surface);
-    box-shadow:0 0 0 1px var(--c), var(--md-elev-1); pointer-events:none; }
+  .bus .arrow path { fill:var(--c); stroke:#fff; stroke-width:1.5; stroke-linejoin:round; }
+  .bus.sel { box-shadow:0 0 0 2.5px #fff, 0 0 0 6px var(--tint), 0 2px 6px rgba(0,0,0,.32); }
+  /* run number bottom right; status (stopped time, next departure) top left */
+  .bus .run { position:absolute; left:calc(100% - 8px); bottom:-11px; height:16px; padding:0 5px; border-radius:999px; white-space:nowrap;
+    font:700 10px/16px var(--font); letter-spacing:0; background:var(--pill); color:var(--pill-ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.25); pointer-events:none; }
   #map.far .bus .run { display:none; }
-  .bus .flag { position:absolute; right:calc(100% - 8px); top:-10px; min-width:16px; height:16px; padding:0 4px; border-radius:8px;
-    font:500 11px/16px Roboto, sans-serif; text-align:center; }
-  .bus.midroute { box-shadow:0 0 0 2px var(--halo), 0 0 0 5px #BA1A1A, var(--md-elev-2); }
-  .bus.midroute .flag { background:#BA1A1A; color:#fff; }
-  .bus.terminus, .bus.layover { opacity:.8; box-shadow:0 0 0 2px var(--halo), var(--md-elev-1); }
-  .bus.terminus .flag, .bus.layover .flag { background:#44474E; color:#fff; }
+  .bus .flag { position:absolute; right:calc(100% - 8px); top:-10px; min-width:16px; height:16px; padding:0 5px; border-radius:999px;
+    font:800 10px/16px var(--font); text-align:center; white-space:nowrap; }
+  .bus.midroute { box-shadow:0 0 0 2.5px #fff, 0 0 0 5px var(--amber), 0 2px 6px rgba(0,0,0,.32); }
+  .bus.midroute .flag { background:var(--amber); color:#1B1B1F; }
+  .bus.terminus, .bus.layover { opacity:.85; }
+  .bus.terminus .flag, .bus.layover .flag { background:var(--label); color:var(--solid); }
   .bus.midroute .arrow, .bus.terminus .arrow, .bus.layover .arrow { display:none; }
   .bus.stale { opacity:.45; }
   /* on a stretch no stop reports on: position dead-reckoned from its last GPS */
-  .bus.blind { opacity:.75; box-shadow:0 0 0 2px var(--halo), 0 0 0 4px var(--c), var(--md-elev-1); outline:2px dashed var(--halo); outline-offset:3px; }
-  /* a scheduled departure no known bus will take: hollow, at the terminus */
-  .bus.pending { background:var(--md-surface-container-high) !important; color:var(--md-on-surface) !important;
-    box-shadow:inset 0 0 0 3px var(--c), 0 0 0 2px var(--halo), var(--md-elev-1); }
-  .bus.pending .flag { background:var(--md-surface-container-highest); color:var(--md-on-surface); }
-  .bus.pending.late .flag, .lbus.pending.late { color:var(--md-error); }
-  .selstop { width:22px; height:22px; border-radius:50%; background:var(--md-primary); border:4px solid var(--halo); box-shadow:var(--md-elev-2); }
-  .me { width:18px; height:18px; border-radius:50%; background:#1A73E8; border:3px solid var(--halo); box-shadow:0 0 0 8px rgba(26,115,232,.2); }
+  .bus.blind { opacity:.75; outline:2px dashed var(--c); outline-offset:3px; }
+  /* a scheduled departure no known bus will take: hollow and dashed, at the terminus */
+  .bus.pending { background:var(--solid) !important; color:var(--label) !important; border:2px dashed var(--c);
+    box-shadow:0 0 0 2px var(--halo), 0 1px 4px rgba(0,0,0,.2); }
+  .bus.pending .flag { background:var(--pill); color:var(--pill-ink); box-shadow:0 1px 2px rgba(0,0,0,.25); }
+  .bus.pending.late .flag, .lbus.pending.late { color:var(--warn); }
+  .selstop { width:20px; height:20px; border-radius:50%; background:#fff; border:4px solid var(--tint);
+    box-shadow:0 0 0 12px color-mix(in srgb, var(--tint) 18%, transparent), 0 2px 6px rgba(0,0,0,.3); }
+  .me { width:18px; height:18px; border-radius:50%; background:#1A73E8; border:3px solid #fff; box-shadow:0 0 0 8px rgba(26,115,232,.2); }
 
-  /* M3 bottom sheet */
-  #sheet { position:fixed; z-index:1000; left:0; right:0; bottom:0; max-height:52vh; display:flex; flex-direction:column;
-    background:var(--md-surface-container-low); border-radius:28px 28px 0 0; box-shadow:var(--md-elev-1); transition:max-height .25s ease; }
-  #sheet.full { max-height:88vh; }
-  #sheet.min { max-height:calc(36px + 28px + var(--safe-b)); }
+  /* the sheet: regular glass floating over the map */
+  #sheet { position:fixed; z-index:1000; left:8px; right:8px; bottom:calc(8px + var(--safe-b)); max-height:52vh;
+    display:flex; flex-direction:column; border-radius:36px; overflow:hidden; transition:max-height .25s ease; }
+  #sheet.full { max-height:calc(88vh - var(--safe-b)); }
+  #sheet.min { max-height:calc(28px + 30px); }
   #sheet.min #sheetBody { overflow:hidden; }
   #sheet.drag { transition:none; }
-  #grab { flex:none; height:36px; width:100%; border:0; background:none; display:flex; align-items:center; justify-content:center;
-    touch-action:none; cursor:grab; }
-  #grab span { width:32px; height:4px; border-radius:2px; background:var(--md-on-surface-variant); opacity:.4; }
-  #sheetBody { overflow:auto; padding:0 16px calc(16px + var(--safe-b)); }
-  .kicker { color:var(--md-on-surface-variant); display:flex; justify-content:space-between; gap:8px; align-items:center; }
-  h2 { margin:2px 0 0; font:400 24px/32px Roboto, sans-serif; letter-spacing:0; }
-  .sub { color:var(--md-on-surface-variant); font-size:14px; margin-top:4px; }
-  .row { display:flex; align-items:center; gap:16px; min-height:56px; width:100%; border:0; border-radius:12px;
-    background:none; padding:8px 8px; margin:0 -8px; width:calc(100% + 16px); text-align:left; color:var(--md-on-surface); }
-  .row:not(:disabled):hover { background:color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
-  .row:not(:disabled):active { background:color-mix(in srgb, var(--md-on-surface) 12%, transparent); }
-  .badge { flex:none; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    background:var(--c); color:var(--k); font:500 16px Roboto, sans-serif; }
+  #grab { flex:none; height:28px; width:100%; border:0; background:none; display:flex; align-items:center; justify-content:center;
+    touch-action:none; cursor:grab; border-radius:36px 36px 0 0; }
+  #grab span { width:36px; height:5px; border-radius:3px; background:var(--label3); opacity:.7; }
+  /* the scroll area stops short of the rounded bottom corners, so its scrollbar can't run past them */
+  #sheetBody { overflow:auto; padding:0 12px 4px 18px; margin:0 6px 18px 0; }
+  .kicker { color:var(--label2); display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  h2 { margin:2px 0 0; font:800 24px/28px var(--font); letter-spacing:-.03em; }
+  .sub { color:var(--label2); font-size:14px; margin-top:4px; }
+  .row { display:flex; align-items:center; gap:12px; min-height:58px; border:0; border-radius:14px;
+    background:none; padding:8px 8px; margin:0 -8px; width:calc(100% + 16px); text-align:left; color:var(--label); }
+  .row:not(:disabled):hover { background:var(--fill); }
+  .row:not(:disabled):active { background:var(--fill2); }
+  .badge { flex:none; min-width:32px; height:28px; padding:0 7px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    background:var(--c); color:var(--k); font:800 15px/1 var(--font); }
   .grow { flex:1; min-width:0; }
-  .grow b { display:block; font:400 16px/24px Roboto, sans-serif; letter-spacing:.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .note { font:400 14px/20px Roboto, sans-serif; letter-spacing:.25px; color:var(--md-on-surface-variant); }
-  .eta { font:400 22px/28px Roboto, sans-serif; min-width:48px; text-align:right; }
-  .op { font:400 12px/16px Roboto, sans-serif; color:var(--md-on-surface-variant); min-width:64px; text-align:right; }
-  .faded { opacity:.6; }
+  .grow b { display:block; font:700 16px/22px var(--font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .note { font:400 13px/18px var(--font); color:var(--label2); }
+  .etac { flex:none; display:flex; flex-direction:column; align-items:flex-end; min-width:64px; }
+  .eta { font:800 24px/28px var(--font); letter-spacing:-.03em; min-width:48px; text-align:right; }
+  .op { font:500 12px/16px var(--font); color:var(--label2); min-width:64px; text-align:right; }
+  .etac .op { min-width:0; white-space:nowrap; }
+  .eta.sm { font:700 16px/22px var(--font); letter-spacing:-.01em; }
+  .faded { opacity:.62; }
   .grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin-top:16px; }
-  .grid > div { background:var(--md-surface-container-high); border-radius:12px; padding:12px 16px; min-width:0; }
-  .grid .v { font:400 22px/28px Roboto, sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .grid > div { background:var(--fill); border-radius:16px; padding:12px 14px; min-width:0; }
+  .grid .v { font:800 22px/28px var(--font); letter-spacing:-.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
-  .btn { height:40px; padding:0 24px; border-radius:20px; border:1px solid var(--md-outline); background:transparent;
-    color:var(--md-primary); font:500 14px/20px Roboto, sans-serif; letter-spacing:.1px; }
-  .btn:hover { background:color-mix(in srgb, var(--md-primary) 8%, transparent); }
-  .btn.primary { background:var(--md-primary); color:var(--md-on-primary); border-color:transparent; }
-  .btn.on { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-color:transparent; }
-  .empty { color:var(--md-on-surface-variant); padding:16px 0; font-size:14px; }
-  .later { font-size:14px; color:var(--md-on-surface-variant); padding:12px 0 4px; line-height:22px; }
+  .btn { height:44px; padding:0 20px; border-radius:999px; border:0; background:var(--fill);
+    color:var(--label); font:600 15px/20px var(--font); }
+  .btn:hover { background:var(--fill2); }
+  .btn.primary { background:var(--tint); color:var(--on-tint); }
+  .btn.primary:hover { background:color-mix(in srgb, var(--tint) 88%, var(--label)); }
+  .btn.on { background:var(--label); color:var(--solid); }
+  .empty { color:var(--label2); padding:16px 0; font-size:14px; }
+  .later { font-size:14px; color:var(--label2); padding:12px 0 4px; line-height:22px; }
   .pchips { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-  .pchip { display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 12px 0 4px; border-radius:8px;
-    background:var(--md-surface-container-high); font:500 14px/20px Roboto, sans-serif; }
-  .pchip .badge { width:24px; height:24px; font-size:12px; }
-  .pchip.sched { background:transparent; border:1px solid var(--md-outline-variant); color:var(--md-on-surface-variant); }
+  .pchip { display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 12px 0 4px; border-radius:999px;
+    background:var(--fill); font:700 14px/20px var(--font); }
+  .pchip .badge { min-width:26px; height:26px; border-radius:999px; font-size:12px; padding:0 6px; }
+  .pchip.sched { background:transparent; box-shadow:inset 0 0 0 1px var(--sep); color:var(--label2); }
+  .mini { display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:24px; padding:0 6px; border-radius:8px; font:800 12px/1 var(--font); }
 
-  /* overlays: search view and full-screen dialog */
-  .overlay { position:fixed; z-index:1100; inset:0; background:var(--md-surface); display:flex; flex-direction:column;
+  /* overlays: search, menu, line page. The map shows through, blurred */
+  .overlay { position:fixed; z-index:1100; inset:0; background:var(--scrim); display:flex; flex-direction:column;
+    -webkit-backdrop-filter:blur(30px) saturate(160%); backdrop-filter:blur(30px) saturate(160%);
     padding-top:env(safe-area-inset-top); }
-  .ohead { display:flex; gap:4px; padding:8px 8px 8px 16px; align-items:center; min-height:64px; }
-  .ohead input { flex:1; min-width:0; height:56px; border-radius:28px; background:var(--md-surface-container-high);
+  .ohead { display:flex; gap:6px; padding:10px 10px 8px 16px; align-items:center; min-height:64px; width:100%; max-width:640px; margin:0 auto; }
+  .ohead input { flex:1; min-width:0; height:48px; border-radius:999px; background:var(--fill);
     border:0; padding:0 20px; outline:none; font-size:16px; }
-  .ohead input:focus { box-shadow:inset 0 0 0 2px var(--md-primary); }
-  .obody { overflow:auto; padding:4px 16px calc(24px + var(--safe-b)); }
-  .obody h3 { font:500 14px/20px Roboto, sans-serif; letter-spacing:.1px; color:var(--md-primary); margin:24px 0 8px; }
-  .obody p { color:var(--md-on-surface-variant); font-size:14px; line-height:20px; margin:6px 0; }
-  .seg { display:inline-flex; border:1px solid var(--md-outline); border-radius:20px; overflow:hidden; }
-  .seg button { height:40px; padding:0 20px; border:0; background:none; font:500 14px Roboto, sans-serif; color:var(--md-on-surface); }
-  .seg button + button { border-left:1px solid var(--md-outline); }
-  .seg button[aria-pressed=true] { background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
+  .ohead input:focus { box-shadow:inset 0 0 0 2px var(--tint); }
+  .otitle { flex:1; font:800 22px/28px var(--font); letter-spacing:-.03em; }
+  .obody { overflow:auto; padding:4px 16px calc(24px + var(--safe-b)); width:100%; max-width:640px; margin:0 auto; }
+  .obody h3 { font:700 13px/18px var(--font); color:var(--label2); margin:24px 0 8px; }
+  .obody p { color:var(--label2); font-size:14px; line-height:20px; margin:6px 0; }
+  .seg { display:inline-flex; padding:3px; gap:2px; border-radius:999px; background:var(--fill); }
+  .seg button { height:34px; padding:0 16px; border:0; border-radius:999px; background:none; font:600 14px var(--font); color:var(--label); }
+  .seg button[aria-pressed=true] { background:var(--solid); box-shadow:0 1px 3px rgba(0,0,0,.16); }
   .stat { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:8px; }
-  .stat > div { background:var(--md-surface-container-high); border-radius:12px; padding:12px; }
-  .stat .v { font:400 22px/28px Roboto, sans-serif; }
-  a { color:var(--md-primary); }
-  /* thin, theme-coloured scrollbars with no arrow buttons (the default looks out of place on the sheet) */
-  #sheetBody, .obody { scrollbar-width:thin; scrollbar-color:color-mix(in srgb, var(--md-on-surface) 28%, transparent) transparent; }
+  .stat > div { background:var(--fill); border-radius:16px; padding:12px; }
+  .stat .v { font:800 22px/28px var(--font); letter-spacing:-.02em; }
+  a { color:var(--tint); }
+  /* thin, theme-coloured scrollbars with no arrow buttons */
+  /* Chromium drops its ::-webkit-scrollbar rules (and shows arrow buttons) once scrollbar-width is set,
+     so the standard properties are only for browsers without them (Firefox) */
+  @supports not selector(::-webkit-scrollbar) {
+    #sheetBody, .obody { scrollbar-width:thin; scrollbar-color:var(--label3) transparent; }
+  }
   #sheetBody::-webkit-scrollbar, .obody::-webkit-scrollbar { width:6px; }
-  #sheetBody::-webkit-scrollbar-thumb, .obody::-webkit-scrollbar-thumb { border-radius:3px; background:color-mix(in srgb, var(--md-on-surface) 28%, transparent); }
+  #sheetBody::-webkit-scrollbar-thumb, .obody::-webkit-scrollbar-thumb { border-radius:3px; background:var(--label3); }
   #sheetBody::-webkit-scrollbar-track, .obody::-webkit-scrollbar-track { background:transparent; }
+  #sheetBody::-webkit-scrollbar-track { margin:4px 0; }
   #sheetBody::-webkit-scrollbar-button, .obody::-webkit-scrollbar-button { display:none; }
   /* line page: both directions as two strips, buses placed along them */
   .ltabs { flex:1; min-width:0; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:4px 2px; }
-  .ltab { flex:none; min-width:56px; height:40px; padding:0 16px; border-radius:20px; border:2px solid var(--c); background:none;
-    font:500 16px/20px Roboto, sans-serif; color:var(--md-on-surface); }
-  .ltab[aria-selected=true] { background:var(--c); color:var(--k); }
+  .ltab { flex:none; min-width:52px; height:40px; padding:0 16px; border-radius:999px; border:0; background:color-mix(in srgb, var(--c) 20%, transparent);
+    box-shadow:inset 0 0 0 2px var(--c); font:800 16px/20px var(--font); color:var(--label); }
+  .ltab[aria-selected=true] { background:var(--c); color:var(--k); box-shadow:none; }
   #lineBody { width:100%; max-width:560px; margin:0 auto; }
-  .thead { display:flex; justify-content:space-between; gap:8px; margin-top:20px; font:500 12px/16px Roboto, sans-serif; color:var(--md-on-surface-variant); }
+  .thead { display:flex; justify-content:space-between; gap:8px; margin-top:20px; font:700 12px/16px var(--font); color:var(--label2); }
   .thead span:last-child { text-align:right; }
   .track { position:relative; margin-top:4px; }
   .track .strip { position:absolute; width:6px; border-radius:3px; background:var(--c); }
-  .track .tick { position:absolute; width:12px; height:3px; margin-top:-1.5px; border-radius:2px; background:var(--md-on-surface); }
+  .track .tick { position:absolute; width:12px; height:3px; margin-top:-1.5px; border-radius:2px; background:var(--label); }
   .trow { position:absolute; left:100px; right:100px; height:36px; margin-top:-18px; display:flex; align-items:center; justify-content:center;
-    padding:0 4px; border:0; border-radius:8px; background:none; color:var(--md-on-surface); font:400 13px/16px Roboto, sans-serif; }
+    padding:0 4px; border:0; border-radius:10px; background:none; color:var(--label); font:500 13px/16px var(--font); }
   .trow span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .trow.end { font-weight:700; }
-  .trow:not(:disabled):hover { background:color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
-  .trow:disabled { color:var(--md-on-surface-variant); cursor:default; }
-  .lbus { position:absolute; z-index:2; height:24px; margin-top:-12px; padding:0 8px; display:flex; align-items:center; gap:4px; border:0; border-radius:12px;
-    background:var(--c); color:var(--k); font:500 12px/24px Roboto, sans-serif; white-space:nowrap; box-shadow:0 0 0 2px var(--halo), var(--md-elev-1); }
+  .trow.end { font-weight:800; }
+  .trow:not(:disabled):hover { background:var(--fill); }
+  .trow:disabled { color:var(--label2); cursor:default; }
+  .lbus { position:absolute; z-index:2; height:24px; margin-top:-12px; padding:0 9px; display:flex; align-items:center; gap:4px; border:0; border-radius:999px;
+    background:var(--c); color:var(--k); font:800 12px/24px var(--font); white-space:nowrap; box-shadow:0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,.25); }
   .lbus.short { outline:2px dashed var(--c); outline-offset:2px; }
-  .lbus.blind { outline:2px dashed var(--md-on-surface-variant); outline-offset:2px; }
+  .lbus.blind { outline:2px dashed var(--label2); outline-offset:2px; }
   .lbus.stale { opacity:.45; }
-  .lbus.wait { opacity:.8; }
-  .lbus.pending { background:var(--md-surface-container-high); color:var(--md-on-surface); box-shadow:inset 0 0 0 2px var(--c), 0 0 0 2px var(--halo); }
-  .lbus .fl { padding:0 4px; border-radius:8px; font-size:11px; line-height:16px; background:#44474E; color:#fff; }
-  .lbus .fl.bad { background:#BA1A1A; }
-  .lgap { position:absolute; width:26px; font:500 11px/14px Roboto, sans-serif; text-align:center; color:var(--md-on-surface-variant);
+  .lbus.wait { opacity:.85; }
+  .lbus.pending { background:var(--solid); color:var(--label); border:2px dashed var(--c); box-shadow:0 0 0 2px var(--halo); }
+  .lbus .fl { padding:0 5px; border-radius:999px; font-size:10px; line-height:16px; background:var(--label); color:var(--solid); }
+  .lbus .fl.bad { background:var(--amber); color:#1B1B1F; }
+  .lgap { position:absolute; width:26px; font:700 11px/14px var(--font); text-align:center; color:var(--label2);
     display:flex; align-items:center; justify-content:center; }
   .lgap::before { content:""; position:absolute; top:0; bottom:0; width:4px; border:1.5px solid currentColor; opacity:.5; }
   .lgap.l::before { right:-2px; border-left:0; } .lgap.r::before { left:-2px; border-right:0; }
-  .lgap.bunch { color:var(--md-error); font-weight:700; }
-  .lgap.hole { color:var(--md-on-surface); font-weight:700; }
-  .lgap b { position:relative; background:var(--md-surface); padding:1px 0; font-weight:inherit; }
-  :focus-visible { outline:2px solid var(--md-primary); outline-offset:2px; }
+  .lgap.bunch { color:var(--warn); font-weight:800; }
+  .lgap.hole { color:var(--label); font-weight:800; }
+  .lgap b { position:relative; background:var(--solid); padding:1px 0; font-weight:inherit; border-radius:4px; }
+  :focus-visible { outline:2px solid var(--tint); outline-offset:2px; }
   .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
-  /* compass: needle points north on screen; tap to turn the map back to north */
-  #compass { position:fixed; z-index:1000; right:16px; top:calc(max(12px, env(safe-area-inset-top)) + 116px);
-    width:40px; height:40px; border:0; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;
-    background:var(--md-surface-container-high); color:var(--md-on-surface-variant); box-shadow:var(--md-elev-2); transition:opacity .2s; }
-  #compass.north { opacity:.7; }
-  #locate { position:fixed; z-index:1000; right:16px; width:56px; height:56px; border:0; border-radius:16px;
-    background:var(--md-primary-container); color:var(--md-on-primary-container); box-shadow:var(--md-elev-3);
-    display:flex; align-items:center; justify-content:center; }
   #toast { position:fixed; z-index:1200; left:16px; right:16px; bottom:calc(56vh); margin:0 auto; max-width:400px;
-    background:var(--md-inverse-surface); color:var(--md-inverse-on-surface); border-radius:4px;
-    padding:14px 16px; font-size:14px; box-shadow:var(--md-elev-3); }
+    background:var(--sheet-bg); color:var(--label); border-radius:20px; padding:14px 18px; font-size:14px; }
   @media (min-width: 720px) {
-    #sheet { left:16px; right:auto; width:400px; bottom:16px; max-height:70vh; border-radius:28px; }
-    #sheet.full { max-height:calc(100vh - 150px); }
-    #compass { top:16px; }
-    #top { right:auto; width:432px; }
-    #toast { bottom:24px; left:auto; right:24px; }
+    #top { right:auto; width:432px; padding:16px 0 0 16px; }
+    #sheet { left:16px; right:auto; width:416px; bottom:16px; max-height:calc(100vh - 176px); border-radius:28px; }
+    #sheet.full { max-height:calc(100vh - 176px); }
+    #grab { border-radius:28px 28px 0 0; }
+    #ctrl { top:auto; bottom:24px; right:16px; }
+    #toast { bottom:24px; left:auto; right:80px; }
   }
 </style>
 </head>
@@ -260,7 +301,7 @@
 <div id="map" aria-label="Map"></div>
 
 <div id="top">
-  <div class="bar">
+  <div class="bar glass">
     <button class="field" id="openSearch">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
       <span data-t="searchPh"></span>
@@ -270,17 +311,20 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
   </div>
-  <div id="chips" role="group" data-t-aria="lines"></div>
+  <div id="chips" class="glass" role="group" data-t-aria="lines"></div>
 </div>
 
-<button id="compass" class="north" data-t-aria="north" data-t-title="north">
-  <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 L16 12 L8 12 Z" fill="#D93025"/><path d="M12 21.5 L16 12 L8 12 Z" fill="currentColor"/></svg>
-</button>
-<button id="locate" data-t-aria="locate">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
-</button>
+<div id="ctrl" class="glass">
+  <button id="locate" data-t-aria="locate">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+  </button>
+  <hr>
+  <button id="compass" class="north" data-t-aria="north" data-t-title="north">
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L15.2 12 L8.8 12 Z" fill="#E5484D"/><path d="M12 21 L15.2 12 L8.8 12 Z" fill="#8E8E93"/></svg>
+  </button>
+</div>
 
-<section id="sheet" aria-live="polite">
+<section id="sheet" class="glass regular" aria-live="polite">
   <button id="grab" data-t-aria="expand"><span></span></button>
   <div id="sheetBody"></div>
 </section>
@@ -296,7 +340,7 @@
 
 <div class="overlay hide" id="menu" role="dialog" aria-modal="true" data-t-aria="menu">
   <div class="ohead">
-    <div style="flex:1; font:400 22px/28px Roboto, sans-serif">NoSePol</div>
+    <div class="otitle">NoSePol</div>
     <button class="sq" id="closeMenu" data-t-aria="close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
   <div class="obody" id="menuBody"></div>
@@ -308,7 +352,7 @@
   </div>
   <div class="obody" id="lineBody"></div>
 </div>
-<div id="toast" class="hide" role="status"></div>
+<div id="toast" class="glass regular hide" role="status"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
@@ -788,7 +832,7 @@ function setSheet(html, accent) {
   sheet.style.setProperty("--accent", accent || "var(--edge)");
   placeLocate();
 }
-function placeLocate() { $("locate").style.bottom = (sheet.offsetHeight + 12) + "px"; }
+function placeLocate() {}  // the map controls sit at the top (phone) or bottom right (desktop), clear of the sheet
 // Centre a point in the part of the map the sheet doesn't cover.
 function focusOn(latlng, zoom) {
   const z = Math.max(map.getZoom(), zoom);
@@ -859,10 +903,11 @@ async function openStop(code, { pan = true } = {}) {
       const note = x.live
         ? [x.stopped_s ? stopText(x) : null, x.stale ? t("gpsOld", { s: x.age }) : null, x.dist != null ? t("away", { d: fmtDist(x.dist) }) : null].filter(Boolean).join(" · ")
         : `${t("scheduled")}${x.scheduled ? " " + x.scheduled : ""}${x.waiting_bus ? " · " + t("busWaiting") : ""}`;
+      const ours = x.eta_s != null || !!x.stopped_s || x.live;  // our estimate: big; the operator's or the timetable: small
       const warn = x.stop_kind === "midroute" && x.stopped_s >= ALARM_S ? ' style="color:var(--orange)"' : "";
       return `<button class="row ${x.stale || (!x.live && !x.waiting_bus) || x.stop_kind === "terminus" ? "faded" : ""}" ${x.live ? `data-trip="${esc(x.trip)}"` : "disabled"}>
         ${badge(x.line)}<div class="grow"><b>${esc(x.destination)}</b><span class="note"${warn}>${esc(note)}</span></div>
-        <span class="eta"${warn}>${esc(eta)}</span><span class="op">${esc(x.operator ?? "")}</span></button>`;
+        <span class="etac"><span class="eta${ours ? "" : " sm"}"${warn}>${!ours && x.operator_eta_s != null ? "TPL " : ""}${esc(eta)}</span>${x.operator && x.eta_s != null ? `<span class="op">TPL ${esc(x.operator)}</span>` : ""}</span></button>`;
     }).join("");
     const later = d.later.filter(x => x.times.length).map(x =>
       `<div>${esc(style(x.line).name)} → ${esc(x.destination)}: ${x.times.slice(0, 4).map(esc).join(" · ")}</div>`).join("");
@@ -870,8 +915,7 @@ async function openStop(code, { pan = true } = {}) {
         <button class="sq" id="closeSheet" aria-label="${esc(t("close"))}" style="width:44px;height:44px;border:0;background:none;margin-right:-10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <h2>${esc(d.name)}</h2>
       <div style="display:flex;gap:6px;margin-top:8px">${d.lines.map(l => `<button class="lineLink" data-line="${esc(base(l))}" aria-label="${esc(t("lineN", { n: style(l).name }))}" style="border:0;padding:0;background:none;border-radius:50%">${badge(l)}</button>`).join("")}</div>
-      <div class="kicker mono" style="margin-top:14px"><span></span><span style="display:flex;gap:10px"><span style="min-width:48px;text-align:right">${esc(t("ours"))}</span><span style="min-width:58px;text-align:right">${esc(t("operator"))}</span></span></div>
-      <div style="margin-top:4px">${rows || `<p class="empty">${esc(t("noBuses"))}</p>`}</div>
+      <div style="margin-top:12px">${rows || `<p class="empty">${esc(t("noBuses"))}</p>`}</div>
       ${later ? `<div class="later"><div class="mono" style="color:var(--muted);margin-bottom:4px">${esc(t("later"))}</div>${later}</div>` : ""}
       <div class="actions"><button class="btn" id="shareBtn">${esc(t("share"))}</button><button class="btn primary" id="expandBtn">${esc(t("allDeps"))}</button></div>`, "#ECEAE3");
     $("closeSheet").onclick = peek;
@@ -1059,7 +1103,7 @@ async function runSearch() {
     lineHits.map(([l, s]) => `<button class="row" data-line="${l}">${badge(l)}<div class="grow"><b>${esc(t("lines"))} ${esc(s.name)}</b><span class="note">${esc([...new Set(s.variants.map(v => v.headsign))].join(" ⇄ "))}</span></div></button>`).join("") +
     (res.map(r => `<button class="row" data-code="${esc(r.code)}"><div class="grow"><b>${esc(r.name)}</b>
       <span class="note">${r.dist != null ? fmtDist(r.dist) + " · " : ""}${esc(r.code)}</span></div>
-      <span style="display:flex;gap:4px">${r.lines.map(l => { const s = style(l); return `<span style="background:${s.color};color:${s.ink};font:500 12px/24px Roboto,sans-serif;min-width:24px;height:24px;border-radius:12px;text-align:center;padding:0 6px">${esc(s.name)}</span>`; }).join("")}</span></button>`).join("")
+      <span style="display:flex;gap:4px">${r.lines.map(l => { const s = style(l); return `<span class="mini" style="background:${s.color};color:${s.ink}">${esc(s.name)}</span>`; }).join("")}</span></button>`).join("")
       || (lineHits.length ? "" : `<p class="empty">${esc(t("noResults"))}</p>`));
   for (const b of $("results").querySelectorAll("[data-code]")) b.onclick = () => { closeSearch(); openStop(b.dataset.code); };
   for (const b of $("results").querySelectorAll("[data-line]")) b.onclick = () => openLine(b.dataset.line);
