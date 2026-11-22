@@ -385,7 +385,8 @@ const T = {
     how: "Ogni ~20 s gli autobus inviano la posizione GPS. NoSePol la proietta sul percorso, stima posizione e velocità e calcola quando l'autobus arriva alla fermata. Accanto trovi il tempo dichiarato dall'operatore.",
     privacyTitle: "Privacy e dati",
     privacy: "La tua posizione resta sul telefono: serve solo a trovare le fermate vicine e non viene inviata a nessuno se non come coordinate per cercarle. Nessun account, nessun tracciamento. Dati in tempo reale: TPL FVG. Mappa: © OpenStreetMap.",
-    installTitle: "Sulla schermata Home", install: "Dal menu del browser scegli «Aggiungi a schermata Home» per aprirla come un'app.",
+    installTitle: "Installa come app", install: "Su Android, in Chrome: menu ⋮ → «Installa app». Su iPhone, in Safari: Condividi → «Aggiungi alla schermata Home».",
+    installBtn: "Installa NoSePol", installed: "NoSePol è installata: la trovi tra le tue app.",
     offline: "Server non raggiungibile", unknownTrip: "Questo autobus non è più tracciato.", unknownStop: "Fermata sconosciuta.",
     min: "min",
     blind: "posizione stimata: nessuna fermata di questo tratto segnala gli autobus",
@@ -427,7 +428,8 @@ const T = {
     how: "Buses report GPS about every 20 s. NoSePol fits each one onto its route, estimates position and speed, and works out when it reaches each stop. The operator's own time is shown beside ours.",
     privacyTitle: "Privacy and data",
     privacy: "Your location stays on your phone: it is only used to find nearby stops, sent as coordinates for that search and nothing else. No account, no tracking. Live data: TPL FVG. Map: © OpenStreetMap.",
-    installTitle: "On your home screen", install: "In the browser menu choose “Add to Home screen” to open it like an app.",
+    installTitle: "Install as an app", install: "On Android, in Chrome: menu ⋮ → “Install app”. On iPhone, in Safari: Share → “Add to Home Screen”.",
+    installBtn: "Install NoSePol", installed: "NoSePol is installed: you'll find it with your apps.",
     offline: "Server unreachable", unknownTrip: "This bus is no longer tracked.", unknownStop: "Unknown stop.",
     min: "min",
     lastBatchAt: "Last GPS batch at {time}, about every {s} s", lastBatchAt0: "Last GPS batch at {time}", noBatch: "No GPS received yet",
@@ -1138,7 +1140,15 @@ async function openMenu() {
       ${st.resync_suggested ? `<p style="color:var(--orange)">${esc(t("resync"))}</p>` : ""}` : `<p>${esc(t("offline"))}</p>`}
     <h3>${esc(t("howTitle"))}</h3><p>${esc(t("how"))}</p>
     <h3>${esc(t("privacyTitle"))}</h3><p>${esc(t("privacy"))}</p>
-    <h3>${esc(t("installTitle"))}</h3><p>${esc(t("install"))}</p>`;
+    ${standalone() ? "" : `<h3>${esc(t("installTitle"))}</h3>${installEvt
+      ? `<button class="btn primary" id="installBtn" style="margin-top:4px">${esc(t("installBtn"))}</button>`
+      : `<p>${esc(t("install"))}</p>`}`}`;
+  $("installBtn")?.addEventListener("click", async () => {
+    const e = installEvt; installEvt = null;
+    e.prompt();
+    try { await e.userChoice; } catch {}
+    openMenu();
+  });
   for (const b of $("menuBody").querySelectorAll("[data-line]")) b.onclick = () => openLine(b.dataset.line);
   for (const b of $("menuBody").querySelectorAll("[data-lang]")) b.onclick = () => { lang = b.dataset.lang; store.set("lang", lang); applyLang(); openMenu(); rerender(); };
   for (const b of $("menuBody").querySelectorAll("[data-theme-pick]")) b.onclick = () => {
@@ -1147,6 +1157,15 @@ async function openMenu() {
   };
 }
 function closeMenu() { $("menu").classList.add("hide"); }
+
+// ---------- installing as an app ----------
+// The service worker makes the page installable (Chrome's ⋮ → "Install app"); when Chrome
+// offers it, the menu shows an Install button too. Installing needs HTTPS (or localhost).
+let installEvt = null;
+const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+addEventListener("appinstalled", () => { installEvt = null; toast(t("installed")); });
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
 $("openMenu").onclick = openMenu;
 $("closeMenu").onclick = closeMenu;
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeSearch(); closeMenu(); closeLine(); } });

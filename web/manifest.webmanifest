@@ -1,10 +1,18 @@
 {
+  "id": "/",
   "name": "NoSePol",
   "short_name": "NoSePol",
-  "start_url": ".",
+  "description": "Autobus di Trieste in tempo reale, con il nostro orario di arrivo accanto a quello di TPL FVG.",
+  "lang": "it",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F2F0EB",
   "theme_color": "#F2F0EB",
+  "categories": [
+    "travel",
+    "navigation"
+  ],
   "icons": [
     {
       "src": "favicon.svg",

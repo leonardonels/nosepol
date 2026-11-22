@@ -63,7 +63,7 @@ STOPS_URL = "https://tplfvg.it/services/geojson/points/?lang=it"  # the operator
 STOPS_EVERY = 7 * 24 * 3600  # s between downloads of it (one ~4 MB request, not the realtime API)
 STOPS_SOON = 6 * 3600   # s, earliest download again while some route stop has no code
 STOPS_RETRY = 3600      # s after a failed download
-STOPS_NEAR_KM = 20      # urban stops this close to Trieste are kept
+STOPS_NEAR_KM = 25      # urban stops this close to Trieste are kept (line 44 ends at ~21 km)
 ROUTE_CHECK_EVERY = 24 * 3600  # s: per route variant, one trip's shape is fetched again this often
 OFFROUTE_FIXES = 3      # this many fixes in a row off the shape: fetch the trip's shape again
 RECHECK_PER_HOUR = 20   # cap on those extra shape requests

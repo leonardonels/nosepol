@@ -51,7 +51,7 @@ Findings that shape the design:
 3. **Stop codes**: a route stop with no code in `data/stops.json` can't be polled. The
    server downloads the operator's public stop list (`tplfvg.it/services/geojson/points`,
    one request to the website, not the realtime API) at start and then weekly, or every
-   6 h while a route stop has no code. It adds new urban stops within 20 km, moves ones
+   6 h while a route stop has no code. It adds new urban stops within 25 km, moves ones
    that moved, and only counts ones no longer listed. Only while that download fails
    does it probe codes just past nearby districts' known ones (daily). A bus on an end
    stretch with no coded stop can't be reported at all: once its speed puts it past
@@ -183,8 +183,11 @@ The map is then at `http://<host>:8080`. Options via environment / `.env`:
 - Update code: `git pull && docker compose up -d --build`.
 - After a stop-DB resync (new `data/stops.json` in git) the volume must be reseeded:
   `docker compose down -v && docker compose up -d --build`.
-- To install the PWA / use it away from home, put it behind HTTPS, e.g. `tailscale serve 8080`
-  or a Cloudflare Tunnel.
+- Installing it as an app (Chrome on Android: ⋮ → "Install app"; Safari on iPhone: Share →
+  "Add to Home Screen") needs HTTPS, so put it behind e.g. `tailscale serve 8080` or a
+  Cloudflare Tunnel; over plain `http://<host>:8080` Chrome won't offer it. The page's
+  service worker (`web/sw.js`) is network first: pages always come fresh from the server,
+  `/api` is never cached, and the cached shell only opens the page offline.
 
 ## Next steps
 - Check `eta_errors` in `/api/status` after a few days of learned stretch times; tune
