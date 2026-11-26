@@ -123,6 +123,9 @@ Findings that shape the design:
      out the timetable plus delay. With GPS old, frozen or gone, the filter's alone.
      `eta_src` is then `blend` or `timetable`; `/api/status` adds `blend_mae_s` to
      `eta_errors` and `blend_weights` (the history ETA's weight per minute).
+     `eta_spread` gives mean, median and 95th percentile of the absolute error for all
+     four (speed, history, timetable, blend) on the same recent arrivals: the mean says
+     how good it usually is, the p95 how bad it gets.
    - `NOSEPOL_ESTIMATOR=fit` shows the old estimator. Both are always computed:
      `/api/status` `eta_errors` adds `kalman_mae_s` beside `ours_same_mae_s` (the
      history ETA on the same arrivals), and `timetable` counts passages, ghosts,
