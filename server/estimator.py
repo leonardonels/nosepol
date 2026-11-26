@@ -85,7 +85,76 @@ class History:
         return {"stretches": len(n), "usable": sum(1 for x in n if x >= HIST_MIN_N), "runs": sum(n)}
 
 
+BLEND_BIN_S = 60     # weights are learned per minute of time to the stop...
+BLEND_BINS = 30      # ...up to 30 min (further ahead uses the last bin)
+BLEND_MIN_N = 20     # arrivals a bin needs before its own errors set its weight
+BLEND_ALPHA = 0.02   # weight of a new error once a bin is warm (~50 arrivals of memory)
+BLEND_ERR_CAP = 600  # s, larger errors (an incident, a detour) count as this much
+
+
+class Blend:
+    """Combines the history ETA and the timetable filter's into one, weighted by how far
+    the stop is. Each is weighted by 1 / its mean squared error at that time to the stop
+    (inverse-variance weighting), learned online from the scored arrivals: close to the
+    stop the history (this bus's own recent pace) tends to win, further out the
+    timetable plus delay. Saved to data/blend.json."""
+
+    def __init__(self, path):
+        self.path = path
+        try:
+            d = json.loads(path.read_text()) if path.exists() else {}
+        except (OSError, ValueError):
+            d = {}
+        self.bins = d.get("bins") or [[0, 0.0, 0.0] for _ in range(BLEND_BINS)]  # [n, mse history, mse timetable]
+        self.dirty = False
+
+    @staticmethod
+    def _bin(ahead):
+        return min(max(int(ahead // BLEND_BIN_S), 0), BLEND_BINS - 1)
+
+    def add(self, ahead, err_hist, err_tt):
+        b = self.bins[self._bin(ahead)]
+        b[0] = min(b[0] + 1, 100000)
+        a = max(1.0 / b[0], BLEND_ALPHA)
+        for j, e in ((1, err_hist), (2, err_tt)):
+            e = min(abs(e), BLEND_ERR_CAP)
+            b[j] += (e * e - b[j]) * a
+        self.dirty = True
+
+    def weight(self, ahead):
+        """Weight of the history ETA (the timetable's is 1 - this). A bin with too few
+        arrivals borrows from its neighbours; with none, half and half."""
+        k = self._bin(ahead)
+        n = mh = mk = 0.0
+        for r in range(BLEND_BINS):
+            for j in {k - r, k + r}:
+                if 0 <= j < BLEND_BINS and self.bins[j][0]:
+                    c, h, t = self.bins[j]
+                    n, mh, mk = n + c, mh + c * h, mk + c * t
+            if n >= BLEND_MIN_N:
+                break
+        if n < BLEND_MIN_N or mh + mk <= 0:
+            return 0.5
+        return mk / (mh + mk)  # = (1/mh) / (1/mh + 1/mk)
+
+    def combine(self, eta_hist, eta_tt):
+        w = self.weight((eta_hist + eta_tt) / 2)
+        return w * eta_hist + (1 - w) * eta_tt, w
+
+    def save(self):
+        if self.dirty:
+            self.path.write_text(json.dumps({"bins": [[n, round(h, 1), round(t, 1)] for n, h, t in self.bins]}))
+            self.dirty = False
+
+    def summary(self):
+        """Per minute to the stop: arrivals learned from, and the history ETA's weight."""
+        return [{"min": i, "n": b[0], "w_history": round(self.weight(i * BLEND_BIN_S + 30), 2)}
+                for i, b in enumerate(self.bins) if b[0]]
+
+
 class Track:
+    blend = None  # the tracker's Blend, shared by every track
+
     def __init__(self, trip, variant, history=None):
         self.trip = trip
         self.variant = variant
@@ -179,11 +248,17 @@ class Track:
         return self.history.get(a, b, t) if a and b else None
 
     def eta(self, s_from, s_to, v, now):
-        """(seconds from s_from to s_to, source): the timetable filter's when it runs the
-        bus (source "timetable"), else eta_hist's."""
+        """(seconds from s_from to s_to, source). With the timetable filter running the bus
+        and fresh GPS: the history ETA and the filter's combined by Blend ("blend").
+        With GPS old, frozen or gone the history ETA would run on an old speed, so the
+        filter's alone ("timetable"). Without a timetable: eta_hist's."""
         if self.kalman():
             e = self.tl.eta(s_to, now)
             if e is not None:
+                if self.blend is not None and not self.estimated(now):
+                    h = self.eta_hist(s_from, s_to, v, now)[0]
+                    if h is not None:
+                        return self.blend.combine(h, e)[0], "blend"
                 return e, "timetable"
         return self.eta_hist(s_from, s_to, v, now)
 

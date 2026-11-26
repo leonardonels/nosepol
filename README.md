@@ -115,6 +115,14 @@ Findings that shape the design:
    - **Fewer requests**: only every `NOSEPOL_FULL_EVERY`-th sweep (default 3) polls the
      full set. The others poll each variant's first stop and the two
      stops just ahead of every known bus and ghost. `1` restores full sweeps.
+   - **Blended ETA** (branch `eta-blend`): with fresh GPS the ETA is a weighted average
+     of the history ETA and the filter's. The weights depend on the time to the stop,
+     per minute up to 30: each method counts by 1 / its mean squared error there
+     (inverse-variance weighting), learned from the scored arrivals and saved to
+     `data/blend.json`. Close to the stop the bus's own recent pace tends to win, further
+     out the timetable plus delay. With GPS old, frozen or gone, the filter's alone.
+     `eta_src` is then `blend` or `timetable`; `/api/status` adds `blend_mae_s` to
+     `eta_errors` and `blend_weights` (the history ETA's weight per minute).
    - `NOSEPOL_ESTIMATOR=fit` shows the old estimator. Both are always computed:
      `/api/status` `eta_errors` adds `kalman_mae_s` beside `ours_same_mae_s` (the
      history ETA on the same arrivals), and `timetable` counts passages, ghosts,

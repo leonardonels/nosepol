@@ -30,7 +30,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-from estimator import ARRIVE_M, DWELL_S, ESTIMATOR, OFFROUTE_M, History, Track
+from estimator import ARRIVE_M, DWELL_S, ESTIMATOR, OFFROUTE_M, Blend, History, Track
 from kalman import DelayFilter, TimetableTrack
 from geo import Frame, Polyline
 
@@ -338,6 +338,7 @@ class Tracker:
         self._rechecked = {}    # trip -> last time its shape was fetched again
         self._recheck_times = collections.deque()  # those fetches in the last hour
         self.history = History(DATA / "speeds.json")
+        self.blend = Track.blend = Blend(DATA / "blend.json")
         self._preds = {}        # (trip, stop index) -> [(made at, speed-only arrival, our arrival)]
         self._pred_at = {}      # trip -> when its predictions were last made
         self.eta_errors = {}    # horizon -> {"n", "speed", "ours", "nk", "kalman", "ours_k"}: absolute errors summed (s)
@@ -485,13 +486,13 @@ class Tracker:
         prediction was made. Shown in /api/status as eta_errors."""
         for trip, tr in self.tracks.items():
             for i, ta in tr.new_arrivals:
-                for made, old, new, kf in self._preds.pop((trip, i), []):
+                for made, old, new, kf, bl in self._preds.pop((trip, i), []):
                     ahead = ta - made
                     h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
                     if h is None or ahead < 15:
                         continue
                     e = self.eta_errors.setdefault(h, {"n": 0, "speed": 0.0, "ours": 0.0,
-                                                       "nk": 0, "kalman": 0.0, "ours_k": 0.0})
+                                                       "nk": 0, "kalman": 0.0, "ours_k": 0.0, "blend": 0.0})
                     e["n"] += 1
                     e["speed"] += abs(old - ta)
                     e["ours"] += abs(new - ta)
@@ -499,6 +500,8 @@ class Tracker:
                         e["nk"] += 1
                         e["kalman"] += abs(kf - ta)
                         e["ours_k"] += abs(new - ta)
+                        e["blend"] = e.get("blend", 0.0) + abs(bl - ta)
+                        self.blend.add(ahead, new - ta, kf - ta)  # weights learn after scoring this one
             tr.new_arrivals.clear()
             if tr.layover or tr.stopped_for(t) is not None or t - self._pred_at.get(trip, 0) < self.ETA_EVERY:
                 continue
@@ -513,8 +516,9 @@ class Tracker:
                 old, new = tr.time_to(s, st["s"], v), tr.eta_hist(s, st["s"], v, t)[0]
                 kf = tr.tl.eta(st["s"], t) if tr.tl.ready() else None
                 if old is not None and new is not None:
+                    bl = None if kf is None else t + self.blend.combine(new, kf)[0]
                     self._preds.setdefault((trip, i), []).append(
-                        (t, t + old, t + new, None if kf is None else t + kf))
+                        (t, t + old, t + new, None if kf is None else t + kf, bl))
                 n += 1
                 if n >= self.ETA_AHEAD:
                     break
@@ -1148,6 +1152,7 @@ class Tracker:
                 with self.lock:
                     self._save_refresh()
                     self.history.save()
+                    self.blend.save()
             except Exception:
                 log.exception("saving data failed")
             time.sleep(DATA_EVERY)
@@ -1510,12 +1515,15 @@ class Tracker:
                     "stop_list": {"downloaded": self.refresh.get("stops"), "ok": self.refresh.get("stops_ok")},
                     "route_checks_last_hour": len(self._recheck_times),
                     "history": self.history.summary(),
+                    "blend_weights": self.blend.summary(),
                     "eta_errors": {h: {"n": e["n"], "speed_mae_s": round(e["speed"] / e["n"]),
                                        "ours_mae_s": round(e["ours"] / e["n"]),
                                        # the timetable filter's, and ours on the same arrivals
                                        "n_kalman": e.get("nk", 0),
                                        "kalman_mae_s": round(e["kalman"] / e["nk"]) if e.get("nk") else None,
-                                       "ours_same_mae_s": round(e["ours_k"] / e["nk"]) if e.get("nk") else None}
+                                       "ours_same_mae_s": round(e["ours_k"] / e["nk"]) if e.get("nk") else None,
+                                       # the two combined, weighted by time to the stop
+                                       "blend_mae_s": round(e.get("blend", 0) / e["nk"]) if e.get("nk") else None}
                                    for h, e in sorted(self.eta_errors.items()) if e["n"]}}
 
     def shapes(self, line):
