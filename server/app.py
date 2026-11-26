@@ -712,12 +712,14 @@ class Tracker:
             # the line's next run back (watched on lines 6, 8, 9), so keep it as "layover".
             for k, tr in self.tracks.items():
                 end = self.at_end(tr)
-                # GPS frozen or gone and its timetable at the end: stops it already passed
-                # may keep listing it at the frozen spot, so being listed doesn't mean running
-                est_end = end and (tr.gps_frozen or tr.gps_lost)
+                # Position from the timetable (GPS old, frozen or gone), and that puts it at
+                # the end: stops it already passed may keep listing it at its last GPS spot,
+                # so being listed doesn't mean running. (Not "frozen" alone: a bus estimated
+                # at the end counts as at a terminus, where standing isn't taken as frozen.)
+                est_end = end and (tr.hold_s is not None or tr.estimated(t))
                 if est_end and tr.hold_s is None:
                     tr.hold_s = tr.predict(t)[0]
-                    log.info("%s: by its timetable at the end (GPS frozen/gone): waiting there", k)
+                    log.info("%s: by its timetable at the end (no fresh GPS): waiting there", k)
                 tr.layover = end and (self.seen.get(k, 0) < t or est_end)
                 tr.blind = self.blind(tr, t)
             self._assign_next_runs(t, fetched)
