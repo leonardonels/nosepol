@@ -711,7 +711,14 @@ class Tracker:
             # trip: the operator drops it at once. Buses then usually wait there and start
             # the line's next run back (watched on lines 6, 8, 9), so keep it as "layover".
             for k, tr in self.tracks.items():
-                tr.layover = self.at_end(tr) and self.seen.get(k, 0) < t
+                end = self.at_end(tr)
+                # GPS frozen or gone and its timetable at the end: stops it already passed
+                # may keep listing it at the frozen spot, so being listed doesn't mean running
+                est_end = end and (tr.gps_frozen or tr.gps_lost)
+                if est_end and tr.hold_s is None:
+                    tr.hold_s = tr.predict(t)[0]
+                    log.info("%s: by its timetable at the end (GPS frozen/gone): waiting there", k)
+                tr.layover = end and (self.seen.get(k, 0) < t or est_end)
                 tr.blind = self.blind(tr, t)
             self._assign_next_runs(t, fetched)
             self._ghosts(t, at)
@@ -925,7 +932,9 @@ class Tracker:
         terminus), or within TERMINUS_M of the end of the route. With GPS frozen or gone,
         where its timetable has it."""
         s, stops = tr.fixes[-1][1], tr.variant.stops
-        if tr.estimated(time.time()):
+        if tr.hold_s is not None:
+            s = max(s, tr.hold_s)
+        elif tr.estimated(time.time()):
             s = max(s, tr.predict(time.time())[0])
         if s > tr.variant.shape.length - TERMINUS_M:
             return True

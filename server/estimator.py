@@ -100,6 +100,7 @@ class Track:
         self.blind = False       # set by the tracker: on a stretch no stop reports on, so dead-reckon on
         self.gps_frozen = False  # set by the tracker: listed with the same position too long mid-route
         self.gps_lost = False    # set by the tracker: still listed, but with no position
+        self.hold_s = None       # set by the tracker: where its timetable ended the trip (GPS frozen or gone)
         self.tl = TimetableTrack(variant)
         self.meta = {}
 
@@ -117,6 +118,7 @@ class Track:
         if perp <= OFFROUTE_M:
             self.tl.measure_s(t, s)
         self.gps_frozen = self.gps_lost = False
+        self.hold_s = None
         if len(self.fixes) > 1:
             self._time_stops(self.fixes[-2], self.fixes[-1])
         self.fixes = [f for f in self.fixes if t - f[0] <= WINDOW_S][-MAX_FIXES:]
@@ -296,7 +298,7 @@ class Track:
         """(s, v, residual, n): v is the speed between stops (see cruise)."""
         a, v, res, t_ref, n = self.cruise()
         if self.layover or (self.stopped_for(now) is not None and not self.gps_frozen):
-            return self.fixes[-1][1], 0.0, res, n  # hold it where it stands, no dead reckoning
+            return max(self.fixes[-1][1], self.hold_s or 0.0), 0.0, res, n  # hold it where it stands, no dead reckoning
         if self.kalman():
             s, _, pace = self.tl.position(now)
             if v is None or self.estimated(now):
