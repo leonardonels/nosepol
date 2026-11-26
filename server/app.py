@@ -718,7 +718,10 @@ class Tracker:
                 # at the end counts as at a terminus, where standing isn't taken as frozen.)
                 est_end = end and (tr.hold_s is not None or tr.estimated(t))
                 if est_end and tr.hold_s is None:
-                    tr.hold_s = tr.predict(t)[0]
+                    # at least at the stop before the end: at_end went by the clock a moment
+                    # later than t, so predict(t) can fall just short and undo the hold
+                    stops = tr.variant.stops
+                    tr.hold_s = max(tr.predict(t)[0], stops[-2]["s"] if len(stops) >= 3 else tr.variant.shape.length)
                     log.info("%s: by its timetable at the end (no fresh GPS): waiting there", k)
                 tr.layover = end and (self.seen.get(k, 0) < t or est_end)
                 tr.blind = self.blind(tr, t)
