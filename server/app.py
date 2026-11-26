@@ -979,7 +979,14 @@ class Tracker:
         this one is a leftover."""
         still = t - tr.fixes[-1][0]
         if tr.estimated(t) and tr.predict(t)[0] >= tr.variant.shape.length - 1:
-            return "timetable_end"  # no GPS for a while, and by its timetable the trip is over
+            # No GPS for a while, and by its timetable the trip is over: it waits at the
+            # end like any finished bus (gone when its vehicle starts a newer run, or after
+            # LAYOVER_TTL), rather than being dropped and missing its next run.
+            if tr.hold_s is None:
+                tr.hold_s = tr.variant.shape.length
+                log.info("%s: by its timetable at the end (drop check): waiting there", tr.trip)
+            tr.layover = True
+            return None
         if self.at_terminus(tr):
             if still > TERMINUS_TTL:
                 return "terminus_timeout"

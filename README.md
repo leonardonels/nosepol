@@ -107,7 +107,7 @@ Findings that shape the design:
    - **GPS frozen / gone**: listed at the same position for 150 s mid-route, or listed
      with no position, the bus moves on by its timetable (`estimated`, dashed on the
      map) rather than standing or vanishing. With a known timetable an unlisted bus is
-     kept 6 min instead of 3, and dropped as `timetable_end` once its timetable ends.
+     kept 6 min instead of 3, and once its timetable ends it waits at the terminus like any finished bus.
    - **Ghosts**: a run listed with no GPS, past its first stop and due (or overdue) at
      a stop listing it, that no known bus is about to take, is out running without GPS.
      It is shown at its timetable position (`ghost`, hollow and dashed), `confirmed` once
