@@ -89,6 +89,37 @@ Findings that shape the design:
    fetched again as each next runs. A variant no bus ran on for 21 days is dropped.
    When and where it checked is kept in `data/refresh.json` (not in git).
 
+7. **Timetable filter** (`server/kalman.py`, branch `kalman-timetable`): every stop
+   that lists a run also gives `Time`, its scheduled time at that stop, and the run's
+   first stop is marked `DepartureFromStop`. Collected per trip they make a timetable
+   curve T(s). A stop lists only the next bus, so a bus's times are known up to the bus
+   ahead; past that, another trip of the same route fills in, shifted to match. The
+   bus is then described by its **delay** d = t − T(s), filtered by a 2-state Kalman
+   filter (delay and its rate, the rate fading over ~10 min since timetables have slack).
+   The timetable is the motion model and GPS the correction: position is S(t − d), ETA
+   is the scheduled time at the stop plus the delay expected by then. Between fixes, or
+   with no GPS at all, the bus keeps moving at the timetable's pace and its `sigma`
+   grows, instead of following a speed fitted to whichever fixes came in.
+   - Measurements: each GPS fix (also "listed again at the same spot", so standing
+     makes the delay grow), and **passages**: a stop that listed a run last poll and
+     now lists another of the same line and direction instead means it went by. They
+     need no GPS, so they are used for buses whose GPS is old, frozen or gone.
+   - **GPS frozen / gone**: listed at the same position for 150 s mid-route, or listed
+     with no position, the bus moves on by its timetable (`estimated`, dashed on the
+     map) rather than standing or vanishing. With a known timetable an unlisted bus is
+     kept 6 min instead of 3, and dropped as `timetable_end` once its timetable ends.
+   - **Ghosts**: a run listed with no GPS, past its first stop and due (or overdue) at
+     a stop listing it, that no known bus is about to take, is out running without GPS.
+     It is shown at its timetable position (`ghost`, hollow and dashed), `confirmed` once
+     a passage was seen, and becomes a normal bus when its GPS appears.
+   - **Fewer requests**: only every `NOSEPOL_FULL_EVERY`-th sweep (default 3) polls the
+     full set. The others poll each variant's first stop and the two
+     stops just ahead of every known bus and ghost. `1` restores full sweeps.
+   - `NOSEPOL_ESTIMATOR=fit` shows the old estimator. Both are always computed:
+     `/api/status` `eta_errors` adds `kalman_mae_s` beside `ours_same_mae_s` (the
+     history ETA on the same arrivals), and `timetable` counts passages, ghosts,
+     frozen GPS and full/targeted sweeps; `requests_per_hour` shows the API load.
+
 ## API
 
 - `GET /api/lines`: lines with display `name`, `color`, `ink` (text colour on it), route

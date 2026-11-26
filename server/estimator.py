@@ -4,8 +4,11 @@ learned travel times between stops (History) where there are enough of them."""
 import collections
 import json
 import math
+import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
+from kalman import TimetableTrack
 
 WINDOW_S = 150      # fit window
 MAX_FIXES = 8
@@ -22,6 +25,10 @@ HIST_MAX_GAP_S = 240  # fixes further apart than this don't time a stretch
 HIST_V = (0.8, 20.0)  # m/s, plausible average over a stretch (else: an incident, or bad GPS)
 LIVE_FACTOR = (0.75, 1.5)  # how far this bus's own pace may scale the history
 LOCAL_TZ = ZoneInfo("Europe/Rome")
+# "kalman": position and ETA from the timetable shifted by a filtered delay (kalman.py)
+# wherever the trip's timetable is known; "fit": the speed fit below only. Both are
+# always computed, and /api/status scores both.
+ESTIMATOR = os.environ.get("NOSEPOL_ESTIMATOR", "kalman")
 
 
 class History:
@@ -91,6 +98,9 @@ class Track:
         self.layover = False     # set by the tracker: trip over at the terminus, bus waiting there
         self.next_run = None     # set by the tracker: the departure it probably takes next
         self.blind = False       # set by the tracker: on a stretch no stop reports on, so dead-reckon on
+        self.gps_frozen = False  # set by the tracker: listed with the same position too long mid-route
+        self.gps_lost = False    # set by the tracker: still listed, but with no position
+        self.tl = TimetableTrack(variant)
         self.meta = {}
 
     def add_fix(self, t, lat, lon):
@@ -104,11 +114,27 @@ class Track:
         hint = self.predict(t)[0] if self.fixes else None
         perp, s = self.variant.shape.project(lat, lon, hint)
         self.fixes.append((t, s, perp, lat, lon))
+        if perp <= OFFROUTE_M:
+            self.tl.measure_s(t, s)
+        self.gps_frozen = self.gps_lost = False
         if len(self.fixes) > 1:
             self._time_stops(self.fixes[-2], self.fixes[-1])
         self.fixes = [f for f in self.fixes if t - f[0] <= WINDOW_S][-MAX_FIXES:]
         self.last_report = t
         return True
+
+    def stand(self, t):
+        """Listed again at the same position: standing there now, as far as GPS says."""
+        if self.fixes[-1][2] <= OFFROUTE_M:
+            self.tl.measure_s(t, self.fixes[-1][1])
+
+    def kalman(self):
+        """Use the timetable filter for position and ETA now?"""
+        return ESTIMATOR == "kalman" and self.tl.ready() and not self.layover
+
+    def estimated(self, now):
+        """Position comes from the timetable, not from recent GPS."""
+        return self.kalman() and (self.gps_frozen or self.gps_lost or now - self.fixes[-1][0] > STOP_AFTER_S)
 
     def _time_stops(self, f1, f2):
         """Arrival times at the stops passed between two fixes, interpolated, and from
@@ -151,6 +177,15 @@ class Track:
         return self.history.get(a, b, t) if a and b else None
 
     def eta(self, s_from, s_to, v, now):
+        """(seconds from s_from to s_to, source): the timetable filter's when it runs the
+        bus (source "timetable"), else eta_hist's."""
+        if self.kalman():
+            e = self.tl.eta(s_to, now)
+            if e is not None:
+                return e, "timetable"
+        return self.eta_hist(s_from, s_to, v, now)
+
+    def eta_hist(self, s_from, s_to, v, now):
         """(seconds from s_from to s_to, "history" or "speed"). Whole stretches ahead
         take their learned time, scaled by this bus's pace on its last stretches;
         the rest of the stretch it is on, and stretches with no history, go at v
@@ -260,8 +295,13 @@ class Track:
     def predict(self, now):
         """(s, v, residual, n): v is the speed between stops (see cruise)."""
         a, v, res, t_ref, n = self.cruise()
-        if self.layover or self.stopped_for(now) is not None:
+        if self.layover or (self.stopped_for(now) is not None and not self.gps_frozen):
             return self.fixes[-1][1], 0.0, res, n  # hold it where it stands, no dead reckoning
+        if self.kalman():
+            s, _, pace = self.tl.position(now)
+            if v is None or self.estimated(now):
+                v = pace
+            return max(s, self.fixes[-1][1]), v, res, n  # buses don't reverse
         dt = max(0.0, now - t_ref)
         if not self.blind:  # no report expected there: keep moving it (to the end at most)
             dt = min(dt, MAX_EXTRAP_S)
@@ -271,11 +311,16 @@ class Track:
         s, v, res, n = self.predict(now)
         lat, lon = self.variant.shape.at(s)
         nxt = self.variant.next_stop(s)
+        stopped = None if self.gps_frozen else self.stopped_for(now)
         eta = None
-        if nxt and self.stopped_for(now) is None and (e := self.eta(s, nxt["s"], v, now)[0]) is not None:
+        if nxt and stopped is None and (e := self.eta(s, nxt["s"], v, now)[0]) is not None:
             eta = round(e)
         last = self.fixes[-1]
-        stopped = self.stopped_for(now)
+        tl = None
+        if self.tl.ready():
+            d, sd = self.tl.delay(now)
+            tl = {"delay_s": round(d), "sigma_s": round(sd), "sigma_m": round(sd * self.tl.position(now)[2]),
+                  "points": len(self.tl.tt.at), "passages": self.tl.passages}
         return {
             "trip": self.trip,
             "variant": self.variant.key,
@@ -291,6 +336,10 @@ class Track:
             "stopped_s": round(now - last[0]) if self.layover else (None if stopped is None else round(stopped)),
             "next_run": self.next_run,
             "blind": self.blind,
+            "estimated": self.estimated(now),
+            "gps_frozen": self.gps_frozen,
+            "gps_lost": self.gps_lost,
+            "timetable": tl,
             "gps": {"lat": last[3], "lon": last[4], "offroute": round(last[2], 1)},
             "next_stop": nxt and {"code": nxt["code"], "name": nxt["name"],
                                   "dist": round(nxt["s"] - s), "eta_s": eta},

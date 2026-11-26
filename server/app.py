@@ -16,6 +16,7 @@ import hashlib
 import json
 import logging
 import math
+import os
 import pathlib
 import re
 import statistics
@@ -29,7 +30,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-from estimator import ARRIVE_M, DWELL_S, OFFROUTE_M, History, Track
+from estimator import ARRIVE_M, DWELL_S, ESTIMATOR, OFFROUTE_M, History, Track
+from kalman import DelayFilter, TimetableTrack
 from geo import Frame, Polyline
 
 API = "https://realtime.tplfvg.it/API/v1.0/polemonitor"
@@ -73,6 +75,16 @@ STREAM_EVERY = 3        # s between updates on /api/stream (the page glides mark
 STREAM_MAX_S = 10 * 60  # s before a stream closes; the browser reconnects on its own
 MAX_STREAMS = 200       # open streams at once; more get 503 and the page polls instead
 LOCAL_TZ = ZoneInfo("Europe/Rome")  # the operator's timetable times are local
+# Timetable filter (kalman.py): every stop's listing gives the run's scheduled time there.
+FROZEN_AFTER_S = 150    # s listed at the same position mid-route: GPS frozen, move it on the timetable
+KF_TTL = 6 * 60         # s a bus with a known timetable is kept while no stop lists it (hidden, GPS gap)
+GHOST_DUE_S = 120       # a run with no GPS due this soon (or past) at a stop it's listed at is out running
+GHOST_TTL = 4 * 60      # s a ghost is kept after the last stop listing it
+PASSAGE_GAP_S = 120     # longest gap between two polls of a stop that times a passage
+PASSAGE_NEAR_M = 1500   # a passage counts only this close to where the filter has the bus
+# Every FULL_EVERY-th sweep polls the full set; the others only the stops just ahead of
+# known buses and the termini (1: always full, as before).
+FULL_EVERY = max(1, int(os.environ.get("NOSEPOL_FULL_EVERY", "3")))
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
            ("#D35DA2", "#FFFFFF"), ("#26A6B5", "#1B1B1F"), ("#F2B33D", "#1B1B1F"),
@@ -251,6 +263,50 @@ class StopDB:
         return sorted((st for st in self.stops if st.get("urban")), key=lambda st: math.dist(p, st["xy"]))
 
 
+def stop_index(var, code, s_hint=0.0):
+    """Index of the stop with code on var: the first at or past s_hint (loops pass twice)."""
+    idx = [i for i, st in enumerate(var.stops) if st["code"] == code]
+    if not idx:
+        return None
+    return next((i for i in idx if var.stops[i]["s"] >= s_hint), idx[-1])
+
+
+class Ghost:
+    """A run the feed lists without any position, though the timetable says it is out on
+    the road: its bus runs with no GPS. Placed by its timetable and delay filter alone,
+    corrected by passages (a stop stops listing it once it has gone by)."""
+
+    def __init__(self, trip, variant, t):
+        self.trip, self.variant = trip, variant
+        self.tl = TimetableTrack(variant)
+        self.tl.kf = DelayFilter(t)
+        self.first_seen = self.last_listed = t
+        self.meta = {}
+        self.layover = False
+
+    def s(self, now):
+        return self.tl.position(now)[0] if self.tl.schedule() else 0.0
+
+    def state(self, now):
+        s, sm, pace = self.tl.position(now)
+        lat, lon = self.variant.shape.at(s)
+        nxt = self.variant.next_stop(s)
+        eta = self.tl.eta(nxt["s"], now) if nxt else None
+        d, sd = self.tl.delay(now)
+        return {"trip": self.trip, "variant": self.variant.key, "s": round(s, 1),
+                "length": round(self.variant.shape.length), "lat": round(lat, 6), "lon": round(lon, 6),
+                "v": round(pace, 2), "heading": None if (h := self.variant.shape.heading(s)) is None else round(h),
+                "residual": None, "n_fixes": 0, "age": None, "stopped_s": None, "next_run": None,
+                "blind": False, "estimated": True, "gps_frozen": False, "gps_lost": True,
+                "ghost": True, "confirmed": self.tl.passages > 0,
+                "timetable": {"delay_s": round(d), "sigma_s": round(sd), "sigma_m": round(sd * pace),
+                              "points": len(self.tl.tt.at), "passages": self.tl.passages},
+                "gps": None,
+                "next_stop": nxt and {"code": nxt["code"], "name": nxt["name"], "dist": round(nxt["s"] - s),
+                                      "eta_s": None if eta is None else round(eta)},
+                **self.meta}
+
+
 class Tracker:
     def __init__(self, lines):
         self.lines = lines
@@ -259,6 +315,11 @@ class Tracker:
         self.variants = {}      # key -> Variant
         self.race_variant = {}  # "T06:123" -> key
         self.tracks = {}        # trip -> Track
+        self.ghosts = {}        # trip -> Ghost: listed with no GPS but running by the timetable
+        self._listing = {}      # stop code -> (time polled, {trip: (line, direction)} it listed)
+        self._past_tt = {}      # variant key -> recent finished trips' Timetables (to extend others')
+        self.kf_stats = {"passages": 0, "passage_z": [], "ghosts_found": 0, "ghosts_then_gps": 0,
+                         "frozen": 0, "full_sweeps": 0, "targeted_sweeps": 0}
         self.seen = {}          # trip -> last time seen at any stop
         self.frozen = {}        # dropped trip -> its last (lat, lon), ignored until it moves
         self.drops = collections.deque(maxlen=50)  # recent removals, with the reason
@@ -279,7 +340,7 @@ class Tracker:
         self.history = History(DATA / "speeds.json")
         self._preds = {}        # (trip, stop index) -> [(made at, speed-only arrival, our arrival)]
         self._pred_at = {}      # trip -> when its predictions were last made
-        self.eta_errors = {}    # horizon -> {"n", "speed", "ours"}: absolute errors summed (s)
+        self.eta_errors = {}    # horizon -> {"n", "speed", "ours", "nk", "kalman", "ours_k"}: absolute errors summed (s)
         # when the stop list was downloaded, and per variant when it was checked and last used
         self.refresh = self._load_json(DATA / "refresh.json")
         self._load_cache()
@@ -424,15 +485,20 @@ class Tracker:
         prediction was made. Shown in /api/status as eta_errors."""
         for trip, tr in self.tracks.items():
             for i, ta in tr.new_arrivals:
-                for made, old, new in self._preds.pop((trip, i), []):
+                for made, old, new, kf in self._preds.pop((trip, i), []):
                     ahead = ta - made
                     h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
                     if h is None or ahead < 15:
                         continue
-                    e = self.eta_errors.setdefault(h, {"n": 0, "speed": 0.0, "ours": 0.0})
+                    e = self.eta_errors.setdefault(h, {"n": 0, "speed": 0.0, "ours": 0.0,
+                                                       "nk": 0, "kalman": 0.0, "ours_k": 0.0})
                     e["n"] += 1
                     e["speed"] += abs(old - ta)
                     e["ours"] += abs(new - ta)
+                    if kf is not None:
+                        e["nk"] += 1
+                        e["kalman"] += abs(kf - ta)
+                        e["ours_k"] += abs(new - ta)
             tr.new_arrivals.clear()
             if tr.layover or tr.stopped_for(t) is not None or t - self._pred_at.get(trip, 0) < self.ETA_EVERY:
                 continue
@@ -444,9 +510,11 @@ class Tracker:
             for i, st in enumerate(tr.variant.stops):
                 if st["s"] - ARRIVE_M <= s or i in tr.arrivals:
                     continue
-                old, new = tr.time_to(s, st["s"], v), tr.eta(s, st["s"], v, t)[0]
+                old, new = tr.time_to(s, st["s"], v), tr.eta_hist(s, st["s"], v, t)[0]
+                kf = tr.tl.eta(st["s"], t) if tr.tl.ready() else None
                 if old is not None and new is not None:
-                    self._preds.setdefault((trip, i), []).append((t, t + old, t + new))
+                    self._preds.setdefault((trip, i), []).append(
+                        (t, t + old, t + new, None if kf is None else t + kf))
                 n += 1
                 if n >= self.ETA_AHEAD:
                     break
@@ -520,6 +588,28 @@ class Tracker:
             if behind:
                 codes += [c for tr in self.tracks.values()
                           if not tr.layover and (c := tr.variant.stop_behind(tr.fixes[-1][1]))]
+                codes += self._ahead_codes(time.time())
+        return list(dict.fromkeys(codes))
+
+    def _ahead_codes(self, t, n=2):
+        """The next n coded stops ahead of every known bus and ghost: they list it."""
+        codes = []
+        objs = [(tr.variant, tr.predict(t)[0]) for tr in self.tracks.values() if not tr.layover]
+        objs += [(g.variant, g.s(t)) for g in self.ghosts.values()]
+        for var, s in objs:
+            codes += [st["code"] for st in var.stops if st["code"] and st["s"] > s - AT_STOP_M][:n]
+        return codes
+
+    def target_set(self, t):
+        """A lighter sweep: each variant's first stop (departures) and the two stops just
+        ahead of every known bus and ghost (for a bus near the end, the last two: arrivals).
+        Buses hidden behind another one and buses joining mid-route are left to the full
+        sweeps."""
+        with self.lock:
+            codes = []
+            for v in self.variants.values():
+                codes += [st["code"] for st in v.stops if st["code"]][:1]
+            codes += self._ahead_codes(t)
         return list(dict.fromkeys(codes))
 
     # ---- discovery ---------------------------------------------------
@@ -555,20 +645,35 @@ class Tracker:
             return code, get("mrcruns", StopCode=code, IsUrban="true") or []
         except Exception as e:
             log.warning("stop %s: %s", code, e)
-            return code, []
+            return code, None
 
-    def sweep(self, t):
-        codes = self.poll_set()
+    def sweep(self, t, full=True):
+        codes = self.poll_set() if full else self.target_set(t)
+        self.kf_stats["full_sweeps" if full else "targeted_sweeps"] += 1
         listed, fetched = {}, {}
+        at = {}  # trip -> [(stop code, row)]
         for code, rs in self.pool.map(self._fetch, codes):
+            if rs is None:
+                continue  # no answer: says nothing (and mustn't look like buses leaving)
             fetched[code] = rs
             for r in rs:
                 if self.wants(r["Line"]):
-                    listed.setdefault(f"{r['Line']}:{r['Race']}", []).append(r)
+                    trip = f"{r['Line']}:{r['Race']}"
+                    listed.setdefault(trip, []).append(r)
+                    at.setdefault(trip, []).append((code, r))
         runs = {trip: self._freshest(trip, rs) for trip, rs in listed.items()}
         updated, moved = 0, []
         for trip, r in runs.items():
             if not r.get("IsStarted") or not r.get("Latitude"):
+                tr = self.tracks.get(trip)
+                if tr is not None and not tr.layover and tr.tl.ready():
+                    # listed, but its position is gone: the timetable carries it on
+                    with self.lock:
+                        if not tr.gps_lost:
+                            log.info("%s: GPS gone, still listed: on the timetable now", trip)
+                        tr.gps_lost = True
+                        self._timetable_points(tr, at.get(trip, []), t)
+                        self.seen[trip] = t
                 continue
             if trip in self.frozen:
                 if self.frozen[trip] == (r["Latitude"], r["Longitude"]):
@@ -585,14 +690,23 @@ class Tracker:
                 tr = self.tracks.get(trip)
                 if tr is None or tr.variant is not var:
                     tr = self.tracks[trip] = Track(trip, var, self.history)
+                    g = self.ghosts.pop(trip, None)
+                    if g is not None:  # the ghost got its GPS back: keep what its timetable learned
+                        tr.tl = g.tl if g.variant is var else tr.tl
+                        self.kf_stats["ghosts_then_gps"] += 1
+                        log.info("ghost %s now has GPS", trip)
                 tr.meta = {"line": r["Line"], "vehicle": r["Vehicle"], "direction": r["Direction"],
                            "destination": r["Destination"], "note": r["Note"] or None,
                            "api_arrival": r["ArrivalTime"]}
+                self._timetable_points(tr, at.get(trip, []), t, tr.fixes[-1][1] if tr.fixes else None)
                 if tr.add_fix(t, r["Latitude"], r["Longitude"]):
                     updated += 1
                     moved.append(tr)
+                else:
+                    self._standing(tr, t)
                 self.seen[trip] = t
         with self.lock:
+            self._passages(t, fetched)
             # A bus at the end of its route that this sweep didn't list has finished its
             # trip: the operator drops it at once. Buses then usually wait there and start
             # the line's next run back (watched on lines 6, 8, 9), so keep it as "layover".
@@ -600,6 +714,8 @@ class Tracker:
                 tr.layover = self.at_end(tr) and self.seen.get(k, 0) < t
                 tr.blind = self.blind(tr, t)
             self._assign_next_runs(t, fetched)
+            self._ghosts(t, at)
+            self._set_refs()
             reasons = {}
             for k, ts in self.seen.items():
                 tr = self.tracks.get(k)
@@ -609,7 +725,7 @@ class Tracker:
                 elif tr is not None and tr.blind:
                     if t - ts > self.blind_ttl(tr):
                         reasons[k] = "blind_timeout"
-                elif t - ts > TRIP_TTL:
+                elif t - ts > (KF_TTL if tr is not None and tr.kalman() else TRIP_TTL):
                     reasons[k] = "not_reported"
             for k, tr in self.tracks.items():
                 if tr.layover:
@@ -621,12 +737,14 @@ class Tracker:
                 self.seen.pop(trip, None)
                 tr = self.tracks.pop(trip, None)
                 if tr:
+                    self._retire_tt(tr)
                     self.frozen[trip] = tr.fixes[-1][3:5]
                     self._record_drop(trip, tr, why, t)
             self.stats["sweeps"] += 1
             self.stats["last_sweep"] = {"t": t, "stops": len(codes), "trips": len(runs),
-                                        "new_fixes": updated}
-        log.info("sweep: %d stops, %d trips, %d new fixes", len(codes), len(runs), updated)
+                                        "new_fixes": updated, "full": full}
+        log.info("sweep%s: %d stops, %d trips, %d new fixes, %d ghosts", "" if full else " (targeted)",
+                 len(codes), len(runs), updated, len(self.ghosts))
         with self.lock:
             self._score_etas(t)
         try:
@@ -634,6 +752,133 @@ class Tracker:
         except Exception:
             log.exception("route checks failed")
         return updated
+
+    # ---- timetable filter ---------------------------------------------
+    def _timetable_points(self, obj, rows, t, s_hint=None):
+        """Note the scheduled time each listing stop gives for this run."""
+        if s_hint is None:
+            s_hint = obj.tl.position(t)[0] if obj.tl.ready() and obj.tl.schedule() else 0.0
+        for code, r in rows:
+            ts = self._sched_ts(r.get("Time"))
+            i = stop_index(obj.variant, code, s_hint - 300)
+            if ts is not None and i is not None:
+                obj.tl.tt.add(i, ts)
+
+    def _standing(self, tr, t):
+        """Listed again at the same position. Standing at lights or a stop is news for the
+        filter (its delay grows); standing this long mid-route more likely means the GPS
+        froze, so from then on the timetable moves it."""
+        still = tr.stopped_for(t)
+        if (still is not None and still >= FROZEN_AFTER_S and not self.at_terminus(tr)
+                and tr.tl.ready() and ESTIMATOR == "kalman"):
+            if not tr.gps_frozen:
+                self.kf_stats["frozen"] += 1
+                log.info("%s: same position for %ds mid-route: GPS frozen? on the timetable now", tr.trip, still)
+            tr.gps_frozen = True
+            return
+        tr.stand(t)
+
+    def _passages(self, t, fetched):
+        """A stop that listed a run last time and now lists another of the same line and
+        direction instead: the run went by in between. A measurement with no GPS at all,
+        used for ghosts and buses whose GPS is old, frozen or gone."""
+        for code, rs in fetched.items():
+            now_set = {f"{r['Line']}:{r['Race']}": (r["Line"], r["Direction"]) for r in rs if self.wants(r["Line"])}
+            prev = self._listing.get(code)
+            self._listing[code] = (t, now_set)
+            if not prev or t - prev[0] > PASSAGE_GAP_S:
+                continue
+            served = set(now_set.values())
+            for trip, ld in prev[1].items():
+                if trip in now_set or ld not in served:
+                    continue
+                obj = self.tracks.get(trip) or self.ghosts.get(trip)
+                if obj is None or obj.layover or not obj.tl.ready():
+                    continue
+                if isinstance(obj, Track) and obj.fixes[-1][0] >= prev[0] and not obj.gps_frozen:
+                    continue  # fresh GPS knows better
+                s = obj.tl.position(t)[0]
+                i = stop_index(obj.variant, code, s - PASSAGE_NEAR_M)
+                if i is None or abs(obj.variant.stops[i]["s"] - s) > PASSAGE_NEAR_M:
+                    continue
+                z = obj.tl.measure_passage(i, prev[0], t)
+                if z is None:
+                    continue
+                self.kf_stats["passages"] += 1
+                self.kf_stats["passage_z"] = (self.kf_stats["passage_z"] + [round(z)])[-50:]
+                log.info("passage %s at %s (%s): delay %+ds%s", trip, code, pretty(obj.variant.stops[i]["name"]),
+                         z, " [ghost]" if isinstance(obj, Ghost) else "")
+
+    def _ghosts(self, t, at):
+        """Runs listed with no GPS whose time at a stop listing them is due or past, that
+        aren't still waiting at their first stop and no known bus is about to take: out
+        running without GPS. Each becomes a Ghost, placed by its timetable."""
+        paired = {tr.next_run["trip"] for tr in self.tracks.values() if tr.next_run}
+        for trip, rows in at.items():
+            if trip in self.tracks or any(r.get("IsStarted") and r.get("Latitude") for _, r in rows):
+                continue
+            live = [(c, r) for c, r in rows if not r.get("IsDestination") and self._sched_ts(r.get("Time"))]
+            g = self.ghosts.get(trip)
+            if g is None:
+                if not live or trip in paired or any(r.get("TransitType") == "DepartureFromStop" for _, r in rows):
+                    continue
+                if min(self._sched_ts(r["Time"]) for _, r in live) > t + GHOST_DUE_S:
+                    continue
+                key = self.race_variant.get(trip)
+                var = self.variants.get(key) if key else None
+                if var is None:
+                    continue  # its shape isn't known yet: fetched once it runs with GPS
+                g = self.ghosts[trip] = Ghost(trip, var, t)
+                self.kf_stats["ghosts_found"] += 1
+                r0 = rows[0][1]
+                log.info("ghost %s (%s -> %s): listed at %d stops with no GPS", trip, r0["Line"],
+                         pretty(r0.get("Destination")), len(rows))
+            r0 = rows[0][1]
+            g.meta = {"line": r0["Line"], "vehicle": r0.get("Vehicle") or None, "direction": r0.get("Direction"),
+                      "destination": r0.get("Destination"), "note": r0.get("Note") or None,
+                      "api_arrival": r0.get("ArrivalTime")}
+            g.last_listed = t
+            self._timetable_points(g, rows, t, g.s(t) if g.tl.tt.at else 0.0)
+            for c, r in live:  # still listed there: not past it yet
+                i = stop_index(g.variant, c, g.s(t) - 300)
+                if i is not None:
+                    g.tl.not_past(i, t)
+        for trip, g in list(self.ghosts.items()):
+            sch = g.tl.schedule()
+            done = sch and g.s(t) >= g.variant.shape.length - 1
+            if trip in self.tracks or t - g.last_listed > GHOST_TTL or done:
+                self._retire_tt(g)
+                del self.ghosts[trip]
+                log.info("ghost %s gone (%s), %d passages", trip,
+                         "has GPS" if trip in self.tracks else ("reached the end" if done else "not listed"),
+                         g.tl.passages)
+        self.pending = [d for d in self.pending if d["trip"] not in self.ghosts]
+
+    def _retire_tt(self, obj):
+        if len(obj.tl.tt.at) >= 3:
+            q = self._past_tt.setdefault(obj.variant.key, collections.deque(maxlen=6))
+            q.append(obj.tl.tt)
+
+    def _set_refs(self):
+        """Give each trip another trip's timetable on the same route to extend its own
+        past the stops it was listed at (a stop lists only the next bus, so a bus's
+        times are known up to the bus ahead of it)."""
+        by = collections.defaultdict(list)
+        for o in list(self.tracks.values()) + list(self.ghosts.values()):
+            by[o.variant.key].append(o.tl.tt)
+        for o in list(self.tracks.values()) + list(self.ghosts.values()):
+            mine = o.tl.tt.at
+            if not mine:
+                continue
+            lo, hi = min(mine), max(mine)
+            best, score = None, 0
+            for tt in by[o.variant.key] + list(self._past_tt.get(o.variant.key, ())):
+                if tt is o.tl.tt or not any(i in tt.at for i in mine):
+                    continue
+                sc = sum(1 for i in tt.at if i > hi or i < lo)
+                if sc > score:
+                    best, score = tt, sc
+            o.tl.ref = best
 
     def _batch_seen(self, t, interval=False):
         """Record new GPS positions at t. Only the heartbeat times batches closely
@@ -677,8 +922,11 @@ class Tracker:
     @staticmethod
     def at_end(tr):
         """At or past the second-to-last stop (buses often wait at the stop before the
-        terminus), or within TERMINUS_M of the end of the route."""
+        terminus), or within TERMINUS_M of the end of the route. With GPS frozen or gone,
+        where its timetable has it."""
         s, stops = tr.fixes[-1][1], tr.variant.stops
+        if tr.estimated(time.time()):
+            s = max(s, tr.predict(time.time())[0])
         if s > tr.variant.shape.length - TERMINUS_M:
             return True
         return len(stops) >= 3 and s >= stops[-2]["s"] - AT_STOP_M
@@ -697,13 +945,14 @@ class Tracker:
         (stopped there, still listed), 'midroute' (may have a problem), or None if moving."""
         if tr.layover:
             return "layover"
-        if tr.stopped_for(now) is None:
+        if tr.stopped_for(now) is None or tr.gps_frozen:
             return None
         return "terminus" if self.at_terminus(tr) else "midroute"
 
     def is_stale(self, tr, now):
+        """GPS old and nothing better to go by (with a timetable it is "estimated" instead)."""
         return (now - tr.fixes[-1][0] > STALE_S and not tr.layover and not tr.blind
-                and tr.stopped_for(now) is None)
+                and tr.stopped_for(now) is None and not tr.estimated(now))
 
     def _drop_reason(self, tr, t):
         """Why a bus that stopped moving should go now, or None to keep it. It stays
@@ -711,6 +960,8 @@ class Tracker:
         mid-route; sooner (TRIP_TTL) once its vehicle runs a newer trip, since then
         this one is a leftover."""
         still = t - tr.fixes[-1][0]
+        if tr.estimated(t) and tr.predict(t)[0] >= tr.variant.shape.length - 1:
+            return "timetable_end"  # no GPS for a while, and by its timetable the trip is over
         if self.at_terminus(tr):
             if still > TERMINUS_TTL:
                 return "terminus_timeout"
@@ -891,6 +1142,7 @@ class Tracker:
         self.discover()
         threading.Thread(target=self._data_loop, daemon=True).start()
         last, last_sweep, hb = None, 0, None  # last: (stop, signature) the heartbeat saw
+        n = 0
         while True:
             t = time.time()
             codes = self.poll_set(behind=False)
@@ -902,6 +1154,7 @@ class Tracker:
                     hb = codes[len(codes) // 2]
                 code = hb
                 _, rs = self._fetch(code)
+                rs = rs or []
                 pos = tuple(sorted((r["Race"], r["Latitude"], r["Longitude"]) for r in rs
                                    if r.get("IsStarted") and r.get("Latitude")))
                 if pos:
@@ -912,8 +1165,10 @@ class Tracker:
             if changed:
                 self._batch_seen(t, interval=True)
             if changed or t - last_sweep > FORCE_SWEEP_EVERY:
+                full = not changed or n % FULL_EVERY == 0
+                n += 1
                 try:
-                    if self.sweep(t) and not changed:
+                    if self.sweep(t, full) and not changed:
                         self._batch_seen(t)  # forced sweep found newer fixes
                 except Exception:
                     log.exception("sweep failed")
@@ -927,6 +1182,8 @@ class Tracker:
         with self.lock:
             out = [{**tr.state(now), "stop_kind": self.stop_kind(tr, now), "stale": self.is_stale(tr, now)}
                    for tr in self.tracks.values() if line in (None, tr.variant.line.rstrip("/"))]
+            out += [{**g.state(now), "stop_kind": None, "stale": False}
+                    for g in self.ghosts.values() if line in (None, g.variant.line.rstrip("/"))]
             pending = [{**{k: v for k, v in d.items() if k not in ("when", "seen")}, "in_s": round(d["when"] - now)}
                        for d in self.pending if line in (None, d["line"])]
         for v in out:
@@ -963,6 +1220,7 @@ class Tracker:
             return [{"line": l, **self.line_style(l),
                      "variants": [v.summary() for v in self.variants.values() if v.line.rstrip("/") == l],
                      "vehicles": sum(tr.variant.line.rstrip("/") == l for tr in self.tracks.values()),
+                     "ghosts": sum(g.variant.line.rstrip("/") == l for g in self.ghosts.values()),
                      "pending": sum(d["line"] == l for d in self.pending)}
                     for l in self.lines]
 
@@ -980,15 +1238,17 @@ class Tracker:
                 mine = [v for v in vs if v.direction == d]
                 main = max(mine, key=lambda v: (not v.line.endswith("/"), v.shape.length))
                 buses = []
-                for tr in self.tracks.values():
+                for tr in list(self.tracks.values()) + list(self.ghosts.values()):
                     if tr.variant not in mine:
                         continue
                     st = tr.state(now)
-                    kind = self.stop_kind(tr, now)
-                    buses.append({k: st.get(k) for k in ("trip", "vehicle", "v", "age", "stopped_s", "next_run", "blind")}
+                    ghost = isinstance(tr, Ghost)
+                    kind = None if ghost else self.stop_kind(tr, now)
+                    buses.append({k: st.get(k) for k in ("trip", "vehicle", "v", "age", "stopped_s", "next_run", "blind",
+                                                         "estimated", "timetable")}
                                  | {"s": round(self._on_main(tr.variant, main, st), 1), "short": tr.variant is not main,
-                                    "to": pretty(tr.variant.stops[-1]["name"]), "stop_kind": kind,
-                                    "stale": self.is_stale(tr, now)})
+                                    "to": pretty(tr.variant.stops[-1]["name"]), "stop_kind": kind, "ghost": ghost,
+                                    "stale": False if ghost else self.is_stale(tr, now)})
                 buses.sort(key=lambda b: -b["s"])
                 self._gaps(main, buses)
                 starts = {v.stops[0]["code"] for v in mine}
@@ -1117,7 +1377,20 @@ class Tracker:
                               "dist": round(dist), "v": None if v is None else round(v, 2),
                               "stopped_s": None if stopped is None else round(stopped),
                               "stop_kind": self.stop_kind(tr, now),
-                              "stale": self.is_stale(tr, now), "age": age,
+                              "stale": self.is_stale(tr, now), "age": age, "estimated": tr.estimated(now),
+                              "operator": None, "operator_eta_s": None}
+            for trip, g in self.ghosts.items():
+                s = g.s(now)
+                st = next((x for x in g.variant.stops[:-1] if x["code"] == code and x["s"] > s - AT_STOP_M), None)
+                if not st:
+                    continue
+                eta = g.tl.eta(st["s"], now)
+                deps[trip] = {"trip": trip, "line": g.variant.line.rstrip("/"),
+                              "destination": pretty(g.meta.get("destination") or g.variant.destination),
+                              "direction": g.variant.direction, "live": False, "ghost": True,
+                              "eta_s": None if eta is None else round(eta), "eta_src": "timetable",
+                              "dist": round(max(0.0, st["s"] - s)), "v": None, "stopped_s": None,
+                              "stop_kind": None, "stale": False, "age": None, "estimated": True,
                               "operator": None, "operator_eta_s": None}
         later = []
         for r in runs or []:
@@ -1156,6 +1429,18 @@ class Tracker:
         now = time.time()
         with self.lock:
             tr = self.tracks.get(trip)
+            if not tr and (g := self.ghosts.get(trip)):
+                st = g.state(now)
+                ahead = []
+                for x in g.variant.stops:
+                    if x["s"] > st["s"] + 5:
+                        eta = g.tl.eta(x["s"], now)
+                        ahead.append({"code": x["code"], "name": pretty(x["name"]), "dist": round(x["s"] - st["s"]),
+                                      "eta_s": None if eta is None else round(eta), "eta_src": "timetable"})
+                return {"t": now, **st, "destination": pretty(st.get("destination")), "stop_kind": None,
+                        "line": g.variant.line.rstrip("/"), "stale": False,
+                        "from": pretty(g.variant.stops[0]["name"]), "to": pretty(g.variant.stops[-1]["name"]),
+                        "stops_ahead": ahead, "fixes": []}
             if not tr:
                 return None
             st = tr.state(now)
@@ -1194,6 +1479,15 @@ class Tracker:
                     "at_terminus": sum(1 for x in states if x["stop_kind"] == "terminus"),
                     "layover": sum(1 for x in states if x["stop_kind"] == "layover"),
                     "stale": sum(1 for x in states if x["stale"]),
+                    "estimated": sum(1 for x in states if x["estimated"]),
+                    "estimator": ESTIMATOR,
+                    "timetable": {**{k: v for k, v in self.kf_stats.items() if k != "passage_z"},
+                                  "ghosts_now": len(self.ghosts),
+                                  "on_timetable": sum(1 for tr in self.tracks.values() if tr.tl.ready()),
+                                  "passage_delay_recent_s": self.kf_stats["passage_z"][-20:],
+                                  "full_every": FULL_EVERY},
+                    "requests": self.stats["requests"],
+                    "requests_per_hour": round(self.stats["requests"] / max(now - self.started, 1) * 3600),
                     "variants": len(self.variants), "stops_unknown_code": unknown,
                     "uptime_s": round(now - self.started),
                     "drops_by_reason": dict(self.drop_counts),
@@ -1203,7 +1497,11 @@ class Tracker:
                     "route_checks_last_hour": len(self._recheck_times),
                     "history": self.history.summary(),
                     "eta_errors": {h: {"n": e["n"], "speed_mae_s": round(e["speed"] / e["n"]),
-                                       "ours_mae_s": round(e["ours"] / e["n"])}
+                                       "ours_mae_s": round(e["ours"] / e["n"]),
+                                       # the timetable filter's, and ours on the same arrivals
+                                       "n_kalman": e.get("nk", 0),
+                                       "kalman_mae_s": round(e["kalman"] / e["nk"]) if e.get("nk") else None,
+                                       "ours_same_mae_s": round(e["ours_k"] / e["nk"]) if e.get("nk") else None}
                                    for h, e in sorted(self.eta_errors.items()) if e["n"]}}
 
     def shapes(self, line):
@@ -1318,7 +1616,11 @@ def make_handler(tracker):
                     with tracker.lock:
                         return self._json({**tracker.stats, "poll_set": tracker.poll_set(),
                                            "tracks": {k: [f[:3] for f in tr.fixes]
-                                                      for k, tr in tracker.tracks.items()}})
+                                                      for k, tr in tracker.tracks.items()},
+                                           "timetables": {k: {"at": tr.tl.tt.at, "kf": tr.tl.kf and tr.tl.kf.x,
+                                                              "last": tr.tl.kf and tr.tl.kf.last}
+                                                          for k, tr in list(tracker.tracks.items())
+                                                          + list(tracker.ghosts.items())}})
             self._json({"error": "not found"}, 404)
 
     return H

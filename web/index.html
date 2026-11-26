@@ -162,6 +162,9 @@
   .bus.stale { opacity:.45; }
   /* on a stretch no stop reports on: position dead-reckoned from its last GPS */
   .bus.blind { opacity:.75; outline:2px dashed var(--c); outline-offset:3px; }
+  /* no recent GPS: placed by its timetable and delay; a ghost never had GPS at all */
+  .bus.est { opacity:.8; outline:2px dashed var(--c); outline-offset:3px; }
+  .bus.ghost { background:var(--solid) !important; color:var(--label) !important; border:2px dashed var(--c); opacity:.9; }
   /* a scheduled departure no known bus will take: hollow and dashed, at the terminus */
   .bus.pending { background:var(--solid) !important; color:var(--label) !important; border:2px dashed var(--c);
     box-shadow:0 0 0 2px var(--halo), 0 1px 4px rgba(0,0,0,.2); }
@@ -272,6 +275,8 @@
   .lbus.short { outline:2px dashed var(--c); outline-offset:2px; }
   .lbus.blind { outline:2px dashed var(--label2); outline-offset:2px; }
   .lbus.stale { opacity:.45; }
+  .lbus.est { outline:2px dashed var(--label2); outline-offset:2px; opacity:.85; }
+  .lbus.ghost { background:var(--solid); color:var(--label); border:2px dashed var(--c); }
   .lbus.wait { opacity:.85; }
   .lbus.pending { background:var(--solid); color:var(--label); border:2px dashed var(--c); box-shadow:0 0 0 2px var(--halo); }
   .lbus .fl { padding:0 5px; border-radius:999px; font-size:10px; line-height:16px; background:var(--label); color:var(--solid); }
@@ -390,6 +395,9 @@ const T = {
     offline: "Server non raggiungibile", unknownTrip: "Questo autobus non è più tracciato.", unknownStop: "Fermata sconosciuta.",
     min: "min",
     blind: "posizione stimata: nessuna fermata di questo tratto segnala gli autobus",
+    estimated: "posizione stimata dall'orario ±{m}", ghostNote: "senza GPS: posizione dall'orario ±{m}",
+    ghostSeen: "senza GPS, visto passare alle fermate: ±{m}", delayLate: "{m} di ritardo", delayEarly: "{m} in anticipo", onTime: "in orario",
+    timetable: "orario", noGps: "senza GPS",
     lastBatchAt: "Ultimo GPS ricevuto alle {time}, circa ogni {s} s", lastBatchAt0: "Ultimo GPS ricevuto alle {time}", noBatch: "Nessun GPS ricevuto finora",
     onIt: "Sono su questo autobus", notOnIt: "Non sono a bordo", onBoard: "A bordo", whereOff: "Dove scendi?",
     getOffAt: "Scendi a", stopsLeft: "Fermate", arrive: "Arrivo", yourStop: "La tua fermata", nowAt: "In viaggio a {v} km/h",
@@ -424,6 +432,9 @@ const T = {
     language: "Language", theme: "Theme", themeSystem: "System", themeLight: "Light", themeDark: "Dark", feed: "Data status", lastBatch: "Last GPS", every: "Every", staleN: "Stale",
     resync: "Some stops have no code: the stop data should be refreshed.",
     blind: "estimated position: no stop on this stretch reports buses",
+    estimated: "position estimated from the timetable ±{m}", ghostNote: "no GPS: position from the timetable ±{m}",
+    ghostSeen: "no GPS, seen passing stops: ±{m}", delayLate: "{m} late", delayEarly: "{m} early", onTime: "on time",
+    timetable: "timetable", noGps: "no GPS",
     howTitle: "How it works",
     how: "Buses report GPS about every 20 s. NoSePol fits each one onto its route, estimates position and speed, and works out when it reaches each stop. The operator's own time is shown beside ours.",
     privacyTitle: "Privacy and data",
@@ -492,7 +503,21 @@ const stopText = x => x.stop_kind === "layover" || x.stop_kind === "terminus"
   : x.stopped_s < ALARM_S ? t("stoppedFor", { m: fmtMin(x.stopped_s) }) : t("stoppedMid", { m: fmtMin(x.stopped_s) });
 const stopShort = x => x.stop_kind === "layover" || x.stop_kind === "terminus" ? t("waiting") : t("stopped");
 const walkMin = m => Math.max(1, Math.round(m * 1.3 / 75));  // 4.5 km/h, streets ~1.3x straight line
+// delay against the timetable, and how sure of the position we are (from the timetable filter)
+const fmtSigma = sec => sec < 90 ? Math.max(10, Math.round(sec / 10) * 10) + " s" : Math.round(sec / 60) + "′";
+function delayText(v) {
+  const d = v.timetable?.delay_s;
+  if (d == null) return "";
+  return Math.abs(d) < 60 ? t("onTime") : t(d > 0 ? "delayLate" : "delayEarly", { m: Math.round(Math.abs(d) / 60) + "′" });
+}
+function estText(v) {
+  if (!v.estimated || !v.timetable) return "";
+  const m = fmtSigma(v.timetable.sigma_s);
+  return v.ghost ? t(v.confirmed ? "ghostSeen" : "ghostNote", { m }) : t("estimated", { m });
+}
 function confidence(v) {
+  if (v.ghost) return ["low", "var(--md-error)"];
+  if (v.estimated) return v.timetable && v.timetable.sigma_s <= 60 ? ["medium", "var(--md-on-surface)"] : ["low", "var(--md-error)"];
   if (v.stale || v.blind || v.residual == null || v.n_fixes < 3) return ["low", "var(--md-error)"];
   if (v.residual <= 25 && v.age <= 45) return ["high", "var(--md-good)"];
   return ["medium", "var(--md-on-surface)"];
@@ -708,7 +733,7 @@ function busHtml(v) {
   // standing still mid-route is normal for a while (lights, loading): alarm only after ALARM_S
   const kind0 = v.stop_kind || (v.stopped_s ? "midroute" : "");
   const kind = kind0 === "midroute" && v.stopped_s < ALARM_S ? "" : kind0;
-  const cls = ["bus", kind, isStale(v) ? "stale" : "", v.blind ? "blind" : "", sel?.type === "bus" && sel.id === v.trip ? "sel" : ""].join(" ");
+  const cls = ["bus", kind, isStale(v) ? "stale" : "", v.blind ? "blind" : "", v.ghost ? "ghost" : v.estimated ? "est" : "", sel?.type === "bus" && sel.id === v.trip ? "sel" : ""].join(" ");
   // waiting at a terminus: show when it probably leaves; otherwise how long it has stood still
   const flag = (kind === "layover" || kind === "terminus") && v.next_run ? `<span class="flag">${esc(v.next_run.scheduled)}</span>`
     : kind ? `<span class="flag">${kind === "midroute" ? "!" : ""}${fmtMin(v.stopped_s)}</span>` : "";
@@ -902,12 +927,13 @@ async function openStop(code, { pan = true } = {}) {
     const rows = d.departures.map(x => {
       const eta = x.eta_s != null ? fmtEta(x.eta_s) : x.stopped_s ? stopShort(x) : x.live ? "–"
         : x.operator_eta_s != null ? fmtEta(x.operator_eta_s) : (x.scheduled || "–");
-      const note = x.live
-        ? [x.stopped_s ? stopText(x) : null, x.stale ? t("gpsOld", { s: x.age }) : null, x.dist != null ? t("away", { d: fmtDist(x.dist) }) : null].filter(Boolean).join(" · ")
+      const note = x.ghost ? `${t("noGps")}${x.scheduled ? " · " + t("scheduled") + " " + x.scheduled : ""}`
+        : x.live
+        ? [x.estimated ? t("timetable") : null, x.stopped_s ? stopText(x) : null, x.stale ? t("gpsOld", { s: x.age }) : null, x.dist != null ? t("away", { d: fmtDist(x.dist) }) : null].filter(Boolean).join(" · ")
         : `${t("scheduled")}${x.scheduled ? " " + x.scheduled : ""}${x.waiting_bus ? " · " + t("busWaiting") : ""}`;
-      const ours = x.eta_s != null || !!x.stopped_s || x.live;  // our estimate: big; the operator's or the timetable: small
+      const ours = x.eta_s != null || !!x.stopped_s || x.live || x.ghost;  // our estimate: big; the operator's or the timetable: small
       const warn = x.stop_kind === "midroute" && x.stopped_s >= ALARM_S ? ' style="color:var(--orange)"' : "";
-      return `<button class="row ${x.stale || (!x.live && !x.waiting_bus) || x.stop_kind === "terminus" ? "faded" : ""}" ${x.live ? `data-trip="${esc(x.trip)}"` : "disabled"}>
+      return `<button class="row ${x.stale || (!x.live && !x.waiting_bus && !x.ghost) || x.stop_kind === "terminus" ? "faded" : ""}" ${x.live || x.ghost ? `data-trip="${esc(x.trip)}"` : "disabled"}>
         ${badge(x.line)}<div class="grow"><b>${esc(x.destination)}</b><span class="note"${warn}>${esc(note)}</span></div>
         <span class="etac"><span class="eta${ours ? "" : " sm"}"${warn}>${!ours && x.operator_eta_s != null ? "TPL " : ""}${esc(eta)}</span>${x.operator && x.eta_s != null ? `<span class="op">TPL ${esc(x.operator)}</span>` : ""}</span></button>`;
     }).join("");
@@ -954,7 +980,9 @@ async function openBus(trip, { pan = true, from = null } = {}) {
     const head = d.stopped_s || d.stop_kind === "layover" ? `<b style="color:${d.stop_kind === "midroute" && d.stopped_s >= ALARM_S ? "var(--orange)" : "var(--fg)"}">${esc(stopText(d))}</b>`
       : (ns ? esc(t("reaches", { name: ns.name, eta: fmtEta(ns.eta_s) })) : esc(t("atTerminus")))
         + (d.next_run ? " · " + esc(t("thenLeaves", { time: d.next_run.scheduled, dest: d.next_run.destination })) : "")
-        + (d.blind ? " · " + esc(t("blind")) : "");
+        + (d.blind ? " · " + esc(t("blind")) : "")
+        + (d.estimated ? " · " + esc(estText(d)) : "")
+        + (delayText(d) ? " · " + esc(delayText(d)) : "");
     const ahead = d.stops_ahead.slice(0, 12).map(x => {
       const clock = x.eta_s != null ? new Date((d.t + x.eta_s) * 1000).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" }) : "";
       const mine = sel.from === x.code;
@@ -963,7 +991,7 @@ async function openBus(trip, { pan = true, from = null } = {}) {
         <span class="grow" style="font-weight:${mine ? 500 : 400}">${esc(x.name)}</span>
         <span class="note">${esc(clock)}</span><span class="eta" style="font-size:16px">${esc(fmtEta(x.eta_s))}</span></button>`;
     }).join("");
-    setSheet(`<div class="kicker mono"><span>${esc(t("bus"))} · ${esc(d.trip)} · ${esc(t("gps"))} ${d.age}s</span>
+    setSheet(`<div class="kicker mono"><span>${esc(t("bus"))} · ${esc(d.trip)} · ${d.age == null ? esc(t("timetable")) : `${esc(t("gps"))} ${d.age}s`}</span>
         <button class="sq" id="closeSheet" aria-label="${esc(t("close"))}" style="width:44px;height:44px;border:0;background:none;margin-right:-10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <h2 style="display:flex;align-items:center;gap:12px">${badge(d.line)}<span>${esc(d.destination)}</span></h2>
       <div class="sub">${head}${d.api_arrival ? ` · ${esc(t("operator"))}: ${esc(d.api_arrival)}` : ""}</div>
@@ -1270,8 +1298,8 @@ async function renderLine(first) {
       const mid = b.stop_kind === "midroute" && b.stopped_s >= ALARM_S;
       const fl = wait && b.next_run ? `<span class="fl">${esc(b.next_run.scheduled)}</span>`
         : b.stopped_s && !wait ? `<span class="fl ${mid ? "bad" : ""}">${mid ? "!" : ""}${fmtMin(b.stopped_s)}</span>` : "";
-      const title = [`${d.name} ${t("to")} ${b.to}`, b.short ? t("shortTrip", { dest: b.to }) : "", b.stopped_s ? stopText(b) : "", b.blind ? t("blind") : ""].filter(Boolean).join(" · ");
-      html += `<button class="lbus ${b.short ? "short" : ""} ${b.blind ? "blind" : ""} ${b.stale ? "stale" : ""} ${wait ? "wait" : ""}" data-trip="${esc(b.trip)}"
+      const title = [`${d.name} ${t("to")} ${b.to}`, b.short ? t("shortTrip", { dest: b.to }) : "", b.stopped_s ? stopText(b) : "", b.blind ? t("blind") : "", estText(b)].filter(Boolean).join(" · ");
+      html += `<button class="lbus ${b.short ? "short" : ""} ${b.blind ? "blind" : ""} ${b.stale ? "stale" : ""} ${wait ? "wait" : ""} ${b.ghost ? "ghost" : b.estimated ? "est" : ""}" data-trip="${esc(b.trip)}"
         style="${side}:44px;top:${yy}px" title="${esc(title)}" aria-label="${esc(title)}">${left ? "▼" : "▲"} ${esc(String(b.trip).split(":")[1] ?? b.trip)}${fl}</button>`;
       // gap to the running bus ahead, as a bracket beside the strip
       if (running(b)) {
