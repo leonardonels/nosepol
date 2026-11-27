@@ -85,6 +85,10 @@ PASSAGE_NEAR_M = 1500   # a passage counts only this close to where the filter h
 # Every FULL_EVERY-th sweep polls the full set; the others only the stops just ahead of
 # known buses and the termini (1: always full, as before).
 FULL_EVERY = max(1, int(os.environ.get("NOSEPOL_FULL_EVERY", "3")))
+# Rate study (Shadow): estimators fed with only some of the real sweeps, one GPS batch per
+# this many seconds, each twice: borrowing the real tracker's learned data, and learning
+# its own from scratch (data/shadow/<name>/). Empty: none.
+SHADOW_EVERY = [int(x) for x in os.environ.get("NOSEPOL_SHADOWS", "45,60,90,120,180").split(",") if x.strip()]
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
            ("#D35DA2", "#FFFFFF"), ("#26A6B5", "#1B1B1F"), ("#F2B33D", "#1B1B1F"),
@@ -308,12 +312,18 @@ class Ghost:
 
 
 class Tracker:
-    def __init__(self, lines):
+    shadows = ()  # rate-study estimators fed from this one's sweeps (see Shadow)
+
+    def __init__(self, lines, shadow_of=None):
         self.lines = lines
-        self.lock = threading.RLock()
-        self.stopdb = StopDB(DATA / "stops.json")
-        self.variants = {}      # key -> Variant
-        self.race_variant = {}  # "T06:123" -> key
+        self.log = log
+        # how long things are kept unseen: a shadow sees the feed less often, so these scale
+        self.trip_ttl, self.kf_ttl, self.ghost_ttl, self.passage_gap = TRIP_TTL, KF_TTL, GHOST_TTL, PASSAGE_GAP_S
+        self.lock = threading.RLock() if shadow_of is None else shadow_of.lock
+        self.stopdb = StopDB(DATA / "stops.json") if shadow_of is None else shadow_of.stopdb
+        # a shadow shares the real tracker's routes (it never fetches one itself)
+        self.variants = {} if shadow_of is None else shadow_of.variants        # key -> Variant
+        self.race_variant = {} if shadow_of is None else shadow_of.race_variant  # "T06:123" -> key
         self.tracks = {}        # trip -> Track
         self.ghosts = {}        # trip -> Ghost: listed with no GPS but running by the timetable
         self._listing = {}      # stop code -> (time polled, {trip: (line, direction)} it listed)
@@ -328,7 +338,10 @@ class Tracker:
         self.pending = []      # departures due soon that no known bus will take
         self.stats = {"sweeps": 0, "requests": 0, "last_sweep": None, "last_batch": None,
                       "batch_intervals": []}
-        self.pool = ThreadPoolExecutor(4)
+        self.pool = ThreadPoolExecutor(4) if shadow_of is None else None
+        self.swept_stops = 0    # stop requests made by sweeps (the heartbeat not counted)
+        self.cpu = 0.0          # s of CPU spent processing sweeps
+        self.last_arrivals = []
         self._stop_index = (None, {})  # (variant keys it was built from, code -> entry)
         self._operator = {}            # stop code -> (time fetched, runs)
         self._live, self._live_lock = None, threading.Lock()  # (built at, body) for live()
@@ -337,8 +350,9 @@ class Tracker:
         self.routes_version = 0  # goes up whenever a route shape is added, changed or dropped
         self._rechecked = {}    # trip -> last time its shape was fetched again
         self._recheck_times = collections.deque()  # those fetches in the last hour
-        self.history = History(DATA / "speeds.json")
-        self.blend = Track.blend = Blend(DATA / "blend.json")
+        if shadow_of is None:
+            self.history = History(DATA / "speeds.json")
+            self.blend = Blend(DATA / "blend.json")
         self._preds = {}        # (trip, stop index) -> [(made at, speed-only arrival, our arrival)]
         self._pred_at = {}      # trip -> when its predictions were last made
         # recent scored arrivals: (horizon, line, GPS age band, then the absolute errors of
@@ -347,8 +361,9 @@ class Tracker:
         self.eta_samples = collections.deque(maxlen=self.ETA_SAMPLES)
         self.eta_errors = {}    # horizon -> {"n", "speed", "ours", "nk", "kalman", "ours_k"}: absolute errors summed (s)
         # when the stop list was downloaded, and per variant when it was checked and last used
-        self.refresh = self._load_json(DATA / "refresh.json")
-        self._load_cache()
+        if shadow_of is None:
+            self.refresh = self._load_json(DATA / "refresh.json")
+            self._load_cache()
 
     def wants(self, line):
         """T06 also covers its short-turn variants such as 'T06/'."""
@@ -370,7 +385,7 @@ class Tracker:
         # a variant with no record counts as used now, so it isn't dropped at once
         self.used = {k: self.refresh.get("used", {}).get(k, now) for k in self.variants}
         self.routes_version = len(self.variants)
-        log.info("route cache: %d variants, %d races", len(self.variants), len(self.race_variant))
+        self.log.info("route cache: %d variants, %d races", len(self.variants), len(self.race_variant))
 
     @staticmethod
     def _load_json(path):
@@ -413,7 +428,7 @@ class Tracker:
             old = self.race_variant.get(trip)
             cur = self.variants.get(var.key)
             if cur is None or cur.sig != var.sig:
-                log.info("%s variant %s: %s -> %s (%d stops, %.1f km)", "new" if cur is None else "changed path of",
+                self.log.info("%s variant %s: %s -> %s (%d stops, %.1f km)", "new" if cur is None else "changed path of",
                          var.key, var.stops[0]["name"], var.stops[-1]["name"], len(var.stops),
                          var.shape.length / 1000)
                 self.variants[var.key] = var
@@ -425,7 +440,7 @@ class Tracker:
                 stale = [k for k, v in self.race_variant.items() if v == old and k != trip]
                 for k in stale:
                     del self.race_variant[k]
-                log.info("trip %s moved from %s to %s: %d more trips of it will be fetched again",
+                self.log.info("trip %s moved from %s to %s: %d more trips of it will be fetched again",
                          trip, old, var.key, len(stale))
             self.race_variant[trip] = var.key
             now = time.time()
@@ -451,14 +466,14 @@ class Tracker:
             self.stats["requests"] += 1
             segs = get("LineGeoTrack", Line=line, Race=race)
         except Exception as e:
-            log.warning("route check %s: %s", trip, e)
+            self.log.warning("route check %s: %s", trip, e)
             return
         if not segs:
             return
         before = tr.variant
         var = self._adopt(trip, tr.meta.get("direction") or before.direction,
                           tr.meta.get("destination") or before.destination, segs, recheck=True)
-        log.info("route check %s (%s): %s", trip, why, "unchanged" if var is before else f"now {var.key}")
+        self.log.info("route check %s (%s): %s", trip, why, "unchanged" if var is before else f"now {var.key}")
 
     def _route_checks(self, t, moved):
         """After a sweep: fetch again the shape of a bus that left its route, and of
@@ -492,8 +507,10 @@ class Tracker:
         bus's predicted arrival at its next stops, both speed-only (time_to, the old
         way) and ours (eta); when it arrives, add the errors by how far ahead the
         prediction was made. Shown in /api/status as eta_errors."""
+        self.last_arrivals = []  # (trip, stop index, time) this sweep: the shadows' ground truth
         for trip, tr in self.tracks.items():
             for i, ta in tr.new_arrivals:
+                self.last_arrivals.append((trip, i, ta))
                 for made, old, new, kf, bl, line, ageb in self._preds.pop((trip, i), []):
                     ahead = ta - made
                     h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
@@ -556,7 +573,7 @@ class Tracker:
                 for trip in [x for x, v in self.race_variant.items() if v == k]:
                     del self.race_variant[trip]
                     n += 1
-                log.info("dropped unused variant %s (%s -> %s, %d trips)", k, var.stops[0]["name"],
+                self.log.info("dropped unused variant %s (%s -> %s, %d trips)", k, var.stops[0]["name"],
                          var.stops[-1]["name"], n)
             if gone:
                 self._stop_index = (None, {})
@@ -582,7 +599,7 @@ class Tracker:
                 feats = json.loads(r.read())["features"]
             ok = True
         except Exception as e:
-            log.warning("stop list download: %s", e)
+            self.log.warning("stop list download: %s", e)
             feats, ok = [], False
         self.refresh["stops_ok"] = ok
         if ok:
@@ -594,7 +611,7 @@ class Tracker:
                 if matched:
                     self._stop_index = (None, {})
                     self._save_cache()
-            log.info("stop list: %d stops, %d new, %d moved, %d not listed any more, %d route stops matched",
+            self.log.info("stop list: %d stops, %d new, %d moved, %d not listed any more, %d route stops matched",
                      len(feats), added, moved, missing, matched)
         return ok
 
@@ -641,21 +658,21 @@ class Tracker:
 
         if not missing():
             return
-        log.info("discovering routes for %s ...", missing())
+        self.log.info("discovering routes for %s ...", missing())
         for i, st in enumerate(self.stopdb.by_distance(45.6505, 13.7765)):
             if not missing() or i > 1500:
                 break
             try:
                 runs = get("mrcruns", StopCode=st["code"], IsUrban="true") or []
             except Exception as e:
-                log.warning("discover %s: %s", st["code"], e)
+                self.log.warning("discover %s: %s", st["code"], e)
                 continue
             for run in runs:
                 if (run["Line"].rstrip("/"), run["Direction"]) in missing():
                     self.variant_for(run)
             time.sleep(0.1)
         if missing():
-            log.warning("could not find variants for %s", missing())
+            self.log.warning("could not find variants for %s", missing())
 
     # ---- polling -----------------------------------------------------
     def _fetch(self, code):
@@ -663,18 +680,32 @@ class Tracker:
             self.stats["requests"] += 1
             return code, get("mrcruns", StopCode=code, IsUrban="true") or []
         except Exception as e:
-            log.warning("stop %s: %s", code, e)
+            self.log.warning("stop %s: %s", code, e)
             return code, None
 
     def sweep(self, t, full=True):
         codes = self.poll_set() if full else self.target_set(t)
-        self.kf_stats["full_sweeps" if full else "targeted_sweeps"] += 1
-        listed, fetched = {}, {}
-        at = {}  # trip -> [(stop code, row)]
+        fetched = {}
         for code, rs in self.pool.map(self._fetch, codes):
-            if rs is None:
-                continue  # no answer: says nothing (and mustn't look like buses leaving)
-            fetched[code] = rs
+            if rs is not None:  # no answer: says nothing (and mustn't look like buses leaving)
+                fetched[code] = rs
+        self.swept_stops += len(codes)
+        c0 = time.process_time()
+        updated = self.process(t, full, codes, fetched)
+        self.cpu += time.process_time() - c0
+        for sh in self.shadows:  # the same answers, thinned out to each one's rate
+            try:
+                sh.offer(t, full, codes, fetched, self)
+            except Exception:
+                self.log.exception("shadow %s failed", sh.name)
+        return updated
+
+    def process(self, t, full, codes, fetched):
+        """Everything a sweep does with the stops' answers (fetched: code -> runs)."""
+        self.kf_stats["full_sweeps" if full else "targeted_sweeps"] += 1
+        listed = {}
+        at = {}  # trip -> [(stop code, row)]
+        for code, rs in fetched.items():
             for r in rs:
                 if self.wants(r["Line"]):
                     trip = f"{r['Line']}:{r['Race']}"
@@ -689,7 +720,7 @@ class Tracker:
                     # listed, but its position is gone: the timetable carries it on
                     with self.lock:
                         if not tr.gps_lost:
-                            log.info("%s: GPS gone, still listed: on the timetable now", trip)
+                            self.log.info("%s: GPS gone, still listed: on the timetable now", trip)
                         tr.gps_lost = True
                         self._timetable_points(tr, at.get(trip, []), t)
                         self.seen[trip] = t
@@ -701,7 +732,7 @@ class Tracker:
             try:
                 var = self.variant_for(r)
             except Exception as e:
-                log.warning("track %s: %s", trip, e)
+                self.log.warning("track %s: %s", trip, e)
                 continue
             if not var:
                 continue
@@ -709,11 +740,12 @@ class Tracker:
                 tr = self.tracks.get(trip)
                 if tr is None or tr.variant is not var:
                     tr = self.tracks[trip] = Track(trip, var, self.history)
+                    tr.blend = self.blend
                     g = self.ghosts.pop(trip, None)
                     if g is not None:  # the ghost got its GPS back: keep what its timetable learned
                         tr.tl = g.tl if g.variant is var else tr.tl
                         self.kf_stats["ghosts_then_gps"] += 1
-                        log.info("ghost %s now has GPS", trip)
+                        self.log.info("ghost %s now has GPS", trip)
                 tr.meta = {"line": r["Line"], "vehicle": r["Vehicle"], "direction": r["Direction"],
                            "destination": r["Destination"], "note": r["Note"] or None,
                            "api_arrival": r["ArrivalTime"]}
@@ -741,7 +773,7 @@ class Tracker:
                     # later than t, so predict(t) can fall just short and undo the hold
                     stops = tr.variant.stops
                     tr.hold_s = max(tr.predict(t)[0], stops[-2]["s"] if len(stops) >= 3 else tr.variant.shape.length)
-                    log.info("%s: by its timetable at the end (no fresh GPS): waiting there", k)
+                    self.log.info("%s: by its timetable at the end (no fresh GPS): waiting there", k)
                 tr.layover = end and (self.seen.get(k, 0) < t or est_end)
                 tr.blind = self.blind(tr, t)
             self._assign_next_runs(t, fetched)
@@ -756,7 +788,7 @@ class Tracker:
                 elif tr is not None and tr.blind:
                     if t - ts > self.blind_ttl(tr):
                         reasons[k] = "blind_timeout"
-                elif t - ts > (KF_TTL if tr is not None and tr.kalman() else TRIP_TTL):
+                elif t - ts > (self.kf_ttl if tr is not None and tr.kalman() else self.trip_ttl):
                     reasons[k] = "not_reported"
             for k, tr in self.tracks.items():
                 if tr.layover:
@@ -774,14 +806,14 @@ class Tracker:
             self.stats["sweeps"] += 1
             self.stats["last_sweep"] = {"t": t, "stops": len(codes), "trips": len(runs),
                                         "new_fixes": updated, "full": full}
-        log.info("sweep%s: %d stops, %d trips, %d new fixes, %d ghosts", "" if full else " (targeted)",
+        self.log.info("sweep%s: %d stops, %d trips, %d new fixes, %d ghosts", "" if full else " (targeted)",
                  len(codes), len(runs), updated, len(self.ghosts))
         with self.lock:
             self._score_etas(t)
         try:
             self._route_checks(t, moved)
         except Exception:
-            log.exception("route checks failed")
+            self.log.exception("route checks failed")
         return updated
 
     # ---- timetable filter ---------------------------------------------
@@ -804,7 +836,7 @@ class Tracker:
                 and tr.tl.ready() and ESTIMATOR == "kalman"):
             if not tr.gps_frozen:
                 self.kf_stats["frozen"] += 1
-                log.info("%s: same position for %ds mid-route: GPS frozen? on the timetable now", tr.trip, still)
+                self.log.info("%s: same position for %ds mid-route: GPS frozen? on the timetable now", tr.trip, still)
             tr.gps_frozen = True
             return
         tr.stand(t)
@@ -817,7 +849,7 @@ class Tracker:
             now_set = {f"{r['Line']}:{r['Race']}": (r["Line"], r["Direction"]) for r in rs if self.wants(r["Line"])}
             prev = self._listing.get(code)
             self._listing[code] = (t, now_set)
-            if not prev or t - prev[0] > PASSAGE_GAP_S:
+            if not prev or t - prev[0] > self.passage_gap:
                 continue
             served = set(now_set.values())
             for trip, ld in prev[1].items():
@@ -837,7 +869,7 @@ class Tracker:
                     continue
                 self.kf_stats["passages"] += 1
                 self.kf_stats["passage_z"] = (self.kf_stats["passage_z"] + [round(z)])[-50:]
-                log.info("passage %s at %s (%s): delay %+ds%s", trip, code, pretty(obj.variant.stops[i]["name"]),
+                self.log.info("passage %s at %s (%s): delay %+ds%s", trip, code, pretty(obj.variant.stops[i]["name"]),
                          z, " [ghost]" if isinstance(obj, Ghost) else "")
 
     def _ghosts(self, t, at):
@@ -862,7 +894,7 @@ class Tracker:
                 g = self.ghosts[trip] = Ghost(trip, var, t)
                 self.kf_stats["ghosts_found"] += 1
                 r0 = rows[0][1]
-                log.info("ghost %s (%s -> %s): listed at %d stops with no GPS", trip, r0["Line"],
+                self.log.info("ghost %s (%s -> %s): listed at %d stops with no GPS", trip, r0["Line"],
                          pretty(r0.get("Destination")), len(rows))
             r0 = rows[0][1]
             g.meta = {"line": r0["Line"], "vehicle": r0.get("Vehicle") or None, "direction": r0.get("Direction"),
@@ -877,10 +909,10 @@ class Tracker:
         for trip, g in list(self.ghosts.items()):
             sch = g.tl.schedule()
             done = sch and g.s(t) >= g.variant.shape.length - 1
-            if trip in self.tracks or t - g.last_listed > GHOST_TTL or done:
+            if trip in self.tracks or t - g.last_listed > self.ghost_ttl or done:
                 self._retire_tt(g)
                 del self.ghosts[trip]
-                log.info("ghost %s gone (%s), %d passages", trip,
+                self.log.info("ghost %s gone (%s), %d passages", trip,
                          "has GPS" if trip in self.tracks else ("reached the end" if done else "not listed"),
                          g.tl.passages)
         self.pending = [d for d in self.pending if d["trip"] not in self.ghosts]
@@ -999,7 +1031,7 @@ class Tracker:
             # LAYOVER_TTL), rather than being dropped and missing its next run.
             if tr.hold_s is None:
                 tr.hold_s = tr.variant.shape.length
-                log.info("%s: by its timetable at the end (drop check): waiting there", tr.trip)
+                self.log.info("%s: by its timetable at the end (drop check): waiting there", tr.trip)
             tr.layover = True
             return None
         if self.at_terminus(tr):
@@ -1106,7 +1138,7 @@ class Tracker:
              "near": pretty(last["name"])}
         self.drops.append(d)
         self.drop_counts[reason] = self.drop_counts.get(reason, 0) + 1
-        log.info("drop %s (%s -> %s) %s: still %ds at %dm/%dm near %s", trip, d["line"], d["destination"],
+        self.log.info("drop %s (%s -> %s) %s: still %ds at %dm/%dm near %s", trip, d["line"], d["destination"],
                  reason, d["still_s"], d["s"], d["length"], d["near"])
 
     def fill_codes(self):
@@ -1127,7 +1159,7 @@ class Tracker:
         known = {st["code"] for st in self.stopdb.stops}
         jobs = [code for z in zones for n in range(1, FILL_GAP + 1)
                 if (code := f"{z}{max(int(st['code'][2:]) for st in by[z]) + n:03d}") not in known]
-        log.info("%d route stops without a code: probing %d codes in districts %s",
+        self.log.info("%d route stops without a code: probing %d codes in districts %s",
                  len(targets), len(jobs), ",".join(zones))
         found = 0
         for code in jobs:
@@ -1135,7 +1167,7 @@ class Tracker:
                 self.stats["requests"] += 1
                 d = get("info", StopCode=code)
             except Exception as e:
-                log.warning("probe %s: %s", code, e)
+                self.log.warning("probe %s: %s", code, e)
                 continue
             finally:
                 time.sleep(0.2)
@@ -1150,9 +1182,9 @@ class Tracker:
             try:
                 self.stopdb.save()
             except OSError as e:
-                log.warning("saving stops: %s", e)
+                self.log.warning("saving stops: %s", e)
         left = len(targets) - matched
-        log.info("stop codes: %d new stops, %d route stops matched, %d still without a code%s",
+        self.log.info("stop codes: %d new stops, %d route stops matched, %d still without a code%s",
                  found, matched, left, " (run tools/fill_stops.py)" if left else "")
         return matched
 
@@ -1168,15 +1200,18 @@ class Tracker:
                     fill_at = t
                     self.fill_codes()
             except Exception:
-                log.exception("stop refresh failed")
+                self.log.exception("stop refresh failed")
             try:
                 self.prune_routes(t)
                 with self.lock:
                     self._save_refresh()
                     self.history.save()
                     self.blend.save()
+                    for sh in self.shadows:
+                        sh.history.save()
+                        sh.blend.save()
             except Exception:
-                log.exception("saving data failed")
+                self.log.exception("saving data failed")
             time.sleep(DATA_EVERY)
 
     def run(self):
@@ -1212,7 +1247,7 @@ class Tracker:
                     if self.sweep(t, full) and not changed:
                         self._batch_seen(t)  # forced sweep found newer fixes
                 except Exception:
-                    log.exception("sweep failed")
+                    self.log.exception("sweep failed")
                 last_sweep = t
             last = sig
             time.sleep(max(0.0, HEARTBEAT_EVERY - (time.time() - t)))
@@ -1388,7 +1423,7 @@ class Tracker:
                         if self.wants(r["Line"])]
                 self._operator[code] = (time.time(), runs)
             except Exception as e:
-                log.warning("operator runs %s: %s", code, e)
+                self.log.warning("operator runs %s: %s", code, e)
         return runs
 
     def stop_detail(self, code):
@@ -1552,7 +1587,20 @@ class Tracker:
                     "eta_spread": self._eta_spread(),
                     # the same split by line, and by how old the bus's GPS was when predicted
                     "eta_by_line": self._eta_spread("line"),
-                    "eta_by_gps_age": self._eta_spread("gps_age")}
+                    "eta_by_gps_age": self._eta_spread("gps_age"),
+                    "rate_study": self.rate_study(now) if self.shadows else None}
+
+    def rate_study(self, now):
+        """The real tracker and each shadow side by side: stop requests per hour its rate
+        would need, ETA error (scored against the real tracker's arrivals), position error
+        against fresh GPS, and how many of the running buses it had at all."""
+        up = max(now - self.started, 1)
+        sp = self._eta_spread()
+        main = {"name": "real", "every_s": None, "requests_per_hour": round(self.swept_stops / up * 3600),
+                "cpu_s": round(self.cpu, 1),
+                "eta": {h: {"n": x["n"], "served": x["blend"], "history": x["history"], "timetable": x["timetable"]}
+                        for h, x in sp.items()}}
+        return [main] + [sh.study(now) for sh in self.shadows]
 
     def _eta_spread(self, by=None):
         """Mean, median and p95 of each method's absolute error, per horizon, and with by
@@ -1578,6 +1626,143 @@ class Tracker:
     def shapes(self, line):
         with self.lock:
             return [v.geojson() for v in self.variants.values() if line in (None, v.line.rstrip("/"))]
+
+
+class ReadOnly:
+    """A learned store that is used but not taught: add() and save() do nothing."""
+
+    def __init__(self, inner):
+        self._inner = inner
+
+    def __getattr__(self, k):
+        return getattr(self._inner, k)
+
+    def add(self, *a, **kw):
+        pass
+
+    def save(self):
+        pass
+
+
+def spread(xs):
+    xs = sorted(x for x in xs if x is not None)
+    if not xs:
+        return None
+    q = lambda f: xs[min(len(xs) - 1, int(f * len(xs)))]
+    return {"mean": round(sum(xs) / len(xs)), "median": round(q(0.5)), "p95": round(q(0.95))}
+
+
+class Shadow(Tracker):
+    """Rate study: the same estimator fed with only one of the real tracker's sweeps every
+    `every` seconds, as if the backend polled that rarely. No network: it reads the real
+    sweeps' answers and shares the routes and stops. Learned data (stretch times, blend
+    weights) is either borrowed read-only from the real tracker (how good a slower
+    backend is once trained) or its own, learned from scratch from what it sees (how
+    well a slower backend learns). Judged on the real tracker's cadence, so its data is
+    as old as a user opening the app at a random time would find it, against the real
+    tracker's arrivals and fresh GPS."""
+
+    def __init__(self, main, every, learn):
+        super().__init__(main.lines, shadow_of=main)
+        self.every, self.learn = every, learn
+        self.name = f"{every}s-{'learn' if learn else 'borrow'}"
+        self.log = logging.getLogger("nosepol.shadow")
+        self.trip_ttl = max(TRIP_TTL, 2.5 * every)
+        self.kf_ttl = max(KF_TTL, 2.5 * every)
+        self.ghost_ttl = max(GHOST_TTL, 2.5 * every)
+        self.passage_gap = max(PASSAGE_GAP_S, 1.5 * every + 30)
+        if learn:
+            d = DATA / "shadow" / self.name
+            d.mkdir(parents=True, exist_ok=True)
+            self.history, self.blend = History(d / "speeds.json"), Blend(d / "blend.json")
+        else:
+            self.history, self.blend = ReadOnly(main.history), ReadOnly(main.blend)
+        self.last = 0.0
+        self.sweeps_used = 0
+        self.cpu = 0.0
+        self._truth = {}       # (trip, stop index) -> [(made at, served, history, timetable) arrival times]
+        self._truth_at = {}    # trip -> when last predicted
+        self.samples = collections.deque(maxlen=20000)  # (horizon, |served|, |history|, |timetable| errors)
+        self.pos_err = collections.deque(maxlen=20000)  # m from the real tracker's fresh fix
+        self.coverage = [0, 0]  # running buses the real tracker had, of which this one had too
+
+    def variant_for(self, run):
+        key = self.race_variant.get(f"{run['Line']}:{run['Race']}")
+        return self.variants.get(key) if key else None
+
+    def _route_checks(self, t, moved):
+        pass
+
+    def offer(self, t, full, codes, fetched, main):
+        """One real sweep: process it if its turn has come, then be judged."""
+        c0 = time.process_time()
+        with self.lock:
+            if t - self.last >= self.every - 5:  # 5 s: batches come every ~20-25 s, not exactly
+                self.last = t
+                self.sweeps_used += 1
+                self.swept_stops += len(codes)
+                self.process(t, full, codes, fetched)
+            self._judge(t, main)
+        self.cpu += time.process_time() - c0
+
+    def _judge(self, t, main):
+        for trip, i, ta in main.last_arrivals:
+            for made, served, hist, tt in self._truth.pop((trip, i), []):
+                ahead = ta - made
+                h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
+                if h is None or ahead < 15:
+                    continue
+                self.samples.append((h, abs(served - ta), None if hist is None else abs(hist - ta),
+                                     None if tt is None else abs(tt - ta)))
+        for trip, mtr in main.tracks.items():
+            if mtr.layover or mtr.stopped_for(t) is not None:
+                continue  # the real tracker has it standing: not a running bus to place
+            self.coverage[0] += 1
+            tr = self.tracks.get(trip)
+            if tr is None or tr.variant is not mtr.variant:
+                continue
+            self.coverage[1] += 1
+            fix = mtr.fixes[-1]
+            if fix[0] == t and fix[2] <= OFFROUTE_M:
+                self.pos_err.append(abs(tr.predict(t)[0] - fix[1]))
+            if t - self._truth_at.get(trip, 0) < self.ETA_EVERY or tr.layover:
+                continue
+            if tr.stopped_for(t) is not None and not tr.gps_frozen:
+                continue  # it shows the bus standing: no ETA served
+            s, v, *_ = tr.predict(t)
+            self._truth_at[trip] = t
+            n = 0
+            for i, st in enumerate(tr.variant.stops):
+                if st["s"] - ARRIVE_M <= s or i in mtr.arrivals:
+                    continue
+                served = tr.eta(s, st["s"], v, t)[0]
+                if served is not None:
+                    hist = tr.eta_hist(s, st["s"], v, t)[0]
+                    tt = tr.tl.eta(st["s"], t) if tr.tl.ready() else None
+                    self._truth.setdefault((trip, i), []).append(
+                        (t, t + served, None if hist is None else t + hist, None if tt is None else t + tt))
+                n += 1
+                if n >= self.ETA_AHEAD:
+                    break
+        live = set(main.tracks)
+        for k in [k for k in self._truth if k[0] not in live]:
+            del self._truth[k]
+        for k in [k for k in self._truth_at if k not in live]:
+            del self._truth_at[k]
+
+    def study(self, now):
+        up = max(now - self.started, 1)
+        eta = {}
+        for h in sorted({r[0] for r in self.samples}):
+            rows = [r for r in self.samples if r[0] == h]
+            eta[h] = {"n": len(rows), "served": spread(r[1] for r in rows),
+                      "history": spread(r[2] for r in rows), "timetable": spread(r[3] for r in rows)}
+        return {"name": self.name, "every_s": self.every, "learns": self.learn,
+                "requests_per_hour": round(self.swept_stops / up * 3600),
+                "sweeps_used": self.sweeps_used, "cpu_s": round(self.cpu, 1),
+                "coverage": round(self.coverage[1] / self.coverage[0], 3) if self.coverage[0] else None,
+                "position_m": spread(self.pos_err), "position_n": len(self.pos_err), "eta": eta,
+                **({"history": self.history.summary()} if self.learn else {})}
 
 
 def make_handler(tracker):
@@ -1718,6 +1903,10 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
     seed_data()
     tracker = Tracker(args.lines.split(","))
+    logging.getLogger("nosepol.shadow").setLevel(logging.WARNING)  # their routine logs are noise
+    tracker.shadows = [Shadow(tracker, every, learn) for every in SHADOW_EVERY for learn in (False, True)]
+    if tracker.shadows:
+        log.info("rate study: %s", ", ".join(sh.name for sh in tracker.shadows))
     threading.Thread(target=tracker.run, daemon=True).start()
     srv = ThreadingHTTPServer(("0.0.0.0", args.port), make_handler(tracker))
     log.info("http://localhost:%d", args.port)

@@ -135,6 +135,21 @@ Findings that shape the design:
      history ETA on the same arrivals), and `timetable` counts passages, ghosts,
      frozen GPS and full/targeted sweeps; `requests_per_hour` shows the API load.
 
+8. **Rate study** (`Shadow` in `server/app.py`, branch `rate-study`): how good can the
+   estimates be with fewer API calls? Shadow estimators get only one of the real sweeps
+   every 45, 60, 90, 120 and 180 s (`NOSEPOL_SHADOWS`, empty for none), as if the
+   backend polled that rarely, at no extra API cost: they reuse the real sweeps'
+   answers and share its routes and stops (no port, no page, no network). Each rate
+   runs twice: `borrow` uses the real tracker's learned stretch times and blend
+   weights read-only (a slower backend once trained), `learn` learns its own from
+   scratch from what it sees, saved in `data/shadow/<name>/` (how well a slower
+   backend learns). TTLs and the passage window scale with the rate. Shadows are
+   judged on the real tracker's cadence, so their data is as old as a user would
+   find it, against the real tracker's arrivals (ETA mean/median/p95 per range, of
+   the ETA served and of history and timetable alone) and its fresh GPS (position
+   error in metres), with the share of running buses each one had at all, the stop
+   requests per hour its rate needs and its CPU time. `/api/status` → `rate_study`.
+
 ## API
 
 - `GET /api/lines`: lines with display `name`, `color`, `ink` (text colour on it), route

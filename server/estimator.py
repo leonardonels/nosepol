@@ -215,7 +215,7 @@ class Blend:
 
 
 class Track:
-    blend = None  # the tracker's Blend, shared by every track
+    blend = None  # set by the tracker on each track: its Blend
 
     def __init__(self, trip, variant, history=None):
         self.trip = trip
