@@ -186,6 +186,7 @@ class TimetableTrack:
         self.kf = None
         self.anchor = None   # (t, delay) of the last GPS fix: shown position starts there
         self.passages = 0
+        self.passed_i = -1   # furthest stop it was timed going by
         self.ref = None      # another trip's Timetable on this route, to extend ours
 
     def schedule(self):
@@ -222,12 +223,15 @@ class TimetableTrack:
         sigma = math.hypot(SCHED_SIGMA_S, (t1 - t0) / math.sqrt(12))
         self._filter(tm).update(tm, z, sigma)
         self.passages += 1
+        self.passed_i = max(self.passed_i, i)
         return z
 
     def not_past(self, i, t):
         """Still listed at stop i at t: it hasn't got there yet, so its delay is at least
-        what reaching it now would mean (only applied to ghosts, see the tracker)."""
-        if self.kf is None:
+        what reaching it now would mean (applied to ghosts and to buses whose GPS froze or
+        went, see the tracker). Not for a stop it was already timed passing: a stop behind
+        can keep listing it a while."""
+        if self.kf is None or i <= self.passed_i:
             return
         sch = self.schedule()
         if not sch:
