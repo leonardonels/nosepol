@@ -8,7 +8,8 @@ probes, in priority order, until every route stop matches a code:
   2. past the last known code of districts near an unmatched route stop
   3. districts 10-99 with no known stops, over a wider range
   4. past the last known code of every other district
-Run with the server stopped or restart it afterwards.
+Run with the server stopped or restart it afterwards. To ship the result with the
+code (fresh checkouts and new volumes start from it): cp data/stops.json seed/
 """
 import json
 import math

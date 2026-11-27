@@ -37,7 +37,7 @@ from geo import Frame, Polyline
 API = "https://realtime.tplfvg.it/API/v1.0/polemonitor"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-SEED = ROOT / "seed"     # bundled copy of data/ (Docker image only)
+SEED = ROOT / "seed"     # tracked snapshot of routes/stops: copied into data/ when missing
 WEB = ROOT / "web"
 FRAME = Frame(45.65, 13.78)  # Trieste
 HEARTBEAT_EVERY = 5     # s
@@ -1732,8 +1732,9 @@ def make_handler(tracker):
 
 
 def seed_data():
-    """Fill missing data files from the bundled seed, e.g. when an empty host folder is
-    bind-mounted over data/. Existing files are never overwritten."""
+    """Fill missing data files from seed/ (the tracked snapshot of routes and stops): a
+    fresh checkout, a new volume or an empty bind mount starts from it instead of
+    rediscovering every route. Existing files are never overwritten."""
     if not SEED.is_dir():
         return
     DATA.mkdir(exist_ok=True)
@@ -1741,7 +1742,7 @@ def seed_data():
         dst = DATA / src.name
         if not dst.exists():
             shutil.copyfile(src, dst)
-            log.info("seeded %s from the image", src.name)
+            log.info("seeded %s from seed/", src.name)
 
 
 def main():

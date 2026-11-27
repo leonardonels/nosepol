@@ -3,5 +3,6 @@ __pycache__/
 .venv/
 .DS_Store
 .claude/
-data/refresh.json
-data/speeds.json
+# runtime state, filled from seed/ at start: never committed
+data/
+.env
