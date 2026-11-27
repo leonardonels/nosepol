@@ -2,6 +2,11 @@
 """Report on a long study run's logs (NOSEPOL_LOG_DIR, see server/app.py).
 
     python3 tools/study_report.py LOG_DIR [--line T09] [--since 2026-11-28]
+        [--hours 7-9] [--days wd] [--by-hour]
+
+--hours (local time, inclusive, may wrap: 22-5) and --days (wd, sa, su) keep only
+predictions made then, so night and rush hour aren't pooled; --by-hour adds a table of
+the main numbers per hour band.
 
 From a server running with NOSEPOL_EXPORT_TOKEN set (logs and learned data, .tar.gz):
 
@@ -27,7 +32,12 @@ import glob
 import json
 import math
 import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
+TZ = ZoneInfo("Europe/Rome")  # the server's buckets are local time
+BANDS = [("night", 0, 5), ("early", 6, 6), ("am peak", 7, 9), ("day", 10, 15),
+         ("pm peak", 16, 19), ("evening", 20, 23)]
 HORIZONS = [(180, "0-3 min"), (600, "3-10 min"), (1800, "10-30 min")]
 
 
@@ -43,6 +53,55 @@ def load(d, kind, since=None):
                 except ValueError:
                     pass  # a line cut by a stop mid-write
     return rows
+
+
+def when(ts):
+    """(local hour, day type) of a unix time, as the server buckets it."""
+    lt = datetime.fromtimestamp(ts, TZ)
+    return lt.hour, "wd" if lt.weekday() < 5 else ("sa" if lt.weekday() == 5 else "su")
+
+
+def hour_range(text):
+    lo, _, hi = text.partition("-")
+    lo, hi = int(lo), int(hi or lo)
+    if not (0 <= lo <= 23 and 0 <= hi <= 23):
+        raise argparse.ArgumentTypeError("hours 0-23, e.g. 7-9 or 22-5")
+    return set(range(lo, hi + 1)) if lo <= hi else set(range(lo, 24)) | set(range(0, hi + 1))
+
+
+def keep(rows, key, hours, days):
+    out = []
+    for r in rows:
+        h, d = when(r[key])
+        if (hours is None or h in hours) and (days is None or d in days):
+            out.append(r)
+    return out
+
+
+def by_hour(rows):
+    """Per hour band and horizon: n, corr(h,k), served and covariance-aware RMSE (the
+    latter fitted on the other bands' data, so a small band can't flatter itself)."""
+    print("\n== By hour band (local): n  corr(h,k)  RMSE served / inverse-variance / covariance-aware")
+    tagged = [(when(r["made"])[0], r) for r in rows if r.get("k") is not None]
+    for lim_lo, (lim, name) in zip([15] + [l for l, _ in HORIZONS], HORIZONS):
+        hz = [(hr, r) for hr, r in tagged if lim_lo < r["ahead"] <= lim]
+        print(f"  {name}")
+        for band, lo, hi in BANDS:
+            ins = [r for hr, r in hz if lo <= hr <= hi]
+            rest = [r for hr, r in hz if not lo <= hr <= hi]
+            if len(ins) < 20:
+                print(f"    {band:<8} n={len(ins):5d}  too few")
+                continue
+            h, k, b = [r["h"] for r in ins], [r["k"] for r in ins], [r["b"] for r in ins]
+            sh, sk = math.sqrt(max(m2(h) - mean(h) ** 2, 0)), math.sqrt(max(m2(k) - mean(k) ** 2, 0))
+            rho = ((m2(h, k) - mean(h) * mean(k)) / (sh * sk)) if sh and sk else float("nan")
+            fit = rest if len(rest) >= 30 else ins
+            wh, wk = [r["h"] for r in fit], [r["k"] for r in fit]
+            wi, wc = iv_weight(wh, wk), cov_weight(wh, wk)
+            rm = lambda e: math.sqrt(m2(e))
+            print(f"    {band:<8} n={len(ins):5d}  {rho:+.2f}  {rm(b):5.0f} / "
+                  f"{rm([wi * x + (1 - wi) * y for x, y in zip(h, k)]):5.0f} / "
+                  f"{rm([wc * x + (1 - wc) * y for x, y in zip(h, k)]):5.0f}   (w {wi:.2f} / {wc:.2f})")
 
 
 def q(xs, f):
@@ -156,12 +215,23 @@ def main():
     ap.add_argument("log_dir")
     ap.add_argument("--line")
     ap.add_argument("--since", help="first day to read, YYYY-MM-DD")
+    ap.add_argument("--hours", type=hour_range, help="local hours, inclusive: 7-9, 22-5")
+    ap.add_argument("--days", type=lambda x: set(x.split(",")), help="day types: wd, sa, su (comma-separated)")
+    ap.add_argument("--by-hour", action="store_true", help="also a table per hour band")
     a = ap.parse_args()
+    if a.days and not a.days <= {"wd", "sa", "su"}:
+        ap.error("--days takes wd, sa, su")
     eta = load(a.log_dir, "eta", a.since)
     if a.line:
         eta = [r for r in eta if r.get("line") == a.line]
+    eta = keep(eta, "made", a.hours, a.days)
+    if a.hours or a.days:
+        print(f"(predictions made at hours {sorted(a.hours) if a.hours else 'all'}, days {sorted(a.days) if a.days else 'all'})")
     eta_report(eta)
-    frozen_report([r for r in load(a.log_dir, "frozen", a.since) if not a.line or r.get("line") == a.line])
+    if a.by_hour:
+        by_hour(eta)
+    frozen = [r for r in load(a.log_dir, "frozen", a.since) if not a.line or r.get("line") == a.line]
+    frozen_report(keep(frozen, "t", a.hours, a.days))
     study_report(load(a.log_dir, "status", a.since))
 
 
