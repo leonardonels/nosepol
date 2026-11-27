@@ -241,6 +241,28 @@
   .stat { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:8px; }
   .stat > div { background:var(--fill); border-radius:16px; padding:12px; }
   .stat .v { font:800 22px/28px var(--font); letter-spacing:-.02em; }
+  /* debug section: collapsed by default, for checking the estimators on the live feed */
+  details.dbg { margin-top:24px; border-top:1px solid var(--sep, rgba(128,128,128,.25)); padding-top:8px; }
+  details.dbg > summary { cursor:pointer; font:700 13px/18px var(--font); color:var(--label2); padding:8px 0; list-style:none; }
+  details.dbg > summary::-webkit-details-marker { display:none; }
+  details.dbg > summary::before { content:"▸ "; }
+  details.dbg[open] > summary::before { content:"▾ "; }
+  .dbg .stat .v { font-size:18px; line-height:24px; }
+  .dbg table { width:100%; border-collapse:separate; border-spacing:4px; margin-top:4px; table-layout:fixed; }
+  .dbg th { font:600 11px/14px var(--font); color:var(--label2); text-align:left; padding:0 4px; }
+  .dbg td { background:var(--fill); border-radius:10px; padding:6px 8px; vertical-align:top; }
+  .dbg td.h { background:none; font:600 12px/16px var(--font); color:var(--label2); padding-left:0; }
+  .dbg td b { font:800 16px/20px var(--font); display:block; }
+  .dbg td small { font:400 11px/14px var(--font); color:var(--label2); display:block; white-space:nowrap; }
+  .dbg td.best b { color:var(--md-good, #2e9d57); }
+  .dbg .bars { display:flex; align-items:flex-end; gap:2px; height:56px; margin-top:6px; position:relative; }
+  .dbg .bars::after { content:""; position:absolute; left:0; right:0; bottom:50%; border-top:1px dashed var(--label2); opacity:.6; pointer-events:none; }
+  .dbg .bars > div { flex:1; min-width:0; background:var(--tint, #4A73D6); border-radius:3px 3px 0 0; position:relative; }
+  .dbg .bars > div.thin { opacity:.4; }
+  .dbg .axis { display:flex; justify-content:space-between; font:400 11px/14px var(--font); color:var(--label2); }
+  .dbg .kv { display:flex; justify-content:space-between; gap:8px; font:400 13px/20px var(--font); }
+  .dbg .kv span:last-child { font-weight:700; font-variant-numeric:tabular-nums; }
+  .dbg a { color:var(--tint, #4A73D6); }
   a { color:var(--tint); }
   /* thin, theme-coloured scrollbars with no arrow buttons */
   /* Chromium drops its ::-webkit-scrollbar rules (and shows arrow buttons) once scrollbar-width is set,
@@ -386,6 +408,12 @@ const T = {
     thenLeaves: "poi riparte alle {time} → {dest}",
     language: "Lingua", theme: "Tema", themeSystem: "Sistema", themeLight: "Chiaro", themeDark: "Scuro", feed: "Stato dei dati", lastBatch: "Ultimo GPS", every: "Ogni", staleN: "Vecchi",
     resync: "Alcune fermate non hanno codice: i dati delle fermate andrebbero aggiornati.",
+    dbgTitle: "Debug", dbgEstimator: "Stimatore", dbgReq: "Richieste/h", dbgOnTt: "Con orario", dbgEst: "Stimati", dbgGhosts: "Senza GPS", dbgUptime: "Attivo da",
+    dbgEta: "Errore ETA (s)", dbgEtaHint: "Stessi arrivi per tutti: media grande; sotto mediana e 95° percentile (i casi peggiori). In verde il migliore della riga.",
+    dbgHist: "Storico", dbgTt: "Orario", dbgBlend: "Misto", dbgSpeed: "Velocità", dbgN: "{n} arrivi",
+    dbgWeights: "Peso dello storico nel misto ({b})", dbgWeightsHint: "Per minuto alla fermata: barra alta = conta di più lo storico, bassa = l'orario. Sbiadite: pochi dati in questa fascia.",
+    dbgFilter: "Filtro orario", dbgPass: "Passaggi rilevati", dbgFrozen: "GPS bloccati", dbgGhostFound: "Corse senza GPS trovate", dbgGhostGps: "…poi con GPS",
+    dbgSweeps: "Giri completi / mirati", dbgPassZ: "Ritardo agli ultimi passaggi", dbgDrops: "Autobus rimossi", dbgRecent: "Ultimi", dbgRaw: "Dati grezzi",
     howTitle: "Come funziona",
     how: "Ogni ~20 s gli autobus inviano la posizione GPS. NoSePol la proietta sul percorso, stima posizione e velocità e calcola quando l'autobus arriva alla fermata. Accanto trovi il tempo dichiarato dall'operatore.",
     privacyTitle: "Privacy e dati",
@@ -435,6 +463,12 @@ const T = {
     estimated: "position estimated from the timetable ±{m}", ghostNote: "no GPS: position from the timetable ±{m}",
     ghostSeen: "no GPS, seen passing stops: ±{m}", delayLate: "{m} late", delayEarly: "{m} early", onTime: "on time",
     timetable: "timetable", noGps: "no GPS",
+    dbgTitle: "Debug", dbgEstimator: "Estimator", dbgReq: "Requests/h", dbgOnTt: "On timetable", dbgEst: "Estimated", dbgGhosts: "No GPS", dbgUptime: "Up for",
+    dbgEta: "ETA error (s)", dbgEtaHint: "Same arrivals for all: mean in large; below, median and 95th percentile (the bad cases). Green: best in the row.",
+    dbgHist: "History", dbgTt: "Timetable", dbgBlend: "Blend", dbgSpeed: "Speed", dbgN: "{n} arrivals",
+    dbgWeights: "History's weight in the blend ({b})", dbgWeightsHint: "Per minute to the stop: tall bar = history counts more, short = the timetable. Faded: little data in this time slot.",
+    dbgFilter: "Timetable filter", dbgPass: "Passages seen", dbgFrozen: "Frozen GPS", dbgGhostFound: "Runs without GPS found", dbgGhostGps: "…then got GPS",
+    dbgSweeps: "Full / targeted sweeps", dbgPassZ: "Delay at the last passages", dbgDrops: "Buses removed", dbgRecent: "Latest", dbgRaw: "Raw data",
     howTitle: "How it works",
     how: "Buses report GPS about every 20 s. NoSePol fits each one onto its route, estimates position and speed, and works out when it reaches each stop. The operator's own time is shown beside ours.",
     privacyTitle: "Privacy and data",
@@ -1170,13 +1204,15 @@ async function openMenu() {
     <h3>${esc(t("privacyTitle"))}</h3><p>${esc(t("privacy"))}</p>
     ${standalone() ? "" : `<h3>${esc(t("installTitle"))}</h3>${installEvt
       ? `<button class="btn primary" id="installBtn" style="margin-top:4px">${esc(t("installBtn"))}</button>`
-      : `<p>${esc(t("install"))}</p>`}`}`;
+      : `<p>${esc(t("install"))}</p>`}`}
+    ${st ? debugHtml(st) : ""}`;
   $("installBtn")?.addEventListener("click", async () => {
     const e = installEvt; installEvt = null;
     e.prompt();
     try { await e.userChoice; } catch {}
     openMenu();
   });
+  $("dbg")?.addEventListener("toggle", e => store.set("debugOpen", e.target.open));
   for (const b of $("menuBody").querySelectorAll("[data-line]")) b.onclick = () => openLine(b.dataset.line);
   for (const b of $("menuBody").querySelectorAll("[data-lang]")) b.onclick = () => { lang = b.dataset.lang; store.set("lang", lang); applyLang(); openMenu(); rerender(); };
   for (const b of $("menuBody").querySelectorAll("[data-theme-pick]")) b.onclick = () => {
@@ -1185,6 +1221,43 @@ async function openMenu() {
   };
 }
 function closeMenu() { $("menu").classList.add("hide"); }
+
+// ---------- debug: how the estimators do on the live feed (/api/status) ----------
+const fmtUp = s => s >= 86400 ? Math.floor(s / 86400) + "d " + Math.floor(s % 86400 / 3600) + "h" : s >= 3600 ? Math.floor(s / 3600) + "h " + Math.floor(s % 3600 / 60) + "m" : Math.round(s / 60) + "m";
+function debugHtml(st) {
+  const tt = st.timetable || {}, n = x => x ?? "–";
+  const tile = (k, v) => `<div><div class="mono" style="color:var(--muted)">${esc(t(k))}</div><div class="v">${esc(String(v))}</div></div>`;
+  const tiles = `<div class="stat">${tile("dbgEstimator", st.estimator ?? "fit")}${tile("dbgReq", n(st.requests_per_hour))}${tile("dbgUptime", fmtUp(st.uptime_s || 0))}</div>
+    <div class="stat">${tile("dbgOnTt", `${n(tt.on_timetable)} / ${st.buses}`)}${tile("dbgEst", n(st.estimated))}${tile("dbgGhosts", n(tt.ghosts_now))}</div>`;
+  // ETA error: same arrivals for every method; mean big, median and p95 below, best of the row in green
+  const H = ["0-3 min", "3-10 min", "10-30 min"], M = [["history", "dbgHist"], ["timetable", "dbgTt"], ["blend", "dbgBlend"]];
+  const sp = st.eta_spread || {};
+  const rows = H.filter(h => sp[h]).map(h => {
+    const r = sp[h], best = k => Math.min(...M.map(([m]) => r[m][k]));
+    return `<tr><td class="h">${esc(h)}<small>${esc(t("dbgN", { n: r.n }))}</small></td>${M.map(([m]) => {
+      const x = r[m];
+      return `<td class="${x.mean === best("mean") ? "best" : ""}"><b>${x.mean}</b><small>p50 ${x.median} · p95 <span style="${x.p95 === best("p95") ? "color:var(--md-good,#2e9d57);font-weight:700" : ""}">${x.p95}</span></small></td>`;
+    }).join("")}</tr>`;
+  }).join("");
+  const eta = rows ? `<h3>${esc(t("dbgEta"))}</h3><table><tr><th></th>${M.map(([, k]) => `<th>${esc(t(k))}</th>`).join("")}</tr>${rows}</table>
+    <p class="note">${esc(t("dbgEtaHint"))}</p>` : "";
+  // blend weights for this hour's bucket, one bar per minute to the stop
+  const bw = st.blend_weights, mins = (bw && bw.minutes || []).filter(m => m.min < 20);
+  const bars = mins.length ? `<h3>${esc(t("dbgWeights", { b: bw.bucket }))}</h3>
+    <div class="bars">${mins.map(m => `<div class="${m.n_bucket < 30 ? "thin" : ""}" style="height:${Math.round(m.w_history * 100)}%" title="${m.min}′: ${Math.round(m.w_history * 100)}% · n ${m.n} / ${m.n_bucket}"></div>`).join("")}</div>
+    <div class="axis"><span>${mins[0].min}′</span><span>50%</span><span>${mins[mins.length - 1].min}′</span></div>
+    <p class="note">${esc(t("dbgWeightsHint"))}</p>` : "";
+  const kv = (k, v) => `<div class="kv"><span>${esc(t(k))}</span><span>${esc(String(v))}</span></div>`;
+  const filt = st.timetable ? `<h3>${esc(t("dbgFilter"))}</h3>${kv("dbgPass", n(tt.passages))}${kv("dbgFrozen", n(tt.frozen))}
+    ${kv("dbgGhostFound", n(tt.ghosts_found))}${kv("dbgGhostGps", n(tt.ghosts_then_gps))}${kv("dbgSweeps", `${n(tt.full_sweeps)} / ${n(tt.targeted_sweeps)}`)}
+    ${(tt.passage_delay_recent_s || []).length ? kv("dbgPassZ", tt.passage_delay_recent_s.slice(-8).map(z => (z > 0 ? "+" : "") + z).join(" ")) : ""}` : "";
+  const drops = Object.entries(st.drops_by_reason || {}).sort((a, b) => b[1] - a[1]);
+  const dr = drops.length ? `<h3>${esc(t("dbgDrops"))}</h3>${drops.map(([k, v]) => `<div class="kv"><span class="mono">${esc(k)}</span><span>${v}</span></div>`).join("")}
+    ${(st.drops_recent || []).slice(0, 5).map(d => `<div class="note">${esc(d.trip)} · ${esc(d.reason)} · ${esc(d.near || "")} · ${fmtMin(d.ago_s)}</div>`).join("")}` : "";
+  return `<details class="dbg" id="dbg" ${store.get("debugOpen", false) ? "open" : ""}><summary>${esc(t("dbgTitle"))}</summary>
+    ${tiles}${eta}${bars}${filt}${dr}
+    <h3>${esc(t("dbgRaw"))}</h3><p class="note"><a href="api/status" target="_blank" rel="noopener">/api/status</a> · <a href="api/debug" target="_blank" rel="noopener">/api/debug</a></p></details>`;
+}
 
 // ---------- installing as an app ----------
 // The service worker makes the page installable (Chrome's ⋮ → "Install app"); when Chrome

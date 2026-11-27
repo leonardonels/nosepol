@@ -187,6 +187,11 @@ Findings that shape the design:
   learned, usable, runs) and `eta_errors` (see Learned stretch times).
 - `GET /api/debug`: poll set, batch intervals, raw fix history
 
+The menu ends with a collapsed **Debug** section (it remembers if you open it), drawn from
+`/api/status`: estimator, requests/hour, buses on the timetable / estimated / ghosts, the ETA
+error of history, timetable and blend on the same arrivals (mean, with median and p95), the
+blend's weights for this hour, the timetable filter's counters and the drop reasons.
+
 The page uses hash links that can be shared: `/#/stop/09001`, `/#/bus/T06:1086`.
 
 ## Keeping data fresh (resync)
