@@ -3,7 +3,7 @@
 
 Stop codes look like <2-digit district><3-digit seq> (01001, 10001, 51001, ...). The API has no
 "list stops" endpoint, so we probe /polemonitor/info sequentially per zone and
-stop after a run of misses. Throttled; run once, re-run rarely.
+stop after a run of misses. Throttled; run once, re-run rarely. To ship the result: cp data/stops.json seed/
 """
 import json
 import pathlib

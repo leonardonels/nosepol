@@ -4,11 +4,14 @@ A backend polls TPL FVG's realtime API, fits each bus's position along its
 route, and serves JSON. A Leaflet map in `web/` shows the result.
 
 ```
-python3 tools/scan_stops.py      # one-off: builds data/stops.json (~35 min)
-python3 tools/fill_stops.py      # fills codes for route stops the scan missed
 python3 server/app.py            # http://localhost:8080
 python3 server/app.py --lines T06,T08,T09,T17 --port 8080
 ```
+
+`data/` is the server's own state and isn't tracked: at start any missing
+`routes.json` / `stops.json` is copied from `seed/`, the tracked snapshot, so a fresh
+checkout doesn't rediscover every route. Refreshing the seed is a deliberate step:
+`cp data/routes.json data/stops.json seed/` and commit.
 
 Python 3.10+, stdlib only. The page loads Leaflet and OSM tiles from their CDNs.
 
@@ -223,6 +226,7 @@ python3 tools/scan_stops.py    # full rescan (~35 min)
 python3 tools/fill_stops.py    # probe gaps until every route stop has a code
 rm data/routes.json            # refetch route shapes on next start
 python3 tools/check_coverage.py  # poll every route stop: are buses missing?
+cp data/stops.json data/routes.json seed/   # ship the result: new installs start from it
 ```
 
 After a stop-list download the log says how many stops were new, moved or no longer
@@ -242,15 +246,14 @@ The map is then at `http://<host>:8080`. Options via environment / `.env`:
 
 - Runs as a non-root user with a healthcheck on `/api/lines`. No restart policy: after a
   crash or a host reboot it stays stopped until you run `docker compose up -d` again.
-- `data/` lives in the `nosepol-data` volume, seeded from the image on first run, so the
-  learned routes cache survives rebuilds and the git checkout stays clean.
-- A bind mount works too (`/srv/nosepol:/app/data`) and may start empty: at startup any
-  missing `stops.json` / `routes.json` is copied from the copy bundled in the image
-  (`/app/seed`). Existing files are never overwritten; delete one and restart to reset it.
-  The folder must be writable by UID 1000.
+- `data/` lives in the `nosepol-data` volume (or a bind mount, e.g. `/srv/nosepol:/app/data`,
+  writable by UID 1000), so what it learns survives rebuilds. It may start empty: at
+  startup any missing `stops.json` / `routes.json` is copied from `seed/` in the image.
+  Existing files are never overwritten; delete one and restart to reset it.
 - Update code: `git pull && docker compose up -d --build`.
-- After a stop-DB resync (new `data/stops.json` in git) the volume must be reseeded:
-  `docker compose down -v && docker compose up -d --build`.
+- After a stop-DB resync (a new `seed/stops.json` in git) the server's copy must be
+  replaced: delete `stops.json` in the volume or bind mount and restart (or
+  `docker compose down -v && docker compose up -d --build`, which also drops what it learned).
 - Installing it as an app (Chrome on Android: ⋮ → "Install app"; Safari on iPhone: Share →
   "Add to Home Screen") needs HTTPS, so put it behind e.g. `tailscale serve 8080` or a
   Cloudflare Tunnel; over plain `http://<host>:8080` Chrome won't offer it. The page's
