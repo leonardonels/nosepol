@@ -342,6 +342,7 @@ class Tracker:
         self.swept_stops = 0    # stop requests made by sweeps (the heartbeat not counted)
         self.cpu = 0.0          # s of CPU spent processing sweeps
         self.last_arrivals = []
+        self.answers = {}       # stop code -> (time fetched, runs): latest answer, for the shadows
         self._stop_index = (None, {})  # (variant keys it was built from, code -> entry)
         self._operator = {}            # stop code -> (time fetched, runs)
         self._live, self._live_lock = None, threading.Lock()  # (built at, body) for live()
@@ -690,12 +691,14 @@ class Tracker:
             if rs is not None:  # no answer: says nothing (and mustn't look like buses leaving)
                 fetched[code] = rs
         self.swept_stops += len(codes)
+        for code, rs in fetched.items():
+            self.answers[code] = (t, rs)
         c0 = time.process_time()
         updated = self.process(t, full, codes, fetched)
         self.cpu += time.process_time() - c0
-        for sh in self.shadows:  # the same answers, thinned out to each one's rate
+        for sh in self.shadows:  # each polls on its own schedule, from these answers
             try:
-                sh.offer(t, full, codes, fetched, self)
+                sh.offer(t, self)
             except Exception:
                 self.log.exception("shadow %s failed", sh.name)
         return updated
@@ -1679,6 +1682,7 @@ class Shadow(Tracker):
             self.history, self.blend = ReadOnly(main.history), ReadOnly(main.blend)
         self.last = 0.0
         self.sweeps_used = 0
+        self.missing = 0       # stops it asked for that the real tracker hadn't polled since its last tick
         self.cpu = 0.0
         self._truth = {}       # (trip, stop index) -> [(made at, served, history, timetable) arrival times]
         self._truth_at = {}    # trip -> when last predicted
@@ -1693,15 +1697,35 @@ class Shadow(Tracker):
     def _route_checks(self, t, moved):
         pass
 
-    def offer(self, t, full, codes, fetched, main):
-        """One real sweep: process it if its turn has come, then be judged."""
+    def offer(self, t, main):
+        """After each real sweep: if its own tick has come, sweep as a backend polling this
+        rarely would (its own full/targeted cycle, its own targeted stops), then be judged.
+
+        Like re-encoding a video at a lower frame rate rather than dropping frames: it
+        doesn't take whichever real sweep falls on its tick (that inherits the real
+        cycle and aliases), it decides which stops it would ask for, and for each takes
+        the real tracker's newest answer fetched since its own last tick. Answers are
+        processed in the order they were fetched, at the time they were fetched, so
+        fixes and passages keep their real timestamps. A stop the real tracker hasn't
+        polled since then gives no answer (counted as missing), but its request is
+        still counted."""
         c0 = time.process_time()
         with self.lock:
             if t - self.last >= self.every - 5:  # 5 s: batches come every ~20-25 s, not exactly
+                full = self.sweeps_used % FULL_EVERY == 0
+                codes = self.poll_set() if full else self.target_set(t)
+                groups = {}
+                for code in codes:
+                    a = main.answers.get(code)
+                    if a is None or a[0] <= self.last:
+                        self.missing += 1
+                        continue
+                    groups.setdefault(a[0], {})[code] = a[1]
+                for ta in sorted(groups):
+                    self.process(ta, full, list(groups[ta]), groups[ta])
                 self.last = t
                 self.sweeps_used += 1
                 self.swept_stops += len(codes)
-                self.process(t, full, codes, fetched)
             self._judge(t, main)
         self.cpu += time.process_time() - c0
 
@@ -1759,7 +1783,9 @@ class Shadow(Tracker):
                       "history": spread(r[2] for r in rows), "timetable": spread(r[3] for r in rows)}
         return {"name": self.name, "every_s": self.every, "learns": self.learn,
                 "requests_per_hour": round(self.swept_stops / up * 3600),
-                "sweeps_used": self.sweeps_used, "cpu_s": round(self.cpu, 1),
+                "sweeps_used": self.sweeps_used,
+                "missing": round(self.missing / self.swept_stops, 3) if self.swept_stops else None,
+                "cpu_s": round(self.cpu, 1),
                 "coverage": round(self.coverage[1] / self.coverage[0], 3) if self.coverage[0] else None,
                 "position_m": spread(self.pos_err), "position_n": len(self.pos_err), "eta": eta,
                 **({"history": self.history.summary()} if self.learn else {})}
