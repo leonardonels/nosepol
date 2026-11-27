@@ -9,6 +9,7 @@ services:
       - "${NOSEPOL_PORT:-8080}:8080"
     environment:
       NOSEPOL_LOG_DIR: ${NOSEPOL_LOG_DIR:-}   # e.g. /app/data/logs: study logs (see server/app.py); empty = off
+      NOSEPOL_EXPORT_TOKEN: ${NOSEPOL_EXPORT_TOKEN:-}  # 16+ chars: GET /api/study/export with it as Bearer; empty = no endpoint
     volumes:
       - nosepol-data:/app/data      # seeded from the image on first run; keeps the routes cache
     command: ["python", "server/app.py", "--port", "8080", "--lines", "${NOSEPOL_LINES:-T06,T08,T09}"]

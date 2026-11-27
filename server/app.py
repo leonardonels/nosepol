@@ -13,6 +13,8 @@ import argparse
 import collections
 import shutil
 import hashlib
+import hmac
+import io
 import json
 import logging
 import math
@@ -20,6 +22,8 @@ import os
 import pathlib
 import re
 import statistics
+import tarfile
+import tempfile
 import threading
 import time
 import unicodedata
@@ -94,6 +98,12 @@ SHADOW_EVERY = [int(x) for x in os.environ.get("NOSEPOL_SHADOWS", "45,60,90,120,
 # of each predictor, the bus's state when predicted), per frozen-GPS outcome, and a
 # status snapshot every DATA_EVERY. Files <kind>-<day>.jsonl; see tools/study_report.py.
 LOG_DIR = os.environ.get("NOSEPOL_LOG_DIR") or None
+# GET /api/study/export (a .tar.gz of the study logs and the learned data) exists only
+# when this is set, and only with "Authorization: Bearer <it>"; otherwise it's a 404.
+EXPORT_TOKEN = os.environ.get("NOSEPOL_EXPORT_TOKEN") or None
+if EXPORT_TOKEN and len(EXPORT_TOKEN) < 16:
+    logging.getLogger("nosepol").warning("NOSEPOL_EXPORT_TOKEN shorter than 16 characters: export off")
+    EXPORT_TOKEN = None
 
 
 class StudyLog:
@@ -2000,7 +2010,60 @@ def make_handler(tracker):
                                                               "last": tr.tl.kf and tr.tl.kf.last}
                                                           for k, tr in list(tracker.tracks.items())
                                                           + list(tracker.ghosts.items())}})
+                case ["study", "export"] if self._export_allowed():
+                    since = qs.get("since")
+                    if since and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", since):
+                        return self._json({"error": "since=YYYY-MM-DD"}, 400)
+                    return self._export(since)
             self._json({"error": "not found"}, 404)
+
+        def _export_allowed(self):
+            if not EXPORT_TOKEN:
+                return False
+            got = self.headers.get("Authorization", "")
+            return hmac.compare_digest(got.encode(), f"Bearer {EXPORT_TOKEN}".encode())
+
+        def _export(self, since):
+            """The study logs (days from `since` on) and what was learned, saved first:
+            blend weights, stretch times, the learning shadows' own, as a .tar.gz."""
+            with tracker.lock:
+                for obj in [tracker, *tracker.shadows]:
+                    obj.history.save()
+                    obj.blend.save()
+            files = [(p, p.name) for p in (DATA / "blend.json", DATA / "speeds.json") if p.is_file()]
+            shadow = DATA / "shadow"
+            if shadow.is_dir():
+                files += [(p, f"shadow/{p.relative_to(shadow)}") for p in sorted(shadow.rglob("*.json"))]
+            if LOG_DIR and pathlib.Path(LOG_DIR).is_dir():
+                for p in sorted(pathlib.Path(LOG_DIR).glob("*.jsonl")):
+                    day = p.stem[-10:]
+                    if not since or day >= since:
+                        files.append((p, f"logs/{p.name}"))
+            with tempfile.SpooledTemporaryFile(max_size=32 << 20) as buf:
+                with tarfile.open(fileobj=buf, mode="w:gz") as tar:
+                    for p, name in files:
+                        try:
+                            tar.add(p, arcname=name)
+                        except OSError as e:
+                            tracker.log.warning("export %s: %s", name, e)
+                    info = json.dumps({"t": round(time.time()), "since": since,
+                                       "uptime_s": round(time.time() - tracker.started),
+                                       "files": [n for _, n in files]}, indent=1).encode()
+                    ti = tarfile.TarInfo("manifest.json")
+                    ti.size, ti.mtime = len(info), int(time.time())
+                    tar.addfile(ti, io.BytesIO(info))
+                size = buf.tell()
+                buf.seek(0)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/gzip")
+                self.send_header("Content-Disposition",
+                                 f'attachment; filename="nosepol-study-{time.strftime("%Y%m%d-%H%M")}.tgz"')
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(size))
+                self.end_headers()
+                shutil.copyfileobj(buf, self.wfile)
+            tracker.log.info("study export: %d files, %d kB%s", len(files), size // 1024,
+                             f" since {since}" if since else "")
 
     return H
 

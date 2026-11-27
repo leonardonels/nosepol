@@ -3,6 +3,13 @@
 
     python3 tools/study_report.py LOG_DIR [--line T09] [--since 2026-11-28]
 
+From a server running with NOSEPOL_EXPORT_TOKEN set (logs and learned data, .tar.gz):
+
+    curl -fsS -H "Authorization: Bearer $NOSEPOL_EXPORT_TOKEN" \
+        https://nosepol.leonardonels.com/api/study/export -o study.tgz   # [?since=YYYY-MM-DD]
+    mkdir -p study-logs && tar -xzf study.tgz -C study-logs
+    python3 tools/study_report.py study-logs/logs
+
 ETA (eta-*.jsonl, one line per scored prediction, signed errors in s, + = predicted
 too late): per horizon, each predictor's bias and spread, the correlation of the
 history (h) and timetable (k) errors, and what three blends would have scored on the
