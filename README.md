@@ -190,7 +190,9 @@ Findings that shape the design:
 The menu ends with a collapsed **Debug** section (it remembers if you open it), drawn from
 `/api/status`: estimator, requests/hour, buses on the timetable / estimated / ghosts, the ETA
 error of history, timetable and blend on the same arrivals (mean, with median and p95), the
-blend's weights for this hour, the timetable filter's counters and the drop reasons.
+blend's weights for this hour, the timetable filter's counters and the drop reasons. The same
+errors split by line and by the bus's GPS age when predicted (`eta_by_line`,
+`eta_by_gps_age` in `/api/status`), one horizon at a time.
 
 The page uses hash links that can be shared: `/#/stop/09001`, `/#/bus/T06:1086`.
 

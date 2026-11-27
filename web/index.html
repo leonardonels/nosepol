@@ -263,6 +263,11 @@
   .dbg .kv { display:flex; justify-content:space-between; gap:8px; font:400 13px/20px var(--font); }
   .dbg .kv span:last-child { font-weight:700; font-variant-numeric:tabular-nums; }
   .dbg a { color:var(--tint, #4A73D6); }
+  .dbg .seg { margin-top:4px; }
+  .dbg td.h .badge { display:inline-flex; margin-bottom:2px; }
+  .dbg [data-hpane] { display:none; }
+  .dbg[data-h="0-3 min"] [data-hpane="0-3 min"], .dbg[data-h="3-10 min"] [data-hpane="3-10 min"],
+  .dbg[data-h="10-30 min"] [data-hpane="10-30 min"] { display:block; }
   a { color:var(--tint); }
   /* thin, theme-coloured scrollbars with no arrow buttons */
   /* Chromium drops its ::-webkit-scrollbar rules (and shows arrow buttons) once scrollbar-width is set,
@@ -413,6 +418,9 @@ const T = {
     dbgHist: "Storico", dbgTt: "Orario", dbgBlend: "Misto", dbgSpeed: "Velocità", dbgN: "{n} arrivi",
     dbgWeights: "Peso dello storico nel misto ({b})", dbgWeightsHint: "Per minuto alla fermata: barra alta = conta di più lo storico, bassa = l'orario. Sbiadite: pochi dati in questa fascia.",
     dbgFilter: "Filtro orario", dbgPass: "Passaggi rilevati", dbgFrozen: "GPS bloccati", dbgGhostFound: "Corse senza GPS trovate", dbgGhostGps: "…poi con GPS",
+    dbgByLine: "Errore ETA per linea (s)", dbgByAge: "Errore ETA per età del GPS (s)", dbgAhead: "Previsione fatta",
+    dbgByAgeHint: "Quanto era vecchio il GPS quando è stata fatta la previsione. Da 90 s la posizione viene dall'orario: lì il misto è l'orario da solo.",
+    dbgNone: "Ancora nessun arrivo misurato in questa fascia.",
     dbgSweeps: "Giri completi / mirati", dbgPassZ: "Ritardo agli ultimi passaggi", dbgDrops: "Autobus rimossi", dbgRecent: "Ultimi", dbgRaw: "Dati grezzi",
     howTitle: "Come funziona",
     how: "Ogni ~20 s gli autobus inviano la posizione GPS. NoSePol la proietta sul percorso, stima posizione e velocità e calcola quando l'autobus arriva alla fermata. Accanto trovi il tempo dichiarato dall'operatore.",
@@ -468,6 +476,9 @@ const T = {
     dbgHist: "History", dbgTt: "Timetable", dbgBlend: "Blend", dbgSpeed: "Speed", dbgN: "{n} arrivals",
     dbgWeights: "History's weight in the blend ({b})", dbgWeightsHint: "Per minute to the stop: tall bar = history counts more, short = the timetable. Faded: little data in this time slot.",
     dbgFilter: "Timetable filter", dbgPass: "Passages seen", dbgFrozen: "Frozen GPS", dbgGhostFound: "Runs without GPS found", dbgGhostGps: "…then got GPS",
+    dbgByLine: "ETA error by line (s)", dbgByAge: "ETA error by GPS age (s)", dbgAhead: "Predicted",
+    dbgByAgeHint: "How old the bus's GPS was when the prediction was made. From 90 s the position comes from the timetable: there the blend is the timetable alone.",
+    dbgNone: "No arrivals measured in this range yet.",
     dbgSweeps: "Full / targeted sweeps", dbgPassZ: "Delay at the last passages", dbgDrops: "Buses removed", dbgRecent: "Latest", dbgRaw: "Raw data",
     howTitle: "How it works",
     how: "Buses report GPS about every 20 s. NoSePol fits each one onto its route, estimates position and speed, and works out when it reaches each stop. The operator's own time is shown beside ours.",
@@ -1213,6 +1224,10 @@ async function openMenu() {
     openMenu();
   });
   $("dbg")?.addEventListener("toggle", e => store.set("debugOpen", e.target.open));
+  for (const b of $("menuBody").querySelectorAll("[data-hpick]")) b.onclick = () => {
+    $("dbg").dataset.h = b.dataset.hpick; store.set("dbgH", b.dataset.hpick);
+    for (const x of $("menuBody").querySelectorAll("[data-hpick]")) x.setAttribute("aria-pressed", x === b);
+  };
   for (const b of $("menuBody").querySelectorAll("[data-line]")) b.onclick = () => openLine(b.dataset.line);
   for (const b of $("menuBody").querySelectorAll("[data-lang]")) b.onclick = () => { lang = b.dataset.lang; store.set("lang", lang); applyLang(); openMenu(); rerender(); };
   for (const b of $("menuBody").querySelectorAll("[data-theme-pick]")) b.onclick = () => {
@@ -1231,16 +1246,28 @@ function debugHtml(st) {
     <div class="stat">${tile("dbgOnTt", `${n(tt.on_timetable)} / ${st.buses}`)}${tile("dbgEst", n(st.estimated))}${tile("dbgGhosts", n(tt.ghosts_now))}</div>`;
   // ETA error: same arrivals for every method; mean big, median and p95 below, best of the row in green
   const H = ["0-3 min", "3-10 min", "10-30 min"], M = [["history", "dbgHist"], ["timetable", "dbgTt"], ["blend", "dbgBlend"]];
-  const sp = st.eta_spread || {};
-  const rows = H.filter(h => sp[h]).map(h => {
-    const r = sp[h], best = k => Math.min(...M.map(([m]) => r[m][k]));
-    return `<tr><td class="h">${esc(h)}<small>${esc(t("dbgN", { n: r.n }))}</small></td>${M.map(([m]) => {
+  // one row per group: mean big, median and p95 below, best mean and best p95 of the row in green
+  const row = (label, r) => {
+    const best = k => Math.min(...M.map(([m]) => r[m][k]));
+    return `<tr><td class="h">${label}<small>${esc(t("dbgN", { n: r.n }))}</small></td>${M.map(([m]) => {
       const x = r[m];
-      return `<td class="${x.mean === best("mean") ? "best" : ""}"><b>${x.mean}</b><small>p50 ${x.median} · p95 <span style="${x.p95 === best("p95") ? "color:var(--md-good,#2e9d57);font-weight:700" : ""}">${x.p95}</span></small></td>`;
+      return `<td class="${x.mean === best("mean") ? "best" : ""}"><b>${x.mean}</b><small>p50 ${x.median}</small><small>p95 <span style="${x.p95 === best("p95") ? "color:var(--md-good,#2e9d57);font-weight:700" : ""}">${x.p95}</span></small></td>`;
     }).join("")}</tr>`;
+  };
+  const table = rows => `<table><tr><th></th>${M.map(([, k]) => `<th>${esc(t(k))}</th>`).join("")}</tr>${rows}</table>`;
+  const sp = st.eta_spread || {};
+  const rows = H.filter(h => sp[h]).map(h => row(esc(h), sp[h])).join("");
+  const eta = rows ? `<h3>${esc(t("dbgEta"))}</h3>${table(rows)}<p class="note">${esc(t("dbgEtaHint"))}</p>` : "";
+  // by line and by GPS age, for one horizon at a time (picker shared by both)
+  const panes = (by, label) => H.map(h => {
+    const g = (by || {})[h] || {}, ks = Object.keys(g);
+    return `<div data-hpane="${h}">${ks.length ? table(ks.map(k => row(label(k), g[k])).join("")) : `<p class="note">${esc(t("dbgNone"))}</p>`}</div>`;
   }).join("");
-  const eta = rows ? `<h3>${esc(t("dbgEta"))}</h3><table><tr><th></th>${M.map(([, k]) => `<th>${esc(t(k))}</th>`).join("")}</tr>${rows}</table>
-    <p class="note">${esc(t("dbgEtaHint"))}</p>` : "";
+  const hPick = store.get("dbgH", "3-10 min");
+  const groups = st.eta_by_line ? `<h3>${esc(t("dbgAhead"))}</h3>
+    <div class="seg" role="group" aria-label="${esc(t("dbgAhead"))}">${H.map(h => `<button data-hpick="${h}" aria-pressed="${h === hPick}">${esc(h)}</button>`).join("")}</div>
+    <h3>${esc(t("dbgByLine"))}</h3>${panes(st.eta_by_line, l => badge(l))}
+    <h3>${esc(t("dbgByAge"))}</h3>${panes(st.eta_by_gps_age, a => esc(a))}<p class="note">${esc(t("dbgByAgeHint"))}</p>` : "";
   // blend weights for this hour's bucket, one bar per minute to the stop
   const bw = st.blend_weights, mins = (bw && bw.minutes || []).filter(m => m.min < 20);
   const bars = mins.length ? `<h3>${esc(t("dbgWeights", { b: bw.bucket }))}</h3>
@@ -1254,8 +1281,8 @@ function debugHtml(st) {
   const drops = Object.entries(st.drops_by_reason || {}).sort((a, b) => b[1] - a[1]);
   const dr = drops.length ? `<h3>${esc(t("dbgDrops"))}</h3>${drops.map(([k, v]) => `<div class="kv"><span class="mono">${esc(k)}</span><span>${v}</span></div>`).join("")}
     ${(st.drops_recent || []).slice(0, 5).map(d => `<div class="note">${esc(d.trip)} · ${esc(d.reason)} · ${esc(d.near || "")} · ${fmtMin(d.ago_s)}</div>`).join("")}` : "";
-  return `<details class="dbg" id="dbg" ${store.get("debugOpen", false) ? "open" : ""}><summary>${esc(t("dbgTitle"))}</summary>
-    ${tiles}${eta}${bars}${filt}${dr}
+  return `<details class="dbg" id="dbg" data-h="${esc(hPick)}" ${store.get("debugOpen", false) ? "open" : ""}><summary>${esc(t("dbgTitle"))}</summary>
+    ${tiles}${eta}${groups}${bars}${filt}${dr}
     <h3>${esc(t("dbgRaw"))}</h3><p class="note"><a href="api/status" target="_blank" rel="noopener">/api/status</a> · <a href="api/debug" target="_blank" rel="noopener">/api/debug</a></p></details>`;
 }
 

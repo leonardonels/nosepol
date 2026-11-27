@@ -341,9 +341,10 @@ class Tracker:
         self.blend = Track.blend = Blend(DATA / "blend.json")
         self._preds = {}        # (trip, stop index) -> [(made at, speed-only arrival, our arrival)]
         self._pred_at = {}      # trip -> when its predictions were last made
-        # horizon -> recent arrivals' absolute errors (speed, history, timetable, blend), s:
-        # for the median and 95th percentile beside the mean (the bad cases matter most)
-        self.eta_samples = {}
+        # recent scored arrivals: (horizon, line, GPS age band, then the absolute errors of
+        # speed, history, timetable, blend in s), for the median and 95th percentile beside
+        # the mean (the bad cases matter most), by horizon, line and GPS age
+        self.eta_samples = collections.deque(maxlen=self.ETA_SAMPLES)
         self.eta_errors = {}    # horizon -> {"n", "speed", "ours", "nk", "kalman", "ours_k"}: absolute errors summed (s)
         # when the stop list was downloaded, and per variant when it was checked and last used
         self.refresh = self._load_json(DATA / "refresh.json")
@@ -481,7 +482,10 @@ class Tracker:
     ETA_HORIZONS = ((180, "0-3 min"), (600, "3-10 min"), (1800, "10-30 min"))
     ETA_EVERY = 60    # s between predictions of one bus
     ETA_AHEAD = 8     # stops ahead predicted
-    ETA_SAMPLES = 5000  # recent arrivals kept per horizon for percentiles
+    ETA_SAMPLES = 20000  # recent scored arrivals kept for percentiles
+    # GPS age when the prediction was made: fresh, one or two batches missed, old (the
+    # position is estimated from 90 s), long gone
+    GPS_AGE_BANDS = ((30, "<30 s"), (90, "30-90 s"), (180, "90-180 s"), (float("inf"), "180 s+"))
 
     def _score_etas(self, t):
         """Measure the ETAs against real arrivals: every ETA_EVERY, note each moving
@@ -490,7 +494,7 @@ class Tracker:
         prediction was made. Shown in /api/status as eta_errors."""
         for trip, tr in self.tracks.items():
             for i, ta in tr.new_arrivals:
-                for made, old, new, kf, bl in self._preds.pop((trip, i), []):
+                for made, old, new, kf, bl, line, ageb in self._preds.pop((trip, i), []):
                     ahead = ta - made
                     h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
                     if h is None or ahead < 15:
@@ -505,8 +509,8 @@ class Tracker:
                         e["kalman"] += abs(kf - ta)
                         e["ours_k"] += abs(new - ta)
                         e["blend"] = e.get("blend", 0.0) + abs(bl - ta)
-                        self.eta_samples.setdefault(h, collections.deque(maxlen=self.ETA_SAMPLES)).append(
-                            (abs(old - ta), abs(new - ta), abs(kf - ta), abs(bl - ta)))
+                        self.eta_samples.append((h, line, ageb, abs(old - ta), abs(new - ta),
+                                                 abs(kf - ta), abs(bl - ta)))
                         self.blend.add(ahead, new - ta, kf - ta, made)  # weights learn after scoring this one
             tr.new_arrivals.clear()
             if tr.layover or tr.stopped_for(t) is not None or t - self._pred_at.get(trip, 0) < self.ETA_EVERY:
@@ -515,6 +519,10 @@ class Tracker:
             if not v or v <= 0.5:
                 continue
             self._pred_at[trip] = t
+            line = tr.variant.line.rstrip("/")
+            age = t - tr.fixes[-1][0]
+            ageb = next(name for lim, name in self.GPS_AGE_BANDS if age < lim)
+            est = tr.estimated(t)
             n = 0
             for i, st in enumerate(tr.variant.stops):
                 if st["s"] - ARRIVE_M <= s or i in tr.arrivals:
@@ -522,9 +530,10 @@ class Tracker:
                 old, new = tr.time_to(s, st["s"], v), tr.eta_hist(s, st["s"], v, t)[0]
                 kf = tr.tl.eta(st["s"], t) if tr.tl.ready() else None
                 if old is not None and new is not None:
-                    bl = None if kf is None else t + self.blend.combine(new, kf, t)[0]
+                    # "blend" is what the app serves: the timetable's alone when GPS is old
+                    bl = None if kf is None else t + (kf if est else self.blend.combine(new, kf, t)[0])
                     self._preds.setdefault((trip, i), []).append(
-                        (t, t + old, t + new, None if kf is None else t + kf, bl))
+                        (t, t + old, t + new, None if kf is None else t + kf, bl, line, ageb))
                 n += 1
                 if n >= self.ETA_AHEAD:
                     break
@@ -1540,20 +1549,31 @@ class Tracker:
                                    for h, e in sorted(self.eta_errors.items()) if e["n"]},
                     # the same arrivals for all four (those with a timetable ETA), recent ones:
                     # mean = how good it usually is, p95 = how bad it gets
-                    "eta_spread": self._eta_spread()}
+                    "eta_spread": self._eta_spread(),
+                    # the same split by line, and by how old the bus's GPS was when predicted
+                    "eta_by_line": self._eta_spread("line"),
+                    "eta_by_gps_age": self._eta_spread("gps_age")}
 
-    def _eta_spread(self):
-        def stats(xs):
-            xs = sorted(xs)
-            q = lambda f: xs[min(len(xs) - 1, int(f * len(xs)))]
-            return {"mean": round(sum(xs) / len(xs)), "median": round(q(0.5)), "p95": round(q(0.95))}
-        out = {}
-        for h, rows in sorted(self.eta_samples.items()):
-            if rows:
-                cols = list(zip(*rows))
-                out[h] = {"n": len(rows), **{name: stats(c) for name, c in
-                                             zip(("speed", "history", "timetable", "blend"), cols)}}
-        return out
+    def _eta_spread(self, by=None):
+        """Mean, median and p95 of each method's absolute error, per horizon, and with by
+        ("line" or "gps_age") per horizon and group: {horizon: {group: stats}}."""
+        def stats(rows):
+            out = {"n": len(rows)}
+            for j, name in enumerate(("speed", "history", "timetable", "blend"), 3):
+                xs = sorted(r[j] for r in rows)
+                q = lambda f: xs[min(len(xs) - 1, int(f * len(xs)))]
+                out[name] = {"mean": round(sum(xs) / len(xs)), "median": round(q(0.5)), "p95": round(q(0.95))}
+            return out
+        col = {None: None, "line": 1, "gps_age": 2}[by]
+        groups = {}
+        for r in self.eta_samples:
+            g = groups.setdefault(r[0], {})
+            g.setdefault(None if col is None else r[col], []).append(r)
+        if col is None:
+            return {h: stats(g[None]) for h, g in sorted(groups.items())}
+        order = [name for _, name in self.GPS_AGE_BANDS] if by == "gps_age" else self.lines
+        return {h: {k: stats(g[k]) for k in sorted(g, key=lambda k: order.index(k) if k in order else 99)}
+                for h, g in sorted(groups.items())}
 
     def shapes(self, line):
         with self.lock:
