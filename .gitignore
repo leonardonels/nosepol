@@ -5,3 +5,4 @@ __pycache__/
 .claude/
 data/refresh.json
 data/speeds.json
+study-logs/

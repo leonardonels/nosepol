@@ -90,6 +90,27 @@ FULL_EVERY = max(1, int(os.environ.get("NOSEPOL_FULL_EVERY", "3")))
 # this many seconds, each twice: borrowing the real tracker's learned data, and learning
 # its own from scratch (data/shadow/<name>/). Empty: none.
 SHADOW_EVERY = [int(x) for x in os.environ.get("NOSEPOL_SHADOWS", "45,60,90,120,180").split(",") if x.strip()]
+# Study logs for long runs (off unless set): one JSON line per scored ETA (signed errors
+# of each predictor, the bus's state when predicted), per frozen-GPS outcome, and a
+# status snapshot every DATA_EVERY. Files <kind>-<day>.jsonl; see tools/study_report.py.
+LOG_DIR = os.environ.get("NOSEPOL_LOG_DIR") or None
+
+
+class StudyLog:
+    def __init__(self, d):
+        self.d = pathlib.Path(d)
+        self.d.mkdir(parents=True, exist_ok=True)
+        self.lock = threading.Lock()
+
+    def write(self, kind, rec):
+        line = json.dumps(rec, separators=(",", ":"), ensure_ascii=False) + "\n"
+        path = self.d / f"{kind}-{time.strftime('%Y-%m-%d')}.jsonl"
+        with self.lock:
+            try:
+                with open(path, "a", encoding="utf-8") as f:
+                    f.write(line)
+            except OSError as e:
+                logging.getLogger("nosepol").warning("study log %s: %s", path.name, e)
 # Line colours by position in --lines: (fill, text on it). Order is the operator's choice.
 PALETTE = [("#F07B3F", "#1B1B1F"), ("#4A73D6", "#FFFFFF"), ("#8BC34A", "#1B1B1F"),
            ("#D35DA2", "#FFFFFF"), ("#26A6B5", "#1B1B1F"), ("#F2B33D", "#1B1B1F"),
@@ -352,6 +373,7 @@ class Tracker:
         self.routes_version = 0  # goes up whenever a route shape is added, changed or dropped
         self._rechecked = {}    # trip -> last time its shape was fetched again
         self._recheck_times = collections.deque()  # those fetches in the last hour
+        self.slog = StudyLog(LOG_DIR) if shadow_of is None and LOG_DIR else None
         if shadow_of is None:
             self.history = History(DATA / "speeds.json")
             self.blend = Blend(DATA / "blend.json")
@@ -513,7 +535,7 @@ class Tracker:
         for trip, tr in self.tracks.items():
             for i, ta in tr.new_arrivals:
                 self.last_arrivals.append((trip, i, ta))
-                for made, old, new, kf, bl, line, ageb in self._preds.pop((trip, i), []):
+                for made, old, new, kf, bl, line, ageb, ctx in self._preds.pop((trip, i), []):
                     ahead = ta - made
                     h = next((name for lim, name in self.ETA_HORIZONS if ahead <= lim), None)
                     if h is None or ahead < 15:
@@ -531,6 +553,11 @@ class Tracker:
                         self.eta_samples.append((h, line, ageb, abs(old - ta), abs(new - ta),
                                                  abs(kf - ta), abs(bl - ta)))
                         self.blend.add(ahead, new - ta, kf - ta, made, line)  # weights learn after scoring this one
+                        if self.slog:  # signed errors (+ : predicted too late), for the blend's correlations
+                            self.slog.write("eta", {"t": round(ta), "made": round(made), "ahead": round(ahead),
+                                                    "line": line, "trip": trip, "i": i, "h": round(new - ta),
+                                                    "k": round(kf - ta), "b": round(bl - ta), "sp": round(old - ta),
+                                                    **ctx})
             tr.new_arrivals.clear()
             if tr.layover or tr.stopped_for(t) is not None or t - self._pred_at.get(trip, 0) < self.ETA_EVERY:
                 continue
@@ -542,6 +569,10 @@ class Tracker:
             age = t - tr.fixes[-1][0]
             ageb = next(name for lim, name in self.GPS_AGE_BANDS if age < lim)
             est = tr.estimated(t)
+            ctx = {"age": round(age), "est": est, "fz": tr.gps_frozen, "lost": tr.gps_lost}
+            if tr.tl.ready():
+                d, sd = tr.tl.delay(t)
+                ctx.update(d=round(d), sd=round(sd), np=tr.tl.passages, pts=len(tr.tl.tt.at))
             n = 0
             for i, st in enumerate(tr.variant.stops):
                 if st["s"] - ARRIVE_M <= s or i in tr.arrivals:
@@ -552,7 +583,7 @@ class Tracker:
                     # "blend" is what the app serves: the timetable's alone when GPS is old
                     bl = None if kf is None else t + (kf if est else self.blend.combine(new, kf, t, line)[0])
                     self._preds.setdefault((trip, i), []).append(
-                        (t, t + old, t + new, None if kf is None else t + kf, bl, line, ageb))
+                        (t, t + old, t + new, None if kf is None else t + kf, bl, line, ageb, ctx))
                 n += 1
                 if n >= self.ETA_AHEAD:
                     break
@@ -730,6 +761,7 @@ class Tracker:
                     with self.lock:
                         if not tr.gps_lost:
                             self.log.info("%s: GPS gone, still listed: on the timetable now", trip)
+                            tr.frozen_since = tr.frozen_since or (t, "gone")
                         tr.gps_lost = True
                         self._timetable_points(tr, at.get(trip, []), t)
                         self.seen[trip] = t
@@ -759,9 +791,13 @@ class Tracker:
                            "destination": r["Destination"], "note": r["Note"] or None,
                            "api_arrival": r["ArrivalTime"]}
                 self._timetable_points(tr, at.get(trip, []), t, tr.fixes[-1][1] if tr.fixes else None)
+                was = tr.frozen_since if (tr.gps_frozen or tr.gps_lost) and tr.fixes else None
+                est = tr.predict(t)[0] if was else None
                 if tr.add_fix(t, r["Latitude"], r["Longitude"]):
                     updated += 1
                     moved.append(tr)
+                    if was:
+                        self._frozen_outcome(tr, t, was, est, "gps_back")
                 else:
                     self._standing(tr, t)
                 self.seen[trip] = t
@@ -849,6 +885,7 @@ class Tracker:
             if not tr.gps_frozen:
                 self.kf_stats["frozen"] += 1
                 self.log.info("%s: same position for %ds mid-route: GPS frozen? on the timetable now", tr.trip, still)
+                tr.frozen_since = (t, "standing")
             tr.gps_frozen = True
             return
         tr.stand(t)
@@ -889,6 +926,7 @@ class Tracker:
                     # Its GPS stands still, yet it went by a stop further on: the GPS froze
                     # (and stops behind may not list it again to show that). Timetable now.
                     obj.gps_frozen = True
+                    obj.frozen_since = (t, "passage")
                     self.kf_stats["frozen_by_passage"] += 1
                     log.info("%s: passed %s, %dm beyond its standing GPS: GPS frozen, on the timetable now",
                              trip, code, obj.variant.stops[i]["s"] - obj.fixes[-1][1])
@@ -1164,7 +1202,27 @@ class Tracker:
                 pending.append(d)
         self.pending = pending
 
+    def _frozen_outcome(self, tr, t, was, est, how, reason=None):
+        """How a stretch on the timetable (GPS frozen or gone) ended: where the GPS came
+        back against where the timetable had it, or that the trip was dropped first."""
+        tr.frozen_since = None
+        if not self.slog:
+            return
+        rec = {"t": round(t), "trip": tr.trip, "line": tr.variant.line.rstrip("/"), "why": was[1],
+               "for_s": round(t - was[0]), "how": how, "est_s": None if est is None else round(est),
+               "len": round(tr.variant.shape.length)}
+        if how == "gps_back":
+            rec["gps_s"] = round(tr.fixes[-1][1])
+            rec["err_m"] = None if est is None else round(est - tr.fixes[-1][1])  # + : timetable had it too far on
+        else:
+            rec["reason"] = reason
+        if tr.tl.ready():
+            rec["sigma_s"] = round(tr.tl.kf.at(t)[1])
+        self.slog.write("frozen", rec)
+
     def _record_drop(self, trip, tr, reason, t):
+        if tr.frozen_since:
+            self._frozen_outcome(tr, t, tr.frozen_since, tr.predict(t)[0], "dropped", reason)
         s = tr.fixes[-1][1]
         last = max((st for st in tr.variant.stops if st["s"] <= s + AT_STOP_M), key=lambda st: st["s"],
                    default=tr.variant.stops[0])
@@ -1249,6 +1307,11 @@ class Tracker:
                         sh.blend.save()
             except Exception:
                 self.log.exception("saving data failed")
+            if self.slog and t - self.started > 60:  # not the empty one at start
+                try:  # the whole /api/status, rate study included: survives a restart
+                    self.slog.write("status", self.status())
+                except Exception:
+                    self.log.exception("status snapshot failed")
             time.sleep(DATA_EVERY)
 
     def run(self):

@@ -7,6 +7,8 @@ services:
     init: true                      # forwards SIGTERM so `docker compose down` is quick
     ports:
       - "${NOSEPOL_PORT:-8080}:8080"
+    environment:
+      NOSEPOL_LOG_DIR: ${NOSEPOL_LOG_DIR:-}   # e.g. /app/data/logs: study logs (see server/app.py); empty = off
     volumes:
       - nosepol-data:/app/data      # seeded from the image on first run; keeps the routes cache
     command: ["python", "server/app.py", "--port", "8080", "--lines", "${NOSEPOL_LINES:-T06,T08,T09}"]

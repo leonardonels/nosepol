@@ -232,6 +232,7 @@ class Track:
         self.gps_frozen = False  # set by the tracker: listed with the same position too long mid-route
         self.gps_lost = False    # set by the tracker: still listed, but with no position
         self.hold_s = None       # set by the tracker: where its timetable ended the trip (GPS frozen or gone)
+        self.frozen_since = None  # set by the tracker: (when, why) its GPS was taken as frozen or gone
         self.tl = TimetableTrack(variant)
         self.meta = {}
 
