@@ -82,6 +82,7 @@ GHOST_DUE_S = 120       # a run with no GPS due this soon (or past) at a stop it
 GHOST_TTL = 4 * 60      # s a ghost is kept after the last stop listing it
 PASSAGE_GAP_S = 120     # longest gap between two polls of a stop that times a passage
 PASSAGE_NEAR_M = 1500   # a passage counts only this close to where the filter has the bus
+PASSED_GPS_M = 50       # a passage this far past a standing bus's GPS: the GPS froze, it drove on
 # Every FULL_EVERY-th sweep polls the full set; the others only the stops just ahead of
 # known buses and the termini (1: always full, as before).
 FULL_EVERY = max(1, int(os.environ.get("NOSEPOL_FULL_EVERY", "3")))
@@ -329,7 +330,7 @@ class Tracker:
         self._listing = {}      # stop code -> (time polled, {trip: (line, direction)} it listed)
         self._past_tt = {}      # variant key -> recent finished trips' Timetables (to extend others')
         self.kf_stats = {"passages": 0, "passage_z": [], "ghosts_found": 0, "ghosts_then_gps": 0,
-                         "frozen": 0, "full_sweeps": 0, "targeted_sweeps": 0}
+                         "frozen": 0, "frozen_by_passage": 0, "full_sweeps": 0, "targeted_sweeps": 0}
         self.seen = {}          # trip -> last time seen at any stop
         self.frozen = {}        # dropped trip -> its last (lat, lon), ignored until it moves
         self.drops = collections.deque(maxlen=50)  # recent removals, with the reason
@@ -633,6 +634,11 @@ class Tracker:
         codes = []
         objs = [(tr.variant, tr.predict(t)[0]) for tr in self.tracks.values() if not tr.layover]
         objs += [(g.variant, g.s(t)) for g in self.ghosts.values()]
+        # A bus standing mid-route is held at its GPS spot, but if that GPS froze it is
+        # further on: poll ahead of where its timetable has it too, so a passage tells.
+        objs += [(tr.variant, tr.tl.position(t)[0]) for tr in self.tracks.values()
+                 if not tr.layover and not tr.gps_frozen and tr.tl.ready() and tr.tl.schedule()
+                 and tr.stopped_for(t) is not None and not self.at_terminus(tr)]
         for var, s in objs:
             codes += [st["code"] for st in var.stops if st["code"] and st["s"] > s - AT_STOP_M][:n]
         return codes
@@ -761,6 +767,7 @@ class Tracker:
                 self.seen[trip] = t
         with self.lock:
             self._passages(t, fetched)
+            self._bound_estimated(t, at)
             # A bus at the end of its route that this sweep didn't list has finished its
             # trip: the operator drops it at once. Buses then usually wait there and start
             # the line's next run back (watched on lines 6, 8, 9), so keep it as "layover".
@@ -834,6 +841,8 @@ class Tracker:
         """Listed again at the same position. Standing at lights or a stop is news for the
         filter (its delay grows); standing this long mid-route more likely means the GPS
         froze, so from then on the timetable moves it."""
+        if tr.gps_frozen:
+            return  # already known frozen (a passage ahead of it, say): that spot is old news
         still = tr.stopped_for(t)
         if (still is not None and still >= FROZEN_AFTER_S and not self.at_terminus(tr)
                 and tr.tl.ready() and ESTIMATOR == "kalman"):
@@ -874,6 +883,31 @@ class Tracker:
                 self.kf_stats["passage_z"] = (self.kf_stats["passage_z"] + [round(z)])[-50:]
                 self.log.info("passage %s at %s (%s): delay %+ds%s", trip, code, pretty(obj.variant.stops[i]["name"]),
                          z, " [ghost]" if isinstance(obj, Ghost) else "")
+                if (isinstance(obj, Track) and not obj.gps_frozen and not obj.gps_lost
+                        and obj.stopped_for(t) is not None
+                        and obj.variant.stops[i]["s"] > obj.fixes[-1][1] + PASSED_GPS_M):
+                    # Its GPS stands still, yet it went by a stop further on: the GPS froze
+                    # (and stops behind may not list it again to show that). Timetable now.
+                    obj.gps_frozen = True
+                    self.kf_stats["frozen_by_passage"] += 1
+                    log.info("%s: passed %s, %dm beyond its standing GPS: GPS frozen, on the timetable now",
+                             trip, code, obj.variant.stops[i]["s"] - obj.fixes[-1][1])
+
+    def _bound_estimated(self, t, at):
+        """A bus moved by its timetable (GPS frozen or gone) hasn't reached a stop that
+        still lists it: hold it short of the first one, as for ghosts. A bus really stuck
+        then waits before the next stop instead of driving on by the clock."""
+        for trip, tr in self.tracks.items():
+            if tr.layover or not (tr.gps_frozen or tr.gps_lost) or not tr.tl.ready():
+                continue
+            s = tr.predict(t)[0]
+            for c, r in at.get(trip, []):
+                if r.get("IsDestination") or not self._sched_ts(r.get("Time")):
+                    continue
+                i = stop_index(tr.variant, c, s - 300)
+                # only stops past its last GPS: one it drove by can keep listing it there
+                if i is not None and tr.variant.stops[i]["s"] > tr.fixes[-1][1] + AT_STOP_M:
+                    tr.tl.not_past(i, t)
 
     def _ghosts(self, t, at):
         """Runs listed with no GPS whose time at a stop listing them is due or past, that
