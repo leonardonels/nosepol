@@ -507,7 +507,7 @@ class Tracker:
                         e["blend"] = e.get("blend", 0.0) + abs(bl - ta)
                         self.eta_samples.setdefault(h, collections.deque(maxlen=self.ETA_SAMPLES)).append(
                             (abs(old - ta), abs(new - ta), abs(kf - ta), abs(bl - ta)))
-                        self.blend.add(ahead, new - ta, kf - ta)  # weights learn after scoring this one
+                        self.blend.add(ahead, new - ta, kf - ta, made)  # weights learn after scoring this one
             tr.new_arrivals.clear()
             if tr.layover or tr.stopped_for(t) is not None or t - self._pred_at.get(trip, 0) < self.ETA_EVERY:
                 continue
@@ -522,7 +522,7 @@ class Tracker:
                 old, new = tr.time_to(s, st["s"], v), tr.eta_hist(s, st["s"], v, t)[0]
                 kf = tr.tl.eta(st["s"], t) if tr.tl.ready() else None
                 if old is not None and new is not None:
-                    bl = None if kf is None else t + self.blend.combine(new, kf)[0]
+                    bl = None if kf is None else t + self.blend.combine(new, kf, t)[0]
                     self._preds.setdefault((trip, i), []).append(
                         (t, t + old, t + new, None if kf is None else t + kf, bl))
                 n += 1
@@ -1528,7 +1528,7 @@ class Tracker:
                     "stop_list": {"downloaded": self.refresh.get("stops"), "ok": self.refresh.get("stops_ok")},
                     "route_checks_last_hour": len(self._recheck_times),
                     "history": self.history.summary(),
-                    "blend_weights": self.blend.summary(),
+                    "blend_weights": self.blend.summary(now),
                     "eta_errors": {h: {"n": e["n"], "speed_mae_s": round(e["speed"] / e["n"]),
                                        "ours_mae_s": round(e["ours"] / e["n"]),
                                        # the timetable filter's, and ours on the same arrivals
