@@ -120,10 +120,11 @@ Findings that shape the design:
      per minute up to 30: each method counts by 1 / its mean squared error there
      (inverse-variance weighting), learned from the scored arrivals and saved to
      `data/blend.json`. Close to the stop the bus's own recent pace tends to win, further
-     out the timetable plus delay, and which wins changes over the day. So errors are
-     kept per day type and hour (`wd08`), per hour and overall, like `speeds.json`; a
-     finer level starts from the coarser one's (30 arrivals' worth) and moves to its own
-     as it learns. With GPS old, frozen or gone, the filter's alone.
+     out the timetable plus delay, and which wins changes over the day and by line (a
+     line with an unrealistic timetable should lean on history). So errors are kept
+     overall, per hour (`h08`), per day type and hour (`wd08`), then the same per line
+     (`T09`, `T09 h08`, `T09 wd08`); each level starts from the ones before it (30
+     arrivals' worth) and moves to its own as it learns. With GPS old, frozen or gone, the filter's alone.
      `eta_src` is then `blend` or `timetable`; `/api/status` adds `blend_mae_s` to
      `eta_errors` and `blend_weights` (this hour's bucket and the history ETA's weight per minute now).
      `eta_spread` gives mean, median and 95th percentile of the absolute error for all

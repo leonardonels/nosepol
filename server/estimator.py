@@ -100,11 +100,13 @@ class Blend:
     the stop is and when. Each is weighted by 1 / its mean squared error at that time to
     the stop (inverse-variance weighting), learned online from the scored arrivals: close
     to the stop the history (this bus's own recent pace) tends to win, further out the
-    timetable plus delay, and which one wins changes over the day (rush hour, evenings).
-    Errors are kept per minute to the stop at three levels, like History: day type and
-    hour ("wd08"), hour ("h08"), and overall ("all"). A finer level's errors are pulled
-    towards the coarser one's by BLEND_SHRINK arrivals' worth, so a new hour starts from
-    the overall weights and moves to its own as it learns. Saved to data/blend.json."""
+    timetable plus delay, and which one wins changes over the day (rush hour, evenings)
+    and by line (a line whose timetable is unrealistic should lean on history). Errors
+    are kept per minute to the stop at these levels, coarse to fine: overall ("all"),
+    hour ("h08"), day type and hour ("wd08"), then the same for the line ("T09",
+    "T09 h08", "T09 wd08"). Each level's errors are pulled towards the estimate of the
+    levels before it by BLEND_SHRINK arrivals' worth, so a new hour or line starts from
+    the broader weights and moves to its own as it learns. Saved to data/blend.json."""
 
     def __init__(self, path):
         self.path = path
@@ -124,10 +126,20 @@ class Blend:
     def _bins(self, key):
         return self.b.setdefault(key, [[0, 0.0, 0.0] for _ in range(BLEND_BINS)])  # [n, mse history, mse timetable]
 
-    def add(self, ahead, err_hist, err_tt, t):
-        """One scored arrival: the two ETAs' errors, predicted `ahead` s before, at time t."""
+    @staticmethod
+    def _levels(t, line):
+        """Keys from coarse to fine, after "all": hour, day type and hour, then the line's."""
+        day_hour, hour, _ = History.buckets(t)
+        keys = [hour, day_hour]
+        if line:
+            keys += [line, f"{line} {hour}", f"{line} {day_hour}"]
+        return keys
+
+    def add(self, ahead, err_hist, err_tt, t, line=None):
+        """One scored arrival: the two ETAs' errors, predicted `ahead` s before, at time t,
+        on line (e.g. "T09")."""
         i = self._bin(ahead)
-        for key in History.buckets(t):
+        for key in ["all"] + self._levels(t, line):
             b = self._bins(key)[i]
             b[0] = min(b[0] + 1, 100000)
             a = max(1.0 / b[0], BLEND_ALPHA)
@@ -152,15 +164,14 @@ class Blend:
                 return n, mh / n, mk / n
         return None
 
-    def mse(self, ahead, t):
-        """(mse history, mse timetable) at this time to the stop and time of day, or None."""
+    def mse(self, ahead, t, line=None):
+        """(mse history, mse timetable) at this time to the stop, time of day and line, or None."""
         k = self._bin(ahead)
         base = self._overall(k)
         if base is None:
             return None
         _, mh, mk = base
-        day_hour, hour, _ = History.buckets(t)
-        for key in (hour, day_hour):  # coarse to fine, each pulled towards the one before
+        for key in self._levels(t, line):  # coarse to fine, each pulled towards the ones before
             bins = self.b.get(key)
             if bins and bins[k][0]:
                 n, h, tt = bins[k]
@@ -168,16 +179,16 @@ class Blend:
                 mk = (n * tt + BLEND_SHRINK * mk) / (n + BLEND_SHRINK)
         return mh, mk
 
-    def weight(self, ahead, t):
+    def weight(self, ahead, t, line=None):
         """Weight of the history ETA (the timetable's is 1 - this); half and half until
         there are enough arrivals."""
-        m = self.mse(ahead, t)
+        m = self.mse(ahead, t, line)
         if m is None or m[0] + m[1] <= 0:
             return 0.5
         return m[1] / (m[0] + m[1])  # = (1/mse_h) / (1/mse_h + 1/mse_t)
 
-    def combine(self, eta_hist, eta_tt, t):
-        w = self.weight((eta_hist + eta_tt) / 2, t)
+    def combine(self, eta_hist, eta_tt, t, line=None):
+        w = self.weight((eta_hist + eta_tt) / 2, t, line)
         return w * eta_hist + (1 - w) * eta_tt, w
 
     def save(self):
@@ -186,15 +197,21 @@ class Blend:
                                              for k, bins in self.b.items()}, separators=(",", ":")))
             self.dirty = False
 
-    def summary(self, t):
+    def summary(self, t, lines=()):
         """Per minute to the stop: arrivals learned from (overall, and in this hour's
-        bucket), and the history ETA's weight now."""
+        bucket), and the history ETA's weight now, overall and per line."""
         day_hour = History.buckets(t)[0]
         alls, here = self.b.get("all") or [], self.b.get(day_hour) or []
+        mins = [i for i, b in enumerate(alls) if b[0]]
+        per_line = {}
+        for line in lines:
+            per_line[line] = [{"min": i, "n_bucket": (self.b.get(f"{line} {day_hour}") or [[0]] * BLEND_BINS)[i][0],
+                               "n_line": (self.b.get(line) or [[0]] * BLEND_BINS)[i][0],
+                               "w_history": round(self.weight(i * BLEND_BIN_S + 30, t, line), 2)} for i in mins]
         return {"bucket": day_hour,
-                "minutes": [{"min": i, "n": b[0], "n_bucket": here[i][0] if here else 0,
-                             "w_history": round(self.weight(i * BLEND_BIN_S + 30, t), 2)}
-                            for i, b in enumerate(alls) if b[0]]}
+                "minutes": [{"min": i, "n": alls[i][0], "n_bucket": here[i][0] if here else 0,
+                             "w_history": round(self.weight(i * BLEND_BIN_S + 30, t), 2)} for i in mins],
+                "lines": per_line}
 
 
 class Track:
@@ -303,7 +320,7 @@ class Track:
                 if self.blend is not None and not self.estimated(now):
                     h = self.eta_hist(s_from, s_to, v, now)[0]
                     if h is not None:
-                        return self.blend.combine(h, e, now)[0], "blend"
+                        return self.blend.combine(h, e, now, self.variant.line.rstrip("/"))[0], "blend"
                 return e, "timetable"
         return self.eta_hist(s_from, s_to, v, now)
 

@@ -255,7 +255,10 @@
   .dbg td b { font:800 16px/20px var(--font); display:block; }
   .dbg td small { font:400 11px/14px var(--font); color:var(--label2); display:block; white-space:nowrap; }
   .dbg td.best b { color:var(--md-good, #2e9d57); }
-  .dbg .bars { display:flex; align-items:flex-end; gap:2px; height:56px; margin-top:6px; position:relative; }
+  .dbg .bars { display:flex; align-items:flex-end; gap:2px; height:40px; margin-top:6px; position:relative; flex:1; min-width:0; }
+  .dbg .brow { display:flex; align-items:flex-end; gap:8px; }
+  .dbg .brow .bl { flex:none; width:40px; font:600 11px/14px var(--font); color:var(--label2); }
+  .dbg .brow .bl .badge { display:inline-flex; }
   .dbg .bars::after { content:""; position:absolute; left:0; right:0; bottom:50%; border-top:1px dashed var(--label2); opacity:.6; pointer-events:none; }
   .dbg .bars > div { flex:1; min-width:0; background:var(--tint, #4A73D6); border-radius:3px 3px 0 0; position:relative; }
   .dbg .bars > div.thin { opacity:.4; }
@@ -416,7 +419,7 @@ const T = {
     dbgTitle: "Debug", dbgEstimator: "Stimatore", dbgReq: "Richieste/h", dbgOnTt: "Con orario", dbgEst: "Stimati", dbgGhosts: "Senza GPS", dbgUptime: "Attivo da",
     dbgEta: "Errore ETA (s)", dbgEtaHint: "Stessi arrivi per tutti: media grande; sotto mediana e 95° percentile (i casi peggiori). In verde il migliore della riga.",
     dbgHist: "Storico", dbgTt: "Orario", dbgBlend: "Misto", dbgSpeed: "Velocità", dbgN: "{n} arrivi",
-    dbgWeights: "Peso dello storico nel misto ({b})", dbgWeightsHint: "Per minuto alla fermata: barra alta = conta di più lo storico, bassa = l'orario. Sbiadite: pochi dati in questa fascia.",
+    dbgWeights: "Peso dello storico nel misto ({b})", dbgWeightsHint: "Per minuto alla fermata, per linea: barra alta = conta di più lo storico, bassa = l'orario. Sbiadite: pochi dati in questa fascia (usa i pesi generali).", dbgAll: "Tutte",
     dbgFilter: "Filtro orario", dbgPass: "Passaggi rilevati", dbgFrozen: "GPS bloccati", dbgGhostFound: "Corse senza GPS trovate", dbgGhostGps: "…poi con GPS",
     dbgByLine: "Errore ETA per linea (s)", dbgByAge: "Errore ETA per età del GPS (s)", dbgAhead: "Previsione fatta",
     dbgByAgeHint: "Quanto era vecchio il GPS quando è stata fatta la previsione. Da 90 s la posizione viene dall'orario: lì il misto è l'orario da solo.",
@@ -474,7 +477,7 @@ const T = {
     dbgTitle: "Debug", dbgEstimator: "Estimator", dbgReq: "Requests/h", dbgOnTt: "On timetable", dbgEst: "Estimated", dbgGhosts: "No GPS", dbgUptime: "Up for",
     dbgEta: "ETA error (s)", dbgEtaHint: "Same arrivals for all: mean in large; below, median and 95th percentile (the bad cases). Green: best in the row.",
     dbgHist: "History", dbgTt: "Timetable", dbgBlend: "Blend", dbgSpeed: "Speed", dbgN: "{n} arrivals",
-    dbgWeights: "History's weight in the blend ({b})", dbgWeightsHint: "Per minute to the stop: tall bar = history counts more, short = the timetable. Faded: little data in this time slot.",
+    dbgWeights: "History's weight in the blend ({b})", dbgWeightsHint: "Per minute to the stop, per line: tall bar = history counts more, short = the timetable. Faded: little data in this time slot (the broader weights are used).", dbgAll: "All",
     dbgFilter: "Timetable filter", dbgPass: "Passages seen", dbgFrozen: "Frozen GPS", dbgGhostFound: "Runs without GPS found", dbgGhostGps: "…then got GPS",
     dbgByLine: "ETA error by line (s)", dbgByAge: "ETA error by GPS age (s)", dbgAhead: "Predicted",
     dbgByAgeHint: "How old the bus's GPS was when the prediction was made. From 90 s the position comes from the timetable: there the blend is the timetable alone.",
@@ -1270,9 +1273,13 @@ function debugHtml(st) {
     <h3>${esc(t("dbgByAge"))}</h3>${panes(st.eta_by_gps_age, a => esc(a))}<p class="note">${esc(t("dbgByAgeHint"))}</p>` : "";
   // blend weights for this hour's bucket, one bar per minute to the stop
   const bw = st.blend_weights, mins = (bw && bw.minutes || []).filter(m => m.min < 20);
+  // one row of bars per line (its own weights), all lines together on top
+  const barRow = (label, ms, nOf) => `<div class="brow"><span class="bl">${label}</span><div class="bars">${ms.map(m =>
+    `<div class="${nOf(m) < 30 ? "thin" : ""}" style="height:${Math.round(m.w_history * 100)}%" title="${m.min}′: ${Math.round(m.w_history * 100)}% · n ${nOf(m)}"></div>`).join("")}</div></div>`;
+  const lineRows = Object.entries(bw && bw.lines || {}).map(([l, ms]) => barRow(badge(l), ms.filter(m => m.min < 20), m => m.n_bucket)).join("");
   const bars = mins.length ? `<h3>${esc(t("dbgWeights", { b: bw.bucket }))}</h3>
-    <div class="bars">${mins.map(m => `<div class="${m.n_bucket < 30 ? "thin" : ""}" style="height:${Math.round(m.w_history * 100)}%" title="${m.min}′: ${Math.round(m.w_history * 100)}% · n ${m.n} / ${m.n_bucket}"></div>`).join("")}</div>
-    <div class="axis"><span>${mins[0].min}′</span><span>50%</span><span>${mins[mins.length - 1].min}′</span></div>
+    ${barRow(esc(t("dbgAll")), mins, m => m.n_bucket)}${lineRows}
+    <div class="brow"><span class="bl"></span><div class="axis" style="flex:1"><span>${mins[0].min}′</span><span>50%</span><span>${mins[mins.length - 1].min}′</span></div></div>
     <p class="note">${esc(t("dbgWeightsHint"))}</p>` : "";
   const kv = (k, v) => `<div class="kv"><span>${esc(t(k))}</span><span>${esc(String(v))}</span></div>`;
   const filt = st.timetable ? `<h3>${esc(t("dbgFilter"))}</h3>${kv("dbgPass", n(tt.passages))}${kv("dbgFrozen", n(tt.frozen))}
